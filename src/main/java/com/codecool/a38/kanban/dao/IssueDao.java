@@ -8,6 +8,6 @@ public interface IssueDao {
 
     List<Issue> getAll();
 
-    Issue save(Issue issue);
+    void save(Issue issue);
 
 }

@@ -21,9 +21,9 @@ public class IssueDaoDB implements IssueDao {
     }
 
     @Override
-    public Issue save(Issue issue) {
+    public void save(Issue issue) {
         log.info("Save issue: " + issue);
-        return issueRepository.save(issue);
+        issueRepository.save(issue);
     }
 
 }

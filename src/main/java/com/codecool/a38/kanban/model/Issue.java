@@ -28,11 +28,11 @@ public class Issue {
 
     private String issueUrl;
 
+    @ManyToOne(cascade = {CascadeType.MERGE})
+    private Assignee assignee;
+
     @ElementCollection
     private List<String> labels;
-
-    @ManyToOne
-    private Assignee assignee;
 
 }
 
