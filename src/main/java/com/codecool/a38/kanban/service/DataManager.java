@@ -1,6 +1,7 @@
 package com.codecool.a38.kanban.service;
 
 import com.codecool.a38.kanban.dao.IssueDao;
+import com.codecool.a38.kanban.model.Issue;
 import com.codecool.a38.kanban.model.generated.ProjectData;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Profile;
@@ -20,10 +21,20 @@ public class DataManager {
     public void refreshData() {
         ProjectData projectData = gitLabGraphQLCaller.getProjectData();
 
+        projectData.getData().getProjects().getNodes().forEach((project) -> {
+                    project.getIssues().getNodes().forEach((issue) -> {
+                        issueDao.save(Issue.builder()
+                                .issueId(issue.getId())
+                                .issueTitle(issue.getTitle())
+                                .issueDescription(issue.getDescription())
+                                .issueUrl(issue.getWebUrl())
+                        .build());
+                    });
+                });
     }
 
     @PostConstruct
-    public void init () {
+    public void init() {
         refreshData();
     }
 

@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @AllArgsConstructor
-public class GitLabController {
+public class DataController {
 
     private GitLabGraphQLCaller gitLabGraphQLCaller;
 
     private DataManager dataManager;
 
-    @GetMapping("/projects")
+    @GetMapping("/projectsData")
     public ProjectData getProjectsData() {
         return gitLabGraphQLCaller.getProjectData();
     }
