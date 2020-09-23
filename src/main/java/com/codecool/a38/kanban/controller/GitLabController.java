@@ -20,20 +20,37 @@ public class GitLabController {
     private RestTemplate restTemplate;
 
     @GetMapping("/projects")
-    public String getProjects() {
+    public Object getProjectsData() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + token);
         headers.add("Content-Type", "application/json");
 
-        String query1 = "{\"query\":\"{\\nprojects(membership: true) {\\n" +
+        String query = "{\"query\":\"{\\n" +
+                "projects(membership: true) {\\n" +
                 "    nodes {\\n" +
                 "      id\\n" +
                 "      name\\n" +
                 "      fullPath\\n" +
+                "      webUrl\\n" +
                 "      issues {\\n" +
                 "          nodes {\\n" +
                 "              id\\n" +
                 "              title\\n" +
+                "              description\\n" +
+                "              webUrl\\n" +
+                "              designCollection {\\n" +
+                "                  project {\\n" +
+                "                      name\\n" +
+                "                  }\\n" +
+                "              }\\n" +
+                "              assignees {\\n" +
+                "                  nodes {\\n" +
+                "                      id\\n" +
+                "                      name\\n" +
+                "                      avatarUrl\\n" +
+                "                      webUrl\\n" +
+                "                  }\\n" +
+                "              }\\n" +
                 "              milestone {\\n" +
                 "                  id\\n" +
                 "                  title\\n" +
@@ -43,16 +60,16 @@ public class GitLabController {
                 "                      title\\n" +
                 "                  }\\n" +
                 "              }\\n" +
-                "              \\n" +
                 "          }\\n" +
                 "      }\\n" +
                 "    }\\n" +
-                "}\\n}\",\"variables\":{}}";
+                "}\\n" +
+                "}\",\"variables\":{}}";
 
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity(url,
-                new HttpEntity<>(query1, headers), String.class);
+        ResponseEntity<Object> responseEntity = restTemplate.postForEntity(
+                url, new HttpEntity<>(query, headers), Object.class);
 
-        log.info("Get all projects, the response: " + responseEntity.getBody());
+        log.info("Get all projects, the response: " + responseEntity.getBody().toString());
         return responseEntity.getBody();
     }
 
