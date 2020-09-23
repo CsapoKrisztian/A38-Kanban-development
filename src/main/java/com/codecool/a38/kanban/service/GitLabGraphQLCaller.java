@@ -72,9 +72,8 @@ public class GitLabGraphQLCaller {
         ResponseEntity<ProjectData> responseEntity = restTemplate.postForEntity(
                 url, new HttpEntity<>(query, headers), ProjectData.class);
 
-        log.info("Get all projects, the response: " + Objects.requireNonNull(responseEntity.getBody()).toString());
+        log.info("Get all project data, the response: " + Objects.requireNonNull(responseEntity.getBody()).toString());
         return responseEntity.getBody();
-
     }
 
 }
