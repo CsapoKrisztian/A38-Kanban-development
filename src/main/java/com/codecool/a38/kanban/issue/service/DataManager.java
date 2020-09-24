@@ -1,20 +1,17 @@
-package com.codecool.a38.kanban.service;
+package com.codecool.a38.kanban.issue.service;
 
-import com.codecool.a38.kanban.dao.IssueDao;
-import com.codecool.a38.kanban.model.Assignee;
-import com.codecool.a38.kanban.model.Issue;
-import com.codecool.a38.kanban.model.generated.NodesItem;
-import com.codecool.a38.kanban.model.generated.ProjectData;
+import com.codecool.a38.kanban.issue.dao.IssueDao;
+import com.codecool.a38.kanban.issue.model.Assignee;
+import com.codecool.a38.kanban.issue.model.Issue;
+import com.codecool.a38.kanban.issue.model.generated.NodesItem;
+import com.codecool.a38.kanban.issue.model.generated.ProjectData;
 import lombok.AllArgsConstructor;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Profile("production")
 @AllArgsConstructor
 public class DataManager {
 
@@ -60,9 +57,7 @@ public class DataManager {
         }
     }
 
-    @PostConstruct
-    public void init() {
-        refreshData();
+    public ProjectData getProjectData() {
+        return gitLabGraphQLCaller.getProjectData();
     }
-
 }

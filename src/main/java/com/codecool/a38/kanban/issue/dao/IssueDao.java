@@ -1,6 +1,6 @@
-package com.codecool.a38.kanban.dao;
+package com.codecool.a38.kanban.issue.dao;
 
-import com.codecool.a38.kanban.model.Issue;
+import com.codecool.a38.kanban.issue.model.Issue;
 
 import java.util.List;
 

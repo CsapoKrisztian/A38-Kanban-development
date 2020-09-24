@@ -1,6 +1,6 @@
-package com.codecool.a38.kanban.service;
+package com.codecool.a38.kanban.issue.service;
 
-import com.codecool.a38.kanban.model.generated.ProjectData;
+import com.codecool.a38.kanban.issue.model.generated.ProjectData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -29,24 +29,22 @@ public class GitLabGraphQLCaller {
         headers.add("Content-Type", "application/json");
 
         String query = "{\"query\":\"{\\n" +
-                "projects(membership: true) {\\n" +
+                "projects {\\n" +
                 "    nodes {\\n" +
                 "      id\\n" +
                 "      name\\n" +
-                "      fullPath\\n" +
-                "      webUrl\\n" +
                 "      issues {\\n" +
                 "          nodes {\\n" +
                 "              id\\n" +
                 "              title\\n" +
                 "              description\\n" +
                 "              webUrl\\n" +
+                "              dueDate\\n" +
                 "              assignees {\\n" +
                 "                  nodes {\\n" +
                 "                      id\\n" +
                 "                      name\\n" +
                 "                      avatarUrl\\n" +
-                "                      webUrl\\n" +
                 "                  }\\n" +
                 "              }\\n" +
                 "              milestone {\\n" +
@@ -55,7 +53,9 @@ public class GitLabGraphQLCaller {
                 "              }\\n" +
                 "              labels {\\n" +
                 "                  nodes {\\n" +
+                "                      id\\n" +
                 "                      title\\n" +
+                "                      color\\n" +
                 "                  }\\n" +
                 "              }\\n" +
                 "          }\\n" +

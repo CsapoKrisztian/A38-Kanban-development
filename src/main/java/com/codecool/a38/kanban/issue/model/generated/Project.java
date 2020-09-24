@@ -1,4 +1,4 @@
-package com.codecool.a38.kanban.model.generated;
+package com.codecool.a38.kanban.issue.model.generated;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -1,12 +1,9 @@
-package com.codecool.a38.kanban.model.generated;
+package com.codecool.a38.kanban.issue.model.generated;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @lombok.Data
 public class NodesItem{
-
-	@JsonProperty("fullPath")
-	private String fullPath;
 
 	@JsonProperty("webUrl")
 	private String webUrl;
@@ -19,6 +16,9 @@ public class NodesItem{
 
 	@JsonProperty("id")
 	private String id;
+
+	@JsonProperty("dueDate")
+	private String dueDate;
 
 	@JsonProperty("issues")
 	private Issues issues;
@@ -37,4 +37,8 @@ public class NodesItem{
 
 	@JsonProperty("labels")
 	private Labels labels;
+
+	@JsonProperty("color")
+	private Labels color;
+
 }

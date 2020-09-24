@@ -1,4 +1,4 @@
-package com.codecool.a38.kanban.model;
+package com.codecool.a38.kanban.issue.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
