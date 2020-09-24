@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +29,10 @@ public class DataManager {
             "Final review",
             "Documentation");
 
+    private static final String priorityPrefix = "Priority: ";
+
+    private static final String storyPrefix = "Story: ";
+
     public void refreshData() {
         ProjectsDataResponse projectsDataResponse = gitLabGraphQLCaller.getProjectData();
 
@@ -39,24 +44,48 @@ public class DataManager {
                             .build();
 
                     generatedProject.getIssues().getNodes()
-                            .forEach((generatedIssue) -> issueDao.save(Issue.builder()
-                                    .issueId(generatedIssue.getId())
-                                    .title(generatedIssue.getTitle())
-                                    .description(generatedIssue.getDescription())
-                                    .issueUrl(generatedIssue.getWebUrl())
-                                    .dueDate(generatedIssue.getDueDate())
-                                    .userNotesCount(generatedIssue.getUserNotesCount())
-                                    .project(thisProject)
-                                    .mileStone(getMileStone(generatedIssue))
-                                    .assignee(getAssignee(generatedIssue))
-                                    .labels(getLabels(generatedIssue))
-                                    .build()));
+                            .forEach((generatedIssue) -> {
+
+                                String story = null, priority = null, status = null;
+                                List<Label> labels = getLabels(generatedIssue);
+                                ListIterator<Label> iterator = labels.listIterator();
+                                while (iterator.hasNext()) {
+                                    Label label = iterator.next();
+                                    if (label.getTitle().startsWith(storyPrefix)) {
+                                        story = label.getTitle().substring(storyPrefix.length());
+                                        iterator.remove();
+                                    } else if (label.getTitle().startsWith(priorityPrefix)) {
+                                        priority = label.getTitle().substring(priorityPrefix.length());
+                                        iterator.remove();
+                                    } else if (statuses.stream()
+                                            .anyMatch(existingStatus -> existingStatus.equals(label.getTitle()))) {
+                                        status = label.getTitle();
+                                        iterator.remove();
+                                    }
+                                }
+
+                                issueDao.save(Issue.builder()
+                                        .issueId(generatedIssue.getId())
+                                        .title(generatedIssue.getTitle())
+                                        .description(generatedIssue.getDescription())
+                                        .story(story)
+                                        .status(status)
+                                        .priority(priority)
+                                        .issueUrl(generatedIssue.getWebUrl())
+                                        .dueDate(generatedIssue.getDueDate())
+                                        .userNotesCount(generatedIssue.getUserNotesCount())
+                                        .project(thisProject)
+                                        .mileStone(getMileStone(generatedIssue))
+                                        .assignee(getAssignee(generatedIssue))
+                                        .labels(labels)
+                                        .build());
+                            });
                 });
     }
 
     private List<Label> getLabels(NodesItem generatedIssue) {
-        return generatedIssue.getLabels().getNodes().stream().
-                map(generatedLabel -> Label.builder()
+        return generatedIssue.getLabels().getNodes().stream()
+                .map(generatedLabel -> Label.builder()
                         .labelId(generatedLabel.getId())
                         .title(generatedLabel.getTitle())
                         .color(generatedIssue.getColor())
