@@ -13,13 +13,11 @@ import javax.persistence.Id;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Assignee {
+public class MileStone {
 
     @Id
-    private String assigneeId;
+    private String mileStoneId;
 
     private String name;
-
-    private String avatarUrl;
 
 }

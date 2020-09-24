@@ -13,13 +13,11 @@ import javax.persistence.Id;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Assignee {
+public class Label {
 
     @Id
-    private String assigneeId;
+    private String title;
 
-    private String name;
-
-    private String avatarUrl;
+    private String color;
 
 }

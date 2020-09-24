@@ -18,21 +18,31 @@ public class Issue {
     @Id
     private String issueId;
 
-    private String issueTitle;
+    private String title;
 
-    private String issueDescription;
+    private String description;
 
-    private String projectName;
+    private String story;
 
-    private String mileStoneName;
+    private String priority;
+
+    private String status;
+
+    private String dueDate;
 
     private String issueUrl;
 
     @ManyToOne(cascade = {CascadeType.MERGE})
-    private Assignee assignee;
+    private Project project;
 
-    @ElementCollection
-    private List<String> labels;
+    @ManyToOne(cascade = {CascadeType.MERGE})
+    private MileStone mileStone;
+
+    @ManyToMany(cascade = {CascadeType.MERGE})
+    private List<Assignee> assignees;
+
+    @ManyToMany(cascade = {CascadeType.MERGE})
+    private List<Label> labels;
 
 }
 
