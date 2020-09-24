@@ -1,13 +1,14 @@
 package com.codecool.a38.kanban.issue.service;
 
 import com.codecool.a38.kanban.issue.dao.IssueDao;
-import com.codecool.a38.kanban.issue.model.Assignee;
-import com.codecool.a38.kanban.issue.model.Issue;
+import com.codecool.a38.kanban.issue.model.*;
+import com.codecool.a38.kanban.issue.model.generated.Milestone;
 import com.codecool.a38.kanban.issue.model.generated.NodesItem;
-import com.codecool.a38.kanban.issue.model.generated.ProjectData;
+import com.codecool.a38.kanban.issue.model.generated.ProjectsDataResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,37 +20,68 @@ public class DataManager {
 
     private GitLabGraphQLCaller gitLabGraphQLCaller;
 
+    private static final List<String> statuses = Arrays.asList(
+            "Backlog",
+            "Todo",
+            "Development",
+            "Dev review",
+            "Final review",
+            "Documentation");
+
     public void refreshData() {
-        ProjectData projectData = gitLabGraphQLCaller.getProjectData();
+        ProjectsDataResponse projectsDataResponse = gitLabGraphQLCaller.getProjectData();
 
-        projectData.getData().getProjects().getNodes()
-                .forEach((project) -> project.getIssues().getNodes()
-                        .forEach((issue) -> {
-                            List<String> labels = issue.getLabels().getNodes().stream().
-                                    map(NodesItem::getTitle)
-                                    .collect(Collectors.toList());
+        projectsDataResponse.getData().getProjects().getNodes()
+                .forEach((generatedProject) -> {
+                    Project thisProject = Project.builder()
+                            .projectId(generatedProject.getId())
+                            .name(generatedProject.getName())
+                            .build();
 
-                            issueDao.save(Issue.builder()
-                                    .issueId(issue.getId())
-                                    .issueTitle(issue.getTitle())
-                                    .issueDescription(issue.getDescription())
-                                    .projectName(project.getName())
-                                    .mileStoneName(issue.getMilestone() != null ?
-                                            issue.getMilestone().getTitle() : null)
-                                    .issueUrl(issue.getWebUrl())
-                                    .assignee(getAssignee(issue))
-                                    .labels(labels)
-                                    .build());
-                        }));
+                    generatedProject.getIssues().getNodes()
+                            .forEach((generatedIssue) -> issueDao.save(Issue.builder()
+                                    .issueId(generatedIssue.getId())
+                                    .title(generatedIssue.getTitle())
+                                    .description(generatedIssue.getDescription())
+                                    .issueUrl(generatedIssue.getWebUrl())
+                                    .dueDate(generatedIssue.getDueDate())
+                                    .userNotesCount(generatedIssue.getUserNotesCount())
+                                    .project(thisProject)
+                                    .mileStone(getMileStone(generatedIssue))
+                                    .assignee(getAssignee(generatedIssue))
+                                    .labels(getLabels(generatedIssue))
+                                    .build()));
+                });
     }
 
-    private Assignee getAssignee(NodesItem issue) {
+    private List<Label> getLabels(NodesItem generatedIssue) {
+        return generatedIssue.getLabels().getNodes().stream().
+                map(generatedLabel -> Label.builder()
+                        .labelId(generatedLabel.getId())
+                        .title(generatedLabel.getTitle())
+                        .color(generatedIssue.getColor())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    private MileStone getMileStone(NodesItem generatedIssue) {
         try {
-            NodesItem assigneeNode = issue.getAssignees().getNodes().get(0);
+            Milestone milestoneNode = generatedIssue.getMilestone();
+            return MileStone.builder()
+                    .mileStoneId(milestoneNode.getId())
+                    .title(milestoneNode.getTitle())
+                    .build();
+        } catch (NullPointerException e) {
+            return null;
+        }
+    }
+
+    private Assignee getAssignee(NodesItem generatedIssue) {
+        try {
+            NodesItem assigneeNode = generatedIssue.getAssignees().getNodes().get(0);
             return Assignee.builder()
                     .assigneeId(assigneeNode.getId())
                     .name(assigneeNode.getName())
-                    .webUrl(assigneeNode.getWebUrl())
                     .avatarUrl(assigneeNode.getAvatarUrl())
                     .build();
         } catch (IndexOutOfBoundsException e) {
@@ -57,7 +89,8 @@ public class DataManager {
         }
     }
 
-    public ProjectData getProjectData() {
+    public ProjectsDataResponse getProjectData() {
         return gitLabGraphQLCaller.getProjectData();
     }
+
 }

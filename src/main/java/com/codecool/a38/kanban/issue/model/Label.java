@@ -16,6 +16,8 @@ import javax.persistence.Id;
 public class Label {
 
     @Id
+    private String labelId;
+
     private String title;
 
     private String color;

@@ -1,6 +1,6 @@
 package com.codecool.a38.kanban.issue.service;
 
-import com.codecool.a38.kanban.issue.model.generated.ProjectData;
+import com.codecool.a38.kanban.issue.model.generated.ProjectsDataResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -20,7 +20,7 @@ public class GitLabGraphQLCaller {
         this.restTemplate = restTemplate;
     }
 
-    public ProjectData getProjectData() {
+    public ProjectsDataResponse getProjectData() {
         String url = "https://gitlab.techpm.guru/api/graphql";
         String token = "JbHJ7hUuBpS3syCQn748";
 
@@ -40,6 +40,7 @@ public class GitLabGraphQLCaller {
                 "              description\\n" +
                 "              webUrl\\n" +
                 "              dueDate\\n" +
+                "              userNotesCount\\n" +
                 "              assignees {\\n" +
                 "                  nodes {\\n" +
                 "                      id\\n" +
@@ -64,8 +65,8 @@ public class GitLabGraphQLCaller {
                 "}\\n" +
                 "}\",\"variables\":{}}";
 
-        ResponseEntity<ProjectData> responseEntity = restTemplate.postForEntity(
-                url, new HttpEntity<>(query, headers), ProjectData.class);
+        ResponseEntity<ProjectsDataResponse> responseEntity = restTemplate.postForEntity(
+                url, new HttpEntity<>(query, headers), ProjectsDataResponse.class);
 
         log.info("Get all project data, the response: " + Objects.requireNonNull(responseEntity.getBody()).toString());
         return responseEntity.getBody();

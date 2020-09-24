@@ -18,6 +18,6 @@ public class MileStone {
     @Id
     private String mileStoneId;
 
-    private String name;
+    private String title;
 
 }

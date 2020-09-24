@@ -30,6 +30,8 @@ public class Issue {
 
     private String dueDate;
 
+    private Integer userNotesCount;
+
     private String issueUrl;
 
     @ManyToOne(cascade = {CascadeType.MERGE})
@@ -38,8 +40,8 @@ public class Issue {
     @ManyToOne(cascade = {CascadeType.MERGE})
     private MileStone mileStone;
 
-    @ManyToMany(cascade = {CascadeType.MERGE})
-    private List<Assignee> assignees;
+    @ManyToOne(cascade = {CascadeType.MERGE})
+    private Assignee assignee;
 
     @ManyToMany(cascade = {CascadeType.MERGE})
     private List<Label> labels;

@@ -2,7 +2,6 @@ package com.codecool.a38.kanban.issue.dao;
 
 import com.codecool.a38.kanban.issue.model.Issue;
 import com.codecool.a38.kanban.issue.repository.IssueRepository;
-import com.codecool.a38.kanban.issue.service.DataManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,8 +14,6 @@ import java.util.List;
 public class IssueDaoDB implements IssueDao {
 
     private IssueRepository issueRepository;
-
-    private DataManager dataManager;
 
     @Override
     public List<Issue> getAll() {

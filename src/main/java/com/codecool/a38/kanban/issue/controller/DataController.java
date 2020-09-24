@@ -1,8 +1,7 @@
 package com.codecool.a38.kanban.issue.controller;
 
-import com.codecool.a38.kanban.issue.model.generated.ProjectData;
+import com.codecool.a38.kanban.issue.model.generated.ProjectsDataResponse;
 import com.codecool.a38.kanban.issue.service.DataManager;
-import com.codecool.a38.kanban.issue.service.GitLabGraphQLCaller;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +16,7 @@ public class DataController {
     private DataManager dataManager;
 
     @GetMapping("/projectsData")
-    public ProjectData getProjectsData() {
+    public ProjectsDataResponse getProjectsData() {
         return dataManager.getProjectData();
     }
 
