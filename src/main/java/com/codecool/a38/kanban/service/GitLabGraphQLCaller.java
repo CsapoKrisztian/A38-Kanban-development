@@ -21,8 +21,8 @@ public class GitLabGraphQLCaller {
     }
 
     public ProjectData getProjectData() {
-        String url = "https://gitlab.com/api/graphql";
-        String token = "VqPH7dptiz5GjSJEgZ6H";
+        String url = "https://gitlab.techpm.guru/api/graphql";
+        String token = "JbHJ7hUuBpS3syCQn748";
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + token);
@@ -41,11 +41,6 @@ public class GitLabGraphQLCaller {
                 "              title\\n" +
                 "              description\\n" +
                 "              webUrl\\n" +
-                "              designCollection {\\n" +
-                "                  project {\\n" +
-                "                      name\\n" +
-                "                  }\\n" +
-                "              }\\n" +
                 "              assignees {\\n" +
                 "                  nodes {\\n" +
                 "                      id\\n" +

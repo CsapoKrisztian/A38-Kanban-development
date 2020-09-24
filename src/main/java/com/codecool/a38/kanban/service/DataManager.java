@@ -36,7 +36,7 @@ public class DataManager {
                                     .issueId(issue.getId())
                                     .issueTitle(issue.getTitle())
                                     .issueDescription(issue.getDescription())
-                                    .projectName(issue.getDesignCollection().getProject().getName())
+                                    .projectName(project.getName())
                                     .mileStoneName(issue.getMilestone() != null ?
                                             issue.getMilestone().getTitle() : null)
                                     .issueUrl(issue.getWebUrl())

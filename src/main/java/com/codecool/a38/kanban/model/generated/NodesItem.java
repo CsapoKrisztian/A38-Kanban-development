@@ -35,9 +35,6 @@ public class NodesItem{
 	@JsonProperty("title")
 	private String title;
 
-	@JsonProperty("designCollection")
-	private DesignCollection designCollection;
-
 	@JsonProperty("labels")
 	private Labels labels;
 }
