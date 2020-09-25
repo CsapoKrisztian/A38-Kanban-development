@@ -18,11 +18,6 @@ public class IssueController {
 
     private IssueDao issueDao;
 
-    @GetMapping("/issues")
-    public List<Issue> getIssues() {
-        return issueDao.getAll();
-    }
-
     @GetMapping("/projects")
     public List<Project> getProjects() {
         return issueDao.getProjects();
@@ -51,6 +46,11 @@ public class IssueController {
     @GetMapping("/issues/orderByStory")
     public Map<String, List<Issue>> getIssuesOrderedByStory() {
         return issueDao.getIssuesOrderedByStory();
+    }
+
+    @GetMapping("/issues")
+    public List<Issue> getIssues() {
+        return issueDao.getAll();
     }
 
 }
