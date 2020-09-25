@@ -41,6 +41,7 @@ public class GitLabGraphQLCaller {
                 "              webUrl\\n" +
                 "              dueDate\\n" +
                 "              userNotesCount\\n" +
+                "              reference\\n" +
                 "              assignees {\\n" +
                 "                  nodes {\\n" +
                 "                      id\\n" +

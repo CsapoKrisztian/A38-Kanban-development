@@ -56,6 +56,7 @@ public class DataManager {
                                         .issueUrl(generatedIssue.getWebUrl())
                                         .dueDate(generatedIssue.getDueDate())
                                         .userNotesCount(generatedIssue.getUserNotesCount())
+                                        .reference(generatedIssue.getReference())
                                         .project(thisProject)
                                         .mileStone(getMileStone(generatedIssue))
                                         .assignee(getAssignee(generatedIssue))

@@ -44,4 +44,7 @@ public class NodesItem {
     @JsonProperty("userNotesCount")
     private Integer userNotesCount;
 
+    @JsonProperty("reference")
+    private String reference;
+
 }

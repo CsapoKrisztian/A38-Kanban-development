@@ -30,6 +30,8 @@ public class Issue {
 
     private Integer userNotesCount;
 
+    private String reference;
+
     private String issueUrl;
 
     @ManyToOne(cascade = {CascadeType.MERGE})
