@@ -1,13 +1,11 @@
 package com.codecool.a38.kanban.issue.dao;
 
-import com.codecool.a38.kanban.issue.model.Assignee;
-import com.codecool.a38.kanban.issue.model.Issue;
-import com.codecool.a38.kanban.issue.model.MileStone;
-import com.codecool.a38.kanban.issue.model.Project;
+import com.codecool.a38.kanban.issue.model.*;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneesIssues;
 import com.codecool.a38.kanban.issue.repository.IssueRepository;
 import com.codecool.a38.kanban.issue.repository.MileStoneRepository;
 import com.codecool.a38.kanban.issue.repository.ProjectRepository;
+import com.codecool.a38.kanban.issue.repository.StoryRepository;
 import com.codecool.a38.kanban.issue.service.DataManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +27,8 @@ public class IssueDaoDB implements IssueDao {
     private ProjectRepository projectRepository;
 
     private MileStoneRepository mileStoneRepository;
+
+    private StoryRepository storyRepository;
 
     @Override
     public List<Issue> getAll() {
@@ -74,15 +74,21 @@ public class IssueDaoDB implements IssueDao {
     public Map<String, List<Issue>> getIssuesOrderedByStory() {
         Map<String, List<Issue>> issuesOrderedByStory = new HashMap<>();
         issueRepository.findAll().forEach(issue -> {
-            String story = issue.getStory();
+            Story story = issue.getStory();
             if (story != null) {
-                if (!issuesOrderedByStory.containsKey(story)) {
-                    issuesOrderedByStory.put(story, new ArrayList<>());
+                String title = story.getTitle();
+                if (!issuesOrderedByStory.containsKey(title)) {
+                    issuesOrderedByStory.put(title, new ArrayList<>());
                 }
-                issuesOrderedByStory.get(story).add(issue);
+                issuesOrderedByStory.get(title).add(issue);
             }
         });
         return issuesOrderedByStory;
+    }
+
+    @Override
+    public List<Story> getStories() {
+        return storyRepository.findAll();
     }
 
     @Override

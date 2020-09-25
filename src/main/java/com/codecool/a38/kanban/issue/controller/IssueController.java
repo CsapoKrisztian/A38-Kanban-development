@@ -1,10 +1,7 @@
 package com.codecool.a38.kanban.issue.controller;
 
 import com.codecool.a38.kanban.issue.dao.IssueDao;
-import com.codecool.a38.kanban.issue.model.Assignee;
-import com.codecool.a38.kanban.issue.model.Issue;
-import com.codecool.a38.kanban.issue.model.MileStone;
-import com.codecool.a38.kanban.issue.model.Project;
+import com.codecool.a38.kanban.issue.model.*;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneesIssues;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -31,9 +28,14 @@ public class IssueController {
         return issueDao.getProjects();
     }
 
-    @GetMapping("/milestones")
+    @GetMapping("/mileStones")
     public List<MileStone> getMilestones() {
         return issueDao.getMilestones();
+    }
+
+    @GetMapping("/stories")
+    public List<Story> getStories() {
+        return issueDao.getStories();
     }
 
     @GetMapping("/statuses")

@@ -72,11 +72,16 @@ public class DataManager {
         while (iterator.hasNext()) {
             Label label = iterator.next();
             if (label.getTitle().startsWith(storyPrefix)) {
-                thisIssue.setStory(label.getTitle().substring(storyPrefix.length()));
+                thisIssue.setStory(Story.builder()
+                        .storyId(label.getLabelId())
+                        .title(label.getTitle().substring(storyPrefix.length()))
+                        .build());
                 iterator.remove();
+
             } else if (label.getTitle().startsWith(priorityPrefix)) {
                 thisIssue.setPriority(label.getTitle().substring(priorityPrefix.length()));
                 iterator.remove();
+
             } else if (statuses.stream()
                     .anyMatch(existingStatus -> existingStatus.equals(label.getTitle()))) {
                 thisIssue.setStatus(label.getTitle());

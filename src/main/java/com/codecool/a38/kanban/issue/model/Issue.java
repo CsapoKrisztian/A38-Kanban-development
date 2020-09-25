@@ -22,8 +22,6 @@ public class Issue {
 
     private String description;
 
-    private String story;
-
     private String priority;
 
     private String status;
@@ -33,6 +31,9 @@ public class Issue {
     private Integer userNotesCount;
 
     private String issueUrl;
+
+    @ManyToOne(cascade = {CascadeType.MERGE})
+    private Story story;
 
     @ManyToOne(cascade = {CascadeType.MERGE})
     private Project project;

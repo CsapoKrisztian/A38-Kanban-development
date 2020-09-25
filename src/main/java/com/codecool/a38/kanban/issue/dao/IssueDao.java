@@ -1,9 +1,6 @@
 package com.codecool.a38.kanban.issue.dao;
 
-import com.codecool.a38.kanban.issue.model.Assignee;
-import com.codecool.a38.kanban.issue.model.Issue;
-import com.codecool.a38.kanban.issue.model.MileStone;
-import com.codecool.a38.kanban.issue.model.Project;
+import com.codecool.a38.kanban.issue.model.*;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneesIssues;
 
 import java.util.List;
@@ -24,5 +21,7 @@ public interface IssueDao {
     List<AssigneesIssues> getIssuesOrderedByAssignee();
 
     Map<String, List<Issue>> getIssuesOrderedByStory();
+
+    List<Story> getStories();
 
 }
