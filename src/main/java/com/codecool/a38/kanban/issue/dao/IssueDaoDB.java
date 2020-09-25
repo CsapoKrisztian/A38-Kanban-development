@@ -52,8 +52,12 @@ public class IssueDaoDB implements IssueDao {
     public Map<Assignee, List<Issue>> getIssuesOrderedByAssignee() {
         Map<Assignee, List<Issue>> issuesOrderedByAssignees = new HashMap<>();
         issueRepository.findAll().forEach(issue -> {
-            if (issue.getAssignee() != null) {
-                issuesOrderedByAssignees.getOrDefault(issue.getAssignee(), new ArrayList<>()).add(issue);
+            Assignee assignee = issue.getAssignee();
+            if (assignee != null) {
+                if (!issuesOrderedByAssignees.containsKey(assignee)) {
+                    issuesOrderedByAssignees.put(assignee, new ArrayList<>());
+                }
+                issuesOrderedByAssignees.get(assignee).add(issue);
             }
         });
         return issuesOrderedByAssignees;
@@ -63,8 +67,12 @@ public class IssueDaoDB implements IssueDao {
     public Map<String, List<Issue>> getIssuesOrderedByStory() {
         Map<String, List<Issue>> issuesOrderedByStory = new HashMap<>();
         issueRepository.findAll().forEach(issue -> {
-            if (issue.getAssignee() != null) {
-                issuesOrderedByStory.getOrDefault(issue.getStory(), new ArrayList<>()).add(issue);
+            String story = issue.getStory();
+            if (story != null) {
+                if (!issuesOrderedByStory.containsKey(story)) {
+                    issuesOrderedByStory.put(story, new ArrayList<>());
+                }
+                issuesOrderedByStory.get(story).add(issue);
             }
         });
         return issuesOrderedByStory;
