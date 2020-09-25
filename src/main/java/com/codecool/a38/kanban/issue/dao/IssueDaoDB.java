@@ -4,6 +4,7 @@ import com.codecool.a38.kanban.issue.model.Assignee;
 import com.codecool.a38.kanban.issue.model.Issue;
 import com.codecool.a38.kanban.issue.model.MileStone;
 import com.codecool.a38.kanban.issue.model.Project;
+import com.codecool.a38.kanban.issue.model.transfer.AssigneesIssues;
 import com.codecool.a38.kanban.issue.repository.IssueRepository;
 import com.codecool.a38.kanban.issue.repository.MileStoneRepository;
 import com.codecool.a38.kanban.issue.repository.ProjectRepository;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -49,7 +51,7 @@ public class IssueDaoDB implements IssueDao {
     }
 
     @Override
-    public Map<Assignee, List<Issue>> getIssuesOrderedByAssignee() {
+    public List<AssigneesIssues> getIssuesOrderedByAssignee() {
         Map<Assignee, List<Issue>> issuesOrderedByAssignees = new HashMap<>();
         issueRepository.findAll().forEach(issue -> {
             Assignee assignee = issue.getAssignee();
@@ -60,7 +62,12 @@ public class IssueDaoDB implements IssueDao {
                 issuesOrderedByAssignees.get(assignee).add(issue);
             }
         });
-        return issuesOrderedByAssignees;
+        return issuesOrderedByAssignees.entrySet().stream()
+                .map(e -> AssigneesIssues.builder()
+                        .assignee(e.getKey())
+                        .issues(e.getValue())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Override
