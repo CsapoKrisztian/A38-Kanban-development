@@ -2,6 +2,7 @@ package com.codecool.a38.kanban.issue.dao;
 
 import com.codecool.a38.kanban.issue.model.*;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneesIssues;
+import com.codecool.a38.kanban.issue.model.transfer.StoriesIssues;
 import com.codecool.a38.kanban.issue.repository.IssueRepository;
 import com.codecool.a38.kanban.issue.repository.MileStoneRepository;
 import com.codecool.a38.kanban.issue.repository.ProjectRepository;
@@ -71,19 +72,23 @@ public class IssueDaoDB implements IssueDao {
     }
 
     @Override
-    public Map<String, List<Issue>> getIssuesOrderedByStory() {
-        Map<String, List<Issue>> issuesOrderedByStory = new HashMap<>();
+    public List<StoriesIssues> getIssuesOrderedByStory() {
+        Map<Story, List<Issue>> issuesOrderedByStory = new HashMap<>();
         issueRepository.findAll().forEach(issue -> {
             Story story = issue.getStory();
             if (story != null) {
-                String title = story.getTitle();
-                if (!issuesOrderedByStory.containsKey(title)) {
-                    issuesOrderedByStory.put(title, new ArrayList<>());
+                if (!issuesOrderedByStory.containsKey(story)) {
+                    issuesOrderedByStory.put(story, new ArrayList<>());
                 }
-                issuesOrderedByStory.get(title).add(issue);
+                issuesOrderedByStory.get(story).add(issue);
             }
         });
-        return issuesOrderedByStory;
+        return issuesOrderedByStory.entrySet().stream()
+                .map(e -> StoriesIssues.builder()
+                        .story(e.getKey())
+                        .issues(e.getValue())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Override

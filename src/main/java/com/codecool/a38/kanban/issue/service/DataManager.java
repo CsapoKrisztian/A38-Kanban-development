@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -60,45 +58,35 @@ public class DataManager {
                                         .project(thisProject)
                                         .mileStone(getMileStone(generatedIssue))
                                         .assignee(getAssignee(generatedIssue))
-                                        .labels(getLabels(generatedIssue))
                                         .build();
-                                setStoryPriorityStatus(thisIssue);
+                                setStoryPriorityStatus(thisIssue, generatedIssue);
                                 issueDao.save(thisIssue);
                             });
                 });
     }
 
-    private void setStoryPriorityStatus(Issue thisIssue) {
-        ListIterator<Label> iterator = thisIssue.getLabels().listIterator();
-        while (iterator.hasNext()) {
-            Label label = iterator.next();
-            if (label.getTitle().startsWith(storyPrefix)) {
+    private void setStoryPriorityStatus(Issue thisIssue, NodesItem generatedIssue) {
+        generatedIssue.getLabels().getNodes().forEach(generatedLabel -> {
+            if (generatedLabel.getTitle().startsWith(storyPrefix)) {
                 thisIssue.setStory(Story.builder()
-                        .storyId(label.getLabelId())
-                        .title(label.getTitle().substring(storyPrefix.length()))
+                        .labelId(generatedLabel.getId())
+                        .title(generatedLabel.getTitle().substring(storyPrefix.length()))
                         .build());
-                iterator.remove();
 
-            } else if (label.getTitle().startsWith(priorityPrefix)) {
-                thisIssue.setPriority(label.getTitle().substring(priorityPrefix.length()));
-                iterator.remove();
+            } else if (generatedLabel.getTitle().startsWith(priorityPrefix)) {
+                thisIssue.setPriority(Priority.builder()
+                        .labelId(generatedLabel.getId())
+                        .title(generatedLabel.getTitle().substring(storyPrefix.length()))
+                        .build());
 
             } else if (statuses.stream()
-                    .anyMatch(existingStatus -> existingStatus.equals(label.getTitle()))) {
-                thisIssue.setStatus(label.getTitle());
-                iterator.remove();
-            }
-        }
-    }
-
-    private List<Label> getLabels(NodesItem generatedIssue) {
-        return generatedIssue.getLabels().getNodes().stream()
-                .map(generatedLabel -> Label.builder()
+                    .anyMatch(existingStatus -> existingStatus.equals(generatedLabel.getTitle()))) {
+                thisIssue.setStatus(Status.builder()
                         .labelId(generatedLabel.getId())
                         .title(generatedLabel.getTitle())
-                        .color(generatedIssue.getColor())
-                        .build())
-                .collect(Collectors.toList());
+                        .build());
+            }
+        });
     }
 
     private MileStone getMileStone(NodesItem generatedIssue) {

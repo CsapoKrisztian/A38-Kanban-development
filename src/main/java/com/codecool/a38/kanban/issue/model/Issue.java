@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Data
@@ -22,9 +21,7 @@ public class Issue {
 
     private String description;
 
-    private String priority;
-
-    private String status;
+    private String issueUrl;
 
     private String dueDate;
 
@@ -32,7 +29,11 @@ public class Issue {
 
     private String reference;
 
-    private String issueUrl;
+    @ManyToOne(cascade = {CascadeType.MERGE})
+    private Priority priority;
+
+    @ManyToOne(cascade = {CascadeType.MERGE})
+    private Status status;
 
     @ManyToOne(cascade = {CascadeType.MERGE})
     private Story story;
@@ -46,8 +47,4 @@ public class Issue {
     @ManyToOne(cascade = {CascadeType.MERGE})
     private Assignee assignee;
 
-    @ManyToMany(cascade = {CascadeType.MERGE})
-    private List<Label> labels;
-
 }
-

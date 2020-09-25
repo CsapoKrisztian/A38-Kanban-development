@@ -1,19 +1,19 @@
 package com.codecool.a38.kanban.issue.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
-@Entity
+@MappedSuperclass
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class Label {
+@SuperBuilder
+public abstract class Label {
 
     @Id
     private String labelId;

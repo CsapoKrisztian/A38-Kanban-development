@@ -8,5 +8,5 @@ import javax.persistence.Entity;
 @Entity
 @SuperBuilder
 @NoArgsConstructor
-public class Story extends Label {
+public class Priority extends Label {
 }

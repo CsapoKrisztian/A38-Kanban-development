@@ -3,6 +3,7 @@ package com.codecool.a38.kanban.issue.controller;
 import com.codecool.a38.kanban.issue.dao.IssueDao;
 import com.codecool.a38.kanban.issue.model.*;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneesIssues;
+import com.codecool.a38.kanban.issue.model.transfer.StoriesIssues;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,7 +45,7 @@ public class IssueController {
     }
 
     @GetMapping("/issues/orderByStory")
-    public Map<String, List<Issue>> getIssuesOrderedByStory() {
+    public List<StoriesIssues> getIssuesOrderedByStory() {
         return issueDao.getIssuesOrderedByStory();
     }
 
