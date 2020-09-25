@@ -49,42 +49,40 @@ public class DataManager {
 
                     generatedProject.getIssues().getNodes()
                             .forEach((generatedIssue) -> {
-
-                                String story = null, priority = null, status = null;
-                                List<Label> labels = getLabels(generatedIssue);
-                                ListIterator<Label> iterator = labels.listIterator();
-                                while (iterator.hasNext()) {
-                                    Label label = iterator.next();
-                                    if (label.getTitle().startsWith(storyPrefix)) {
-                                        story = label.getTitle().substring(storyPrefix.length());
-                                        iterator.remove();
-                                    } else if (label.getTitle().startsWith(priorityPrefix)) {
-                                        priority = label.getTitle().substring(priorityPrefix.length());
-                                        iterator.remove();
-                                    } else if (statuses.stream()
-                                            .anyMatch(existingStatus -> existingStatus.equals(label.getTitle()))) {
-                                        status = label.getTitle();
-                                        iterator.remove();
-                                    }
-                                }
-
-                                issueDao.save(Issue.builder()
+                                Issue thisIssue = Issue.builder()
                                         .issueId(generatedIssue.getId())
                                         .title(generatedIssue.getTitle())
                                         .description(generatedIssue.getDescription())
-                                        .story(story)
-                                        .status(status)
-                                        .priority(priority)
                                         .issueUrl(generatedIssue.getWebUrl())
                                         .dueDate(generatedIssue.getDueDate())
                                         .userNotesCount(generatedIssue.getUserNotesCount())
                                         .project(thisProject)
                                         .mileStone(getMileStone(generatedIssue))
                                         .assignee(getAssignee(generatedIssue))
-                                        .labels(labels)
-                                        .build());
+                                        .labels(getLabels(generatedIssue))
+                                        .build();
+                                setStoryPriorityStatus(thisIssue);
+                                issueDao.save(thisIssue);
                             });
                 });
+    }
+
+    private void setStoryPriorityStatus(Issue thisIssue) {
+        ListIterator<Label> iterator = thisIssue.getLabels().listIterator();
+        while (iterator.hasNext()) {
+            Label label = iterator.next();
+            if (label.getTitle().startsWith(storyPrefix)) {
+                thisIssue.setStory(label.getTitle().substring(storyPrefix.length()));
+                iterator.remove();
+            } else if (label.getTitle().startsWith(priorityPrefix)) {
+                thisIssue.setPriority(label.getTitle().substring(priorityPrefix.length()));
+                iterator.remove();
+            } else if (statuses.stream()
+                    .anyMatch(existingStatus -> existingStatus.equals(label.getTitle()))) {
+                thisIssue.setStatus(label.getTitle());
+                iterator.remove();
+            }
+        }
     }
 
     private List<Label> getLabels(NodesItem generatedIssue) {
