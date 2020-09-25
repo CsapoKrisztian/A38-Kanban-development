@@ -29,6 +29,10 @@ public class DataManager {
             "Final review",
             "Documentation");
 
+    public static List<String> getStatuses() {
+        return statuses;
+    }
+
     private static final String priorityPrefix = "Priority: ";
 
     private static final String storyPrefix = "Story: ";
