@@ -33,7 +33,7 @@ public class GitLabGraphQLCaller {
                 "    nodes {\\n" +
                 "      id\\n" +
                 "      name\\n" +
-                "      issues {\\n" +
+                "      issues(state: opened) {\\n" +
                 "          nodes {\\n" +
                 "              id\\n" +
                 "              title\\n" +
