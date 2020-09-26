@@ -56,12 +56,10 @@ public class IssueDaoDB implements IssueDao {
         Map<Assignee, List<Issue>> issuesOrderedByAssignees = new HashMap<>();
         issueRepository.findAll().forEach(issue -> {
             Assignee assignee = issue.getAssignee();
-            if (assignee != null) {
-                if (!issuesOrderedByAssignees.containsKey(assignee)) {
-                    issuesOrderedByAssignees.put(assignee, new ArrayList<>());
-                }
-                issuesOrderedByAssignees.get(assignee).add(issue);
+            if (!issuesOrderedByAssignees.containsKey(assignee)) {
+                issuesOrderedByAssignees.put(assignee, new ArrayList<>());
             }
+            issuesOrderedByAssignees.get(assignee).add(issue);
         });
         return issuesOrderedByAssignees.entrySet().stream()
                 .map(e -> AssigneesIssues.builder()
