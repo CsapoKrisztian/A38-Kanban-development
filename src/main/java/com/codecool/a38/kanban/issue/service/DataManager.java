@@ -71,12 +71,14 @@ public class DataManager {
                 thisIssue.setStory(Story.builder()
                         .labelId(generatedLabel.getId())
                         .title(generatedLabel.getTitle().substring(storyPrefix.length()))
+                        .color(generatedLabel.getColor())
                         .build());
 
             } else if (generatedLabel.getTitle().startsWith(priorityPrefix)) {
                 thisIssue.setPriority(Priority.builder()
                         .labelId(generatedLabel.getId())
                         .title(generatedLabel.getTitle().substring(storyPrefix.length()))
+                        .color(generatedLabel.getColor())
                         .build());
 
             } else if (statuses.stream()
@@ -84,6 +86,7 @@ public class DataManager {
                 thisIssue.setStatus(Status.builder()
                         .labelId(generatedLabel.getId())
                         .title(generatedLabel.getTitle())
+                        .color(generatedLabel.getColor())
                         .build());
             }
         });
