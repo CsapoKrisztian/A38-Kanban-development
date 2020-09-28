@@ -24,8 +24,6 @@ public class AuthController {
 
     private RestTemplate restTemplate;
 
-    private String token;
-
     public AuthController(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
@@ -43,8 +41,9 @@ public class AuthController {
         OAuthResponse oAuthResponse = restTemplate.postForEntity(url + parameters,
                 request, OAuthResponse.class).getBody();
 
-        log.info("access token: " + oAuthResponse.getAccess_token());
-        token = oAuthResponse.getAccess_token();
+        String token = oAuthResponse.getAccess_token();
+        log.info("access token: " + token);
+
 
         Cookie cookie = new Cookie("token", token);
         cookie.setMaxAge(60 * 60 * 24);
@@ -53,8 +52,7 @@ public class AuthController {
 
         response.addCookie(cookie);
 
-        log.info("Token set: token: " + token);
-        return ResponseEntity.ok("token sent back");
+        return ResponseEntity.ok("token saved in cookie and sent back: " + token);
     }
 
 }
