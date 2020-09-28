@@ -1,7 +1,7 @@
 package com.codecool.a38.kanban.authorization.controller;
 
+import com.codecool.a38.kanban.authorization.model.OAuthResponse;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,8 +24,6 @@ public class AuthController {
 
     @GetMapping("/getToken")
     public void getToken(@RequestParam String code) {
-        System.out.println("get Token: " + code);
-
         String url = "https://gitlab.techpm.guru/oauth/token";
         String parameters = "?client_id=" + APP_ID +
                 "&client_secret=" + APP_SECRET +
@@ -34,12 +32,12 @@ public class AuthController {
                 "&redirect_uri=" + REDIRECT_URI;
 
         HttpEntity<String> request = new HttpEntity<>(null);
+        OAuthResponse oAuthResponse = restTemplate.postForEntity(url + parameters,
+                request, OAuthResponse.class).getBody();
 
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity(url + parameters, request, String.class);
-
-        System.out.println(responseEntity.getBody());
-
-
+        if (oAuthResponse != null) {
+            System.out.println("access token: " + oAuthResponse.getAccess_token());
+        }
     }
 
 }
