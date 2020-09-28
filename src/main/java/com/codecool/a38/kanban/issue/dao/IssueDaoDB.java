@@ -55,11 +55,14 @@ public class IssueDaoDB implements IssueDao {
     public List<AssigneesIssues> getIssuesOrderedByAssignee() {
         Map<Assignee, List<Issue>> issuesOrderedByAssignees = new HashMap<>();
         issueRepository.findAll().forEach(issue -> {
-            Assignee assignee = issue.getAssignee();
-            if (!issuesOrderedByAssignees.containsKey(assignee)) {
-                issuesOrderedByAssignees.put(assignee, new ArrayList<>());
+            Status status = issue.getStatus();
+            if (status != null) {
+                Assignee assignee = issue.getAssignee();
+                if (!issuesOrderedByAssignees.containsKey(assignee)) {
+                    issuesOrderedByAssignees.put(assignee, new ArrayList<>());
+                }
+                issuesOrderedByAssignees.get(assignee).add(issue);
             }
-            issuesOrderedByAssignees.get(assignee).add(issue);
         });
         return issuesOrderedByAssignees.entrySet().stream()
                 .map(e -> AssigneesIssues.builder()
@@ -74,7 +77,8 @@ public class IssueDaoDB implements IssueDao {
         Map<Story, List<Issue>> issuesOrderedByStory = new HashMap<>();
         issueRepository.findAll().forEach(issue -> {
             Story story = issue.getStory();
-            if (story != null) {
+            Status status = issue.getStatus();
+            if (story != null && status != null) {
                 if (!issuesOrderedByStory.containsKey(story)) {
                     issuesOrderedByStory.put(story, new ArrayList<>());
                 }
