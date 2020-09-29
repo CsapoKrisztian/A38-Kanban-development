@@ -20,7 +20,7 @@ public class AuthController {
 
     private static final String APP_ID = "458f27c6eb357cf7419231331e3af3e3a9d39782b7edf50ac2cc083e7a7f1a4a";
     private static final String APP_SECRET = "f0fbf238c1ef5d0be56bf1118c430b15daff2b85d790d4bbfd76b8ccbb5bac33";
-    private static final String REDIRECT_URI = "http://localhost:8080/getToken";
+    private static final String REDIRECT_URI = "http://localhost:3000/getToken";
 
     private RestTemplate restTemplate;
 
