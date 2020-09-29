@@ -29,7 +29,7 @@ public class AuthController {
     }
 
     @GetMapping("/getToken")
-    public ResponseEntity getToken(@RequestParam String code, HttpServletResponse response) {
+    public ResponseEntity<String> getToken(@RequestParam String code, HttpServletResponse response) {
         String url = "https://gitlab.techpm.guru/oauth/token";
         String parameters = "?client_id=" + APP_ID +
                 "&client_secret=" + APP_SECRET +
@@ -40,19 +40,22 @@ public class AuthController {
         HttpEntity<String> request = new HttpEntity<>(null);
         OAuthResponse oAuthResponse = restTemplate.postForEntity(url + parameters,
                 request, OAuthResponse.class).getBody();
+        if (oAuthResponse != null) {
+            String token = oAuthResponse.getAccess_token();
 
-        String token = oAuthResponse.getAccess_token();
-        log.info("access token: " + token);
+            Cookie cookie = new Cookie("accessToken", token);
+            cookie.setMaxAge(60 * 60 * 24);
+            cookie.setHttpOnly(true);
+            cookie.setPath("/");
+            response.addCookie(cookie);
 
+            log.info("access token: " + token);
+            return ResponseEntity.ok("accessToken saved in cookie and sent back: " + token);
 
-        Cookie cookie = new Cookie("token", token);
-        cookie.setMaxAge(60 * 60 * 24);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-
-        response.addCookie(cookie);
-
-        return ResponseEntity.ok("token saved in cookie and sent back: " + token);
+        } else {
+            log.info("No oauth response returned");
+            return ResponseEntity.ok("OAuthResponse not returned, no");
+        }
     }
 
 }
