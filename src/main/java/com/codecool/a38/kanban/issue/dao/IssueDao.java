@@ -5,7 +5,6 @@ import com.codecool.a38.kanban.issue.model.transfer.AssigneesIssues;
 import com.codecool.a38.kanban.issue.model.transfer.StoriesIssues;
 
 import java.util.List;
-import java.util.Map;
 
 public interface IssueDao {
 
