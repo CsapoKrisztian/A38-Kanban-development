@@ -8,5 +8,5 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Issues {
 
     @JsonProperty("nodes")
-    private List<NodesItem> nodes;
+    private List<IssueNode> nodes;
 }

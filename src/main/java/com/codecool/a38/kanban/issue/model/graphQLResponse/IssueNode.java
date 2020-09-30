@@ -1,7 +1,9 @@
 package com.codecool.a38.kanban.issue.model.graphQLResponse;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
+@Data
 public class IssueNode {
 
     @JsonProperty("id")
@@ -23,7 +25,7 @@ public class IssueNode {
     private Integer userNotesCount;
 
     @JsonProperty("reference")
-    private Integer reference;
+    private String reference;
 
     @JsonProperty("assignees")
     private Assignees assignees;
@@ -31,5 +33,7 @@ public class IssueNode {
     @JsonProperty("milestone")
     private Milestone milestone;
 
+    @JsonProperty("labels")
+    private Labels labels;
 
 }

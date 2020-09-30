@@ -2,7 +2,6 @@ package com.codecool.a38.kanban.issue.service;
 
 import com.codecool.a38.kanban.issue.model.*;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.Milestone;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.NodesItem;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.ProjectsDataResponse;
 import com.codecool.a38.kanban.issue.model.transfer.ProjectsData;
 import lombok.AllArgsConstructor;
@@ -42,7 +41,7 @@ public class DataManager {
         projectsDataResponse.getData().getProjects().getNodes()
                 .forEach((generatedProject) -> {
                     Project thisProject = Project.builder()
-                            .projectId(generatedProject.getId())
+                            .id(generatedProject.getId())
                             .name(generatedProject.getName())
                             .build();
 
@@ -51,10 +50,10 @@ public class DataManager {
                     generatedProject.getIssues().getNodes()
                             .forEach((generatedIssue) -> {
                                 Issue thisIssue = Issue.builder()
-                                        .issueId(generatedIssue.getId())
+                                        .id(generatedIssue.getId())
                                         .title(generatedIssue.getTitle())
                                         .description(generatedIssue.getDescription())
-                                        .issueUrl(generatedIssue.getWebUrl())
+                                        .webUrl(generatedIssue.getWebUrl())
                                         .dueDate(generatedIssue.getDueDate())
                                         .userNotesCount(generatedIssue.getUserNotesCount())
                                         .reference(generatedIssue.getReference())

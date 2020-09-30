@@ -1,10 +1,12 @@
 package com.codecool.a38.kanban.issue.model.graphQLResponse;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class AssigneeNode {
+@Builder
+public class Assignee {
 
     @JsonProperty("id")
     private String id;

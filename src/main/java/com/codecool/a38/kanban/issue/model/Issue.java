@@ -1,23 +1,21 @@
 package com.codecool.a38.kanban.issue.model;
 
-import lombok.AllArgsConstructor;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.Assignee;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.Milestone;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class Issue {
 
-    private String issueId;
+    private String id;
 
     private String title;
 
     private String description;
 
-    private String issueUrl;
+    private String webUrl;
 
     private String dueDate;
 
@@ -25,16 +23,19 @@ public class Issue {
 
     private String reference;
 
-    private Priority priority;
 
-    private Status status;
+    private Assignee assignee;
+
+    private Milestone mileStone;
+
 
     private Story story;
 
+    private Status status;
+
+    private Priority priority;
+
+
     private Project project;
-
-    private MileStone mileStone;
-
-    private Assignee assignee;
 
 }

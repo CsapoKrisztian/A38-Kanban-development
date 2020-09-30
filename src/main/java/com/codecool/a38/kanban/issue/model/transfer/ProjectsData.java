@@ -1,9 +1,7 @@
 package com.codecool.a38.kanban.issue.model.transfer;
 
-import com.codecool.a38.kanban.issue.model.MileStone;
 import com.codecool.a38.kanban.issue.model.Project;
 import com.codecool.a38.kanban.issue.model.Story;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

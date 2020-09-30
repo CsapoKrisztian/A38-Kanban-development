@@ -7,5 +7,5 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Labels{
 
 	@JsonProperty("nodes")
-	private List<NodesItem> nodes;
+	private List<Label> nodes;
 }

@@ -1,9 +1,8 @@
 package com.codecool.a38.kanban.issue.model;
 
-import lombok.NoArgsConstructor;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.Label;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
-@NoArgsConstructor
 public class Story extends Label {
 }

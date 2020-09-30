@@ -1,6 +1,5 @@
 package com.codecool.a38.kanban.issue.model.transfer;
 
-import com.codecool.a38.kanban.issue.model.Assignee;
 import com.codecool.a38.kanban.issue.model.Issue;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
