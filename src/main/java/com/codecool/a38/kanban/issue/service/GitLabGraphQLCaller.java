@@ -33,7 +33,7 @@ public class GitLabGraphQLCaller {
                 "    nodes {\\n" +
                 "      id\\n" +
                 "      name\\n" +
-                "      issues(state: opened) {\\n" +
+                "      issues(state: opened, sort: LABEL_PRIORITY_ASC) {\\n" +
                 "          nodes {\\n" +
                 "              id\\n" +
                 "              title\\n" +

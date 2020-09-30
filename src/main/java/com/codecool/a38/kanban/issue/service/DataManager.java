@@ -61,6 +61,7 @@ public class DataManager {
                             });
                 });
 
+        removeNullMilestoneStory(projectsData);
         setAssigneesStoriesIssues(projectsData, issues);
         return projectsData;
     }
@@ -76,14 +77,14 @@ public class DataManager {
                     issuesOrderedByAssignees.put(assignee, new ArrayList<>());
                 }
                 issuesOrderedByAssignees.get(assignee).add(issue);
-            }
 
-            Story story = issue.getStory();
-            if (story != null && issue.getStatus() != null) {
-                if (!issuesOrderedByStory.containsKey(story)) {
-                    issuesOrderedByStory.put(story, new ArrayList<>());
+                Story story = issue.getStory();
+                if (story != null) {
+                    if (!issuesOrderedByStory.containsKey(story)) {
+                        issuesOrderedByStory.put(story, new ArrayList<>());
+                    }
+                    issuesOrderedByStory.get(story).add(issue);
                 }
-                issuesOrderedByStory.get(story).add(issue);
             }
         });
 
@@ -102,6 +103,10 @@ public class DataManager {
                 .collect(Collectors.toList()));
     }
 
+    private void removeNullMilestoneStory(ProjectsData projectsData) {
+        projectsData.getMileStones().remove(null);
+        projectsData.getStories().remove(null);
+    }
 
     private Project createRealProject(ProjectNode projectNode) {
         return Project.builder()

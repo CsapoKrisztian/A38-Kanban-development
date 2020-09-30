@@ -1,10 +1,13 @@
 package com.codecool.a38.kanban.issue.model.graphQLResponse;
 
-import com.codecool.a38.kanban.issue.model.Issue;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class IssueNode {
 
     @JsonProperty("id")
