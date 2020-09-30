@@ -1,6 +1,6 @@
 package com.codecool.a38.kanban.issue.service;
 
-import com.codecool.a38.kanban.issue.model.generated.ProjectsDataResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.ProjectsDataResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -20,7 +20,7 @@ public class GitLabGraphQLCaller {
         this.restTemplate = restTemplate;
     }
 
-    public ProjectsDataResponse getProjectData() {
+    public ProjectsDataResponse getProjectsDataResponse() {
         String url = "https://gitlab.techpm.guru/api/graphql";
         String token = "JbHJ7hUuBpS3syCQn748";
 

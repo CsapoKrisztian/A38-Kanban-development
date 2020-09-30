@@ -23,14 +23,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class IssueDaoDB implements IssueDao {
 
-    private IssueRepository issueRepository;
-
-    private ProjectRepository projectRepository;
-
-    private MileStoneRepository mileStoneRepository;
-
-    private StoryRepository storyRepository;
-
     @Override
     public List<Issue> getAll() {
         return issueRepository.findAll();

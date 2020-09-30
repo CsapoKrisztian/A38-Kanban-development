@@ -1,10 +1,10 @@
 package com.codecool.a38.kanban.issue.service;
 
-import com.codecool.a38.kanban.issue.dao.IssueDao;
 import com.codecool.a38.kanban.issue.model.*;
-import com.codecool.a38.kanban.issue.model.generated.Milestone;
-import com.codecool.a38.kanban.issue.model.generated.NodesItem;
-import com.codecool.a38.kanban.issue.model.generated.ProjectsDataResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.Milestone;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.NodesItem;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.ProjectsDataResponse;
+import com.codecool.a38.kanban.issue.model.transfer.ProjectsData;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +14,6 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class DataManager {
-
-    private IssueDao issueDao;
 
     private GitLabGraphQLCaller gitLabGraphQLCaller;
 
@@ -35,8 +33,11 @@ public class DataManager {
 
     private static final String storyPrefix = "Story: ";
 
-    public void refreshData() {
-        ProjectsDataResponse projectsDataResponse = gitLabGraphQLCaller.getProjectData();
+
+    public ProjectsData getProjectData() {
+        ProjectsData projectsData = new ProjectsData();
+
+        ProjectsDataResponse projectsDataResponse = gitLabGraphQLCaller.getProjectsDataResponse();
 
         projectsDataResponse.getData().getProjects().getNodes()
                 .forEach((generatedProject) -> {
@@ -44,6 +45,8 @@ public class DataManager {
                             .projectId(generatedProject.getId())
                             .name(generatedProject.getName())
                             .build();
+
+                    projectsData.getProjects().add(thisProject);
 
                     generatedProject.getIssues().getNodes()
                             .forEach((generatedIssue) -> {
@@ -60,9 +63,13 @@ public class DataManager {
                                         .assignee(getAssignee(generatedIssue))
                                         .build();
                                 setStoryPriorityStatus(thisIssue, generatedIssue);
-                                issueDao.save(thisIssue);
+
+                                projectsData.getMileStones().add()
+
                             });
                 });
+
+        return projectsData;
     }
 
     private void setStoryPriorityStatus(Issue thisIssue, NodesItem generatedIssue) {
@@ -117,8 +124,8 @@ public class DataManager {
         }
     }
 
-    public ProjectsDataResponse getProjectData() {
-        return gitLabGraphQLCaller.getProjectData();
+    public ProjectsDataResponse getProjectDataResponse() {
+        return gitLabGraphQLCaller.getProjectsDataResponse();
     }
 
 }
