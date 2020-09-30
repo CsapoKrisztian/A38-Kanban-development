@@ -1,14 +1,15 @@
 package com.codecool.a38.kanban.issue.service;
 
 import com.codecool.a38.kanban.issue.model.*;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.Milestone;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.ProjectsDataResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.*;
+import com.codecool.a38.kanban.issue.model.transfer.AssigneesIssues;
 import com.codecool.a38.kanban.issue.model.transfer.ProjectsData;
+import com.codecool.a38.kanban.issue.model.transfer.StoriesIssues;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -35,54 +36,104 @@ public class DataManager {
 
     public ProjectsData getProjectData() {
         ProjectsData projectsData = new ProjectsData();
+        List<Issue> issues = new ArrayList<>();
 
-        ProjectsDataResponse projectsDataResponse = gitLabGraphQLCaller.getProjectsDataResponse();
+        gitLabGraphQLCaller.getProjectsDataResponse().getData().getProjects().getNodes()
+                .forEach((projectNode) -> {
+                    Project thisProject = createRealProject(projectNode);
+                    projectsData.addProject(thisProject);
 
-        projectsDataResponse.getData().getProjects().getNodes()
-                .forEach((generatedProject) -> {
-                    Project thisProject = Project.builder()
-                            .id(generatedProject.getId())
-                            .name(generatedProject.getName())
-                            .build();
+                    projectNode.getIssues().getNodes()
+                            .forEach((issueNode) -> {
+                                Issue thisIssue = createRealIssue(issueNode);
 
-                    projectsData.getProjects().add(thisProject);
+                                thisIssue.setProject(thisProject);
+                                thisIssue.setAssignee(getAssignee(issueNode));
 
-                    generatedProject.getIssues().getNodes()
-                            .forEach((generatedIssue) -> {
-                                Issue thisIssue = Issue.builder()
-                                        .id(generatedIssue.getId())
-                                        .title(generatedIssue.getTitle())
-                                        .description(generatedIssue.getDescription())
-                                        .webUrl(generatedIssue.getWebUrl())
-                                        .dueDate(generatedIssue.getDueDate())
-                                        .userNotesCount(generatedIssue.getUserNotesCount())
-                                        .reference(generatedIssue.getReference())
-                                        .project(thisProject)
-                                        .mileStone(getMileStone(generatedIssue))
-                                        .assignee(getAssignee(generatedIssue))
-                                        .build();
-                                setStoryPriorityStatus(thisIssue, generatedIssue);
+                                Milestone mileStone = getMileStone(issueNode);
+                                projectsData.addMileStone(mileStone);
+                                thisIssue.setMileStone(mileStone);
 
-                                projectsData.getMileStones().add()
+                                setStoryPriorityStatus(thisIssue, issueNode);
+                                projectsData.addStory(thisIssue.getStory());
 
+                                issues.add(thisIssue);
                             });
                 });
 
+        setAssigneesStoriesIssues(projectsData, issues);
         return projectsData;
     }
 
-    private void setStoryPriorityStatus(Issue thisIssue, NodesItem generatedIssue) {
-        generatedIssue.getLabels().getNodes().forEach(generatedLabel -> {
+    private void setAssigneesStoriesIssues(ProjectsData projectsData, List<Issue> issues) {
+        Map<Assignee, List<Issue>> issuesOrderedByAssignees = new HashMap<>();
+        Map<Story, List<Issue>> issuesOrderedByStory = new HashMap<>();
+
+        issues.forEach(issue -> {
+            if (issue.getStatus() != null) {
+                Assignee assignee = issue.getAssignee();
+                if (!issuesOrderedByAssignees.containsKey(assignee)) {
+                    issuesOrderedByAssignees.put(assignee, new ArrayList<>());
+                }
+                issuesOrderedByAssignees.get(assignee).add(issue);
+            }
+
+            Story story = issue.getStory();
+            if (story != null && issue.getStatus() != null) {
+                if (!issuesOrderedByStory.containsKey(story)) {
+                    issuesOrderedByStory.put(story, new ArrayList<>());
+                }
+                issuesOrderedByStory.get(story).add(issue);
+            }
+        });
+
+        projectsData.setAssigneesIssuesList(issuesOrderedByAssignees.entrySet().stream()
+                .map(e -> AssigneesIssues.builder()
+                        .assignee(e.getKey())
+                        .issues(e.getValue())
+                        .build())
+                .collect(Collectors.toList()));
+
+        projectsData.setStoriesIssuesList(issuesOrderedByStory.entrySet().stream()
+                .map(e -> StoriesIssues.builder()
+                        .story(e.getKey())
+                        .issues(e.getValue())
+                        .build())
+                .collect(Collectors.toList()));
+    }
+
+
+    private Project createRealProject(ProjectNode projectNode) {
+        return Project.builder()
+                .id(projectNode.getId())
+                .name(projectNode.getName())
+                .build();
+    }
+
+    private Issue createRealIssue(IssueNode issueNode) {
+        return Issue.builder()
+                .id(issueNode.getId())
+                .title(issueNode.getTitle())
+                .description(issueNode.getDescription())
+                .webUrl(issueNode.getWebUrl())
+                .dueDate(issueNode.getDueDate())
+                .userNotesCount(issueNode.getUserNotesCount())
+                .reference(issueNode.getReference())
+                .build();
+    }
+
+    private void setStoryPriorityStatus(Issue thisIssue, IssueNode issueNode) {
+        issueNode.getLabels().getNodes().forEach(generatedLabel -> {
             if (generatedLabel.getTitle().startsWith(storyPrefix)) {
                 thisIssue.setStory(Story.builder()
-                        .labelId(generatedLabel.getId())
+                        .id(generatedLabel.getId())
                         .title(generatedLabel.getTitle().substring(storyPrefix.length()))
                         .color(generatedLabel.getColor())
                         .build());
 
             } else if (generatedLabel.getTitle().startsWith(priorityPrefix)) {
                 thisIssue.setPriority(Priority.builder()
-                        .labelId(generatedLabel.getId())
+                        .id(generatedLabel.getId())
                         .title(generatedLabel.getTitle().substring(storyPrefix.length()))
                         .color(generatedLabel.getColor())
                         .build());
@@ -90,7 +141,7 @@ public class DataManager {
             } else if (statuses.stream()
                     .anyMatch(existingStatus -> existingStatus.equals(generatedLabel.getTitle()))) {
                 thisIssue.setStatus(Status.builder()
-                        .labelId(generatedLabel.getId())
+                        .id(generatedLabel.getId())
                         .title(generatedLabel.getTitle())
                         .color(generatedLabel.getColor())
                         .build());
@@ -98,11 +149,11 @@ public class DataManager {
         });
     }
 
-    private MileStone getMileStone(NodesItem generatedIssue) {
+    private Milestone getMileStone(IssueNode issueNode) {
         try {
-            Milestone milestoneNode = generatedIssue.getMilestone();
-            return MileStone.builder()
-                    .mileStoneId(milestoneNode.getId())
+            Milestone milestoneNode = issueNode.getMilestone();
+            return Milestone.builder()
+                    .id(milestoneNode.getId())
                     .title(milestoneNode.getTitle())
                     .build();
         } catch (NullPointerException e) {
@@ -110,11 +161,11 @@ public class DataManager {
         }
     }
 
-    private Assignee getAssignee(NodesItem generatedIssue) {
+    private Assignee getAssignee(IssueNode issueNode) {
         try {
-            NodesItem assigneeNode = generatedIssue.getAssignees().getNodes().get(0);
+            Assignee assigneeNode = issueNode.getAssignees().getNodes().get(0);
             return Assignee.builder()
-                    .assigneeId(assigneeNode.getId())
+                    .id(assigneeNode.getId())
                     .name(assigneeNode.getName())
                     .avatarUrl(assigneeNode.getAvatarUrl())
                     .build();

@@ -1,5 +1,6 @@
 package com.codecool.a38.kanban.issue.model.graphQLResponse;
 
+import com.codecool.a38.kanban.issue.model.Project;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
