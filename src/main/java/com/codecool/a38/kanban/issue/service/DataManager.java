@@ -126,8 +126,10 @@ public class DataManager {
     private void setStoryPriorityStatus(Issue thisIssue, IssueNode issueNode) {
         issueNode.getLabels().getNodes().forEach(label -> {
             if (label.getTitle().startsWith(storyPrefix)) {
+                label.setTitle(label.getTitle().substring(storyPrefix.length()));
                 thisIssue.setStory(label);
             } else if (label.getTitle().startsWith(priorityPrefix)) {
+                label.setTitle(label.getTitle().substring(priorityPrefix.length()));
                 thisIssue.setPriority(label);
             } else if (statuses.stream()
                     .anyMatch(existingStatus -> existingStatus.equals(label.getTitle()))) {
