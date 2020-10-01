@@ -30,7 +30,7 @@ public class GitLabGraphQLCaller {
         this.restTemplate = restTemplate;
     }
 
-    public ProjectsIssuesResponse getProjectsDataResponse() {
+    public ProjectsIssuesResponse getProjectsIssuesResponse() {
         String query = "{\"query\":\"{\\n" +
                 "projects {\\n" +
                 "    nodes {\\n" +
@@ -45,7 +45,7 @@ public class GitLabGraphQLCaller {
                 "              dueDate\\n" +
                 "              userNotesCount\\n" +
                 "              reference\\n" +
-                "              assignees {\\n" +
+                "              assignees(first: 1) {\\n" +
                 "                  nodes {\\n" +
                 "                      id\\n" +
                 "                      name\\n" +
@@ -76,7 +76,7 @@ public class GitLabGraphQLCaller {
         return responseEntity.getBody();
     }
 
-    public AssigneeIssuesResponse getAssigneeIssues(String userId) {
+    public AssigneeIssuesResponse getAssigneeIssuesResponse(String userId) {
         String userIdNum = userId.substring("gid://gitlab/User/".length());
         String query = "{\"query\":\"{\\n" +
                 "  user(id: \\\"" + userId + "\\\") {\\n" +
@@ -99,7 +99,7 @@ public class GitLabGraphQLCaller {
                 "                  dueDate\\n" +
                 "                  userNotesCount\\n" +
                 "                  reference\\n" +
-                "                  assignees {\\n" +
+                "                  assignees(first: 1) {\\n" +
                 "                    nodes {\\n" +
                 "                      id\\n" +
                 "                      name\\n" +
@@ -138,7 +138,7 @@ public class GitLabGraphQLCaller {
                 "              dueDate\\n" +
                 "              userNotesCount\\n" +
                 "              reference\\n" +
-                "              assignees {\\n" +
+                "              assignees(first: 1) {\\n" +
                 "                nodes {\\n" +
                 "                  id\\n" +
                 "                  name\\n" +

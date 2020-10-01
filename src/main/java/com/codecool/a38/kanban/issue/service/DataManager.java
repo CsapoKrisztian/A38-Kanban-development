@@ -38,11 +38,11 @@ public class DataManager {
     private static final String storyPrefix = "Story: ";
 
 
-    public UniversalData getProjectData() {
+    public UniversalData getUniversalData() {
         UniversalData universalData = new UniversalData();
         List<Issue> issues = new ArrayList<>();
 
-        gitLabGraphQLCaller.getProjectsDataResponse().getData().getProjects().getNodes()
+        gitLabGraphQLCaller.getProjectsIssuesResponse().getData().getProjects().getNodes()
                 .forEach((projectNode) -> {
                     Project thisProject = createProjectFromProjectNode(projectNode);
                     universalData.addProject(thisProject);
@@ -51,8 +51,8 @@ public class DataManager {
                             .forEach((issueNode) -> {
                                 Issue thisIssue = createIssueFromIssueNode(issueNode);
                                 thisIssue.setProject(thisProject);
-                                thisIssue.setAssignee(getAssignee(issueNode));
-                                setStoryPriorityStatus(thisIssue, issueNode);
+                                thisIssue.setAssignee(getAssigneeFromIssueNode(issueNode));
+                                setStoryPriorityStatusOfIssueFromIssueNode(thisIssue, issueNode);
 
                                 universalData.addMileStone(thisIssue.getMileStone());
                                 universalData.addStory(thisIssue.getStory());
@@ -60,12 +60,12 @@ public class DataManager {
                             });
                 });
 
-        removeNullMilestoneStory(universalData);
-        setAssigneesStoriesIssues(universalData, issues);
+        removeNullMilestoneStoryOfUniversalData(universalData);
+        setAssigneesStoriesIssuesOfUniversalData(universalData, issues);
         return universalData;
     }
 
-    private void setAssigneesStoriesIssues(UniversalData universalData, List<Issue> issues) {
+    private void setAssigneesStoriesIssuesOfUniversalData(UniversalData universalData, List<Issue> issues) {
         Map<User, List<Issue>> issuesOrderedByAssignees = new HashMap<>();
         Map<Label, List<Issue>> issuesOrderedByStory = new HashMap<>();
 
@@ -102,7 +102,7 @@ public class DataManager {
                 .collect(Collectors.toList()));
     }
 
-    private void removeNullMilestoneStory(UniversalData universalData) {
+    private void removeNullMilestoneStoryOfUniversalData(UniversalData universalData) {
         universalData.getMileStones().remove(null);
         universalData.getStories().remove(null);
     }
@@ -127,7 +127,7 @@ public class DataManager {
                 .build();
     }
 
-    private void setStoryPriorityStatus(Issue thisIssue, IssueNode issueNode) {
+    private void setStoryPriorityStatusOfIssueFromIssueNode(Issue thisIssue, IssueNode issueNode) {
         issueNode.getLabels().getNodes().forEach(label -> {
             if (label.getTitle().startsWith(storyPrefix)) {
                 label.setTitle(label.getTitle().substring(storyPrefix.length()));
@@ -142,7 +142,7 @@ public class DataManager {
         });
     }
 
-    private User getAssignee(IssueNode issueNode) {
+    private User getAssigneeFromIssueNode(IssueNode issueNode) {
         try {
             return issueNode.getAssignees().getNodes().get(0);
         } catch (IndexOutOfBoundsException e) {
@@ -150,8 +150,24 @@ public class DataManager {
         }
     }
 
-    public AssigneeIssuesResponse getAssigneeIssues(String userId) {
-        return gitLabGraphQLCaller.getAssigneeIssues(userId);
+    public AssigneeIssues getAssigneeIssues(String userId) {
+        AssigneeIssuesResponse assigneeIssuesResponse = gitLabGraphQLCaller.getAssigneeIssuesResponse(userId);
+        List<Issue> issues = new ArrayList<>();
+
+        assigneeIssuesResponse.getData().getUser().getGroupMemberships().getNodes()
+                .forEach(groupMembershipNode -> groupMembershipNode.getGroup().getProjects().getNodes()
+                        .forEach(projectNode -> {
+                            issues.addAll(Objects.requireNonNull(generateIssuesFromProjectNode(projectNode)));
+                        }));
+
+        return AssigneeIssues.builder()
+                .assignee(assigneeIssuesResponse.getData().getUser())
+                .issues(issues)
+                .build();
+    }
+
+    private List<Issue> generateIssuesFromProjectNode(ProjectNode projectNode) {
+        return null;
     }
 
 }

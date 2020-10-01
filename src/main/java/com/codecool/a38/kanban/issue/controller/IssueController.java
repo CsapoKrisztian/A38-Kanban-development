@@ -1,6 +1,6 @@
 package com.codecool.a38.kanban.issue.controller;
 
-import com.codecool.a38.kanban.issue.model.graphQLResponse.userIssues.AssigneeIssuesResponse;
+import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
 import com.codecool.a38.kanban.issue.model.transfer.UniversalData;
 import com.codecool.a38.kanban.issue.service.DataManager;
 import lombok.AllArgsConstructor;
@@ -17,11 +17,11 @@ public class IssueController {
 
     @GetMapping("/universalData")
     public UniversalData getProjectsData() {
-        return dataManager.getProjectData();
+        return dataManager.getUniversalData();
     }
 
     @GetMapping("/issues")
-    public AssigneeIssuesResponse getIssuesOrderedByAssignee(@RequestParam String userId) {
+    public AssigneeIssues getIssuesOrderedByAssignee(@RequestParam String userId) {
         return dataManager.getAssigneeIssues(userId);
     }
 
