@@ -1,12 +1,10 @@
 package com.codecool.a38.kanban.issue.controller;
 
 import com.codecool.a38.kanban.issue.model.graphQLResponse.userIssues.AssigneeIssuesResponse;
-import com.codecool.a38.kanban.issue.model.transfer.UniversalProjectsData;
+import com.codecool.a38.kanban.issue.model.transfer.UniversalData;
 import com.codecool.a38.kanban.issue.service.DataManager;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,19 +15,24 @@ public class IssueController {
 
     private DataManager dataManager;
 
+    @GetMapping("/universalData")
+    public UniversalData getProjectsData() {
+        return dataManager.getProjectData();
+    }
+
+    @GetMapping("/issues")
+    public AssigneeIssuesResponse getIssuesOrderedByAssignee(@RequestParam String userId) {
+        return dataManager.getAssigneeIssues(userId);
+    }
+
     @GetMapping("/statuses")
     public List<String> getStatuses() {
         return DataManager.getStatuses();
     }
 
-    @GetMapping("/projectsData")
-    public UniversalProjectsData getProjectsData() {
-        return dataManager.getProjectData();
-    }
-
-    @GetMapping("/issues/orderByAssignee")
-    public AssigneeIssuesResponse getIssuesOrderedByAssignee() {
-        return dataManager.getAssigneesIssues();
-    }
+//    @GetMapping("/issues/orderByAssignee")
+//    public AssigneeIssuesResponse getIssuesOrderedByAssignee() {
+//        return dataManager.getAssigneesIssues();
+//    }
 
 }

@@ -12,7 +12,7 @@ import java.util.Set;
 
 @Data
 @NoArgsConstructor
-public class UniversalProjectsData {
+public class UniversalData {
 
     private List<AssigneeIssues> assigneeIssuesList;
 

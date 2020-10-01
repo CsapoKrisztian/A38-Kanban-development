@@ -7,7 +7,7 @@ import com.codecool.a38.kanban.issue.model.graphQLResponse.ProjectNode;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.User;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.userIssues.AssigneeIssuesResponse;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
-import com.codecool.a38.kanban.issue.model.transfer.UniversalProjectsData;
+import com.codecool.a38.kanban.issue.model.transfer.UniversalData;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,14 +38,14 @@ public class DataManager {
     private static final String storyPrefix = "Story: ";
 
 
-    public UniversalProjectsData getProjectData() {
-        UniversalProjectsData universalProjectsData = new UniversalProjectsData();
+    public UniversalData getProjectData() {
+        UniversalData universalData = new UniversalData();
         List<Issue> issues = new ArrayList<>();
 
         gitLabGraphQLCaller.getProjectsDataResponse().getData().getProjects().getNodes()
                 .forEach((projectNode) -> {
                     Project thisProject = createProjectFromProjectNode(projectNode);
-                    universalProjectsData.addProject(thisProject);
+                    universalData.addProject(thisProject);
 
                     projectNode.getIssues().getNodes()
                             .forEach((issueNode) -> {
@@ -54,18 +54,18 @@ public class DataManager {
                                 thisIssue.setAssignee(getAssignee(issueNode));
                                 setStoryPriorityStatus(thisIssue, issueNode);
 
-                                universalProjectsData.addMileStone(thisIssue.getMileStone());
-                                universalProjectsData.addStory(thisIssue.getStory());
+                                universalData.addMileStone(thisIssue.getMileStone());
+                                universalData.addStory(thisIssue.getStory());
                                 issues.add(thisIssue);
                             });
                 });
 
-        removeNullMilestoneStory(universalProjectsData);
-        setAssigneesStoriesIssues(universalProjectsData, issues);
-        return universalProjectsData;
+        removeNullMilestoneStory(universalData);
+        setAssigneesStoriesIssues(universalData, issues);
+        return universalData;
     }
 
-    private void setAssigneesStoriesIssues(UniversalProjectsData universalProjectsData, List<Issue> issues) {
+    private void setAssigneesStoriesIssues(UniversalData universalData, List<Issue> issues) {
         Map<User, List<Issue>> issuesOrderedByAssignees = new HashMap<>();
         Map<Label, List<Issue>> issuesOrderedByStory = new HashMap<>();
 
@@ -87,14 +87,14 @@ public class DataManager {
             }
         });
 
-        universalProjectsData.setAssigneeIssuesList(issuesOrderedByAssignees.entrySet().stream()
+        universalData.setAssigneeIssuesList(issuesOrderedByAssignees.entrySet().stream()
                 .map(e -> AssigneeIssues.builder()
                         .assignee(e.getKey())
                         .issues(e.getValue())
                         .build())
                 .collect(Collectors.toList()));
 
-        universalProjectsData.setStoryIssuesList(issuesOrderedByStory.entrySet().stream()
+        universalData.setStoryIssuesList(issuesOrderedByStory.entrySet().stream()
                 .map(e -> StoryIssues.builder()
                         .story(e.getKey())
                         .issues(e.getValue())
@@ -102,9 +102,9 @@ public class DataManager {
                 .collect(Collectors.toList()));
     }
 
-    private void removeNullMilestoneStory(UniversalProjectsData universalProjectsData) {
-        universalProjectsData.getMileStones().remove(null);
-        universalProjectsData.getStories().remove(null);
+    private void removeNullMilestoneStory(UniversalData universalData) {
+        universalData.getMileStones().remove(null);
+        universalData.getStories().remove(null);
     }
 
     private Project createProjectFromProjectNode(ProjectNode projectNode) {
@@ -150,8 +150,8 @@ public class DataManager {
         }
     }
 
-    public AssigneeIssuesResponse getAssigneesIssues() {
-        return gitLabGraphQLCaller.getAssigneesIssues();
+    public AssigneeIssuesResponse getAssigneeIssues(String userId) {
+        return gitLabGraphQLCaller.getAssigneeIssues(userId);
     }
 
 }

@@ -76,9 +76,10 @@ public class GitLabGraphQLCaller {
         return responseEntity.getBody();
     }
 
-    public AssigneeIssuesResponse getAssigneesIssues() {
+    public AssigneeIssuesResponse getAssigneeIssues(String userId) {
+        String userIdNum = userId.substring("gid://gitlab/User/".length());
         String query = "{\"query\":\"{\\n" +
-                "  user(id: \\\"gid://gitlab/User/5\\\") {\\n" +
+                "  user(id: \\\"" + userId + "\\\") {\\n" +
                 "    id\\n" +
                 "    name\\n" +
                 "    avatarUrl\\n" +
@@ -89,7 +90,7 @@ public class GitLabGraphQLCaller {
                 "            nodes {\\n" +
                 "              id\\n" +
                 "              name\\n" +
-                "              issues(state: opened, assigneeId: \\\"5\\\") {\\n" +
+                "              issues(state: opened, assigneeId: \\\"" + userIdNum + "\\\") {\\n" +
                 "                nodes {\\n" +
                 "                  id\\n" +
                 "                  title\\n" +
@@ -128,7 +129,7 @@ public class GitLabGraphQLCaller {
                 "        project {\\n" +
                 "          id\\n" +
                 "          name\\n" +
-                "          issues(state: opened, assigneeId: \\\"5\\\") {\\n" +
+                "          issues(state: opened, assigneeId: \\\"" + userId + "\\\") {\\n" +
                 "            nodes {\\n" +
                 "              id\\n" +
                 "              title\\n" +
@@ -167,7 +168,8 @@ public class GitLabGraphQLCaller {
         ResponseEntity<AssigneeIssuesResponse> responseEntity = restTemplate.postForEntity(
                 URL, new HttpEntity<>(query, HEADERS), AssigneeIssuesResponse.class);
 
-        log.info("Get UserIssuesResponse: " + Objects.requireNonNull(responseEntity.getBody().toString()));
+        log.info("Get UserIssuesResponse: " +
+                Objects.requireNonNull(Objects.requireNonNull(responseEntity.getBody()).toString()));
         return responseEntity.getBody();
     }
 
