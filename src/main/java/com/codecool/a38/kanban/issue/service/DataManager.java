@@ -40,23 +40,18 @@ public class DataManager {
 
         gitLabGraphQLCaller.getProjectsDataResponse().getData().getProjects().getNodes()
                 .forEach((projectNode) -> {
-                    Project thisProject = createRealProject(projectNode);
+                    Project thisProject = createProjectFromProjectNode(projectNode);
                     projectsData.addProject(thisProject);
 
                     projectNode.getIssues().getNodes()
                             .forEach((issueNode) -> {
-                                Issue thisIssue = createRealIssue(issueNode);
-
+                                Issue thisIssue = createIssueFromIssueNode(issueNode);
                                 thisIssue.setProject(thisProject);
                                 thisIssue.setAssignee(getAssignee(issueNode));
-
-                                Milestone mileStone = getMileStone(issueNode);
-                                projectsData.addMileStone(mileStone);
-                                thisIssue.setMileStone(mileStone);
-
                                 setStoryPriorityStatus(thisIssue, issueNode);
-                                projectsData.addStory(thisIssue.getStory());
 
+                                projectsData.addMileStone(thisIssue.getMileStone());
+                                projectsData.addStory(thisIssue.getStory());
                                 issues.add(thisIssue);
                             });
                 });
@@ -68,7 +63,7 @@ public class DataManager {
 
     private void setAssigneesStoriesIssues(ProjectsData projectsData, List<Issue> issues) {
         Map<Assignee, List<Issue>> issuesOrderedByAssignees = new HashMap<>();
-        Map<Story, List<Issue>> issuesOrderedByStory = new HashMap<>();
+        Map<Label, List<Issue>> issuesOrderedByStory = new HashMap<>();
 
         issues.forEach(issue -> {
             if (issue.getStatus() != null) {
@@ -78,7 +73,7 @@ public class DataManager {
                 }
                 issuesOrderedByAssignees.get(assignee).add(issue);
 
-                Story story = issue.getStory();
+                Label story = issue.getStory();
                 if (story != null) {
                     if (!issuesOrderedByStory.containsKey(story)) {
                         issuesOrderedByStory.put(story, new ArrayList<>());
@@ -108,14 +103,14 @@ public class DataManager {
         projectsData.getStories().remove(null);
     }
 
-    private Project createRealProject(ProjectNode projectNode) {
+    private Project createProjectFromProjectNode(ProjectNode projectNode) {
         return Project.builder()
                 .id(projectNode.getId())
                 .name(projectNode.getName())
                 .build();
     }
 
-    private Issue createRealIssue(IssueNode issueNode) {
+    private Issue createIssueFromIssueNode(IssueNode issueNode) {
         return Issue.builder()
                 .id(issueNode.getId())
                 .title(issueNode.getTitle())
@@ -124,56 +119,26 @@ public class DataManager {
                 .dueDate(issueNode.getDueDate())
                 .userNotesCount(issueNode.getUserNotesCount())
                 .reference(issueNode.getReference())
+                .mileStone(issueNode.getMilestone())
                 .build();
     }
 
     private void setStoryPriorityStatus(Issue thisIssue, IssueNode issueNode) {
-        issueNode.getLabels().getNodes().forEach(generatedLabel -> {
-            if (generatedLabel.getTitle().startsWith(storyPrefix)) {
-                thisIssue.setStory(Story.builder()
-                        .id(generatedLabel.getId())
-                        .title(generatedLabel.getTitle().substring(storyPrefix.length()))
-                        .color(generatedLabel.getColor())
-                        .build());
-
-            } else if (generatedLabel.getTitle().startsWith(priorityPrefix)) {
-                thisIssue.setPriority(Priority.builder()
-                        .id(generatedLabel.getId())
-                        .title(generatedLabel.getTitle().substring(storyPrefix.length()))
-                        .color(generatedLabel.getColor())
-                        .build());
-
+        issueNode.getLabels().getNodes().forEach(label -> {
+            if (label.getTitle().startsWith(storyPrefix)) {
+                thisIssue.setStory(label);
+            } else if (label.getTitle().startsWith(priorityPrefix)) {
+                thisIssue.setPriority(label);
             } else if (statuses.stream()
-                    .anyMatch(existingStatus -> existingStatus.equals(generatedLabel.getTitle()))) {
-                thisIssue.setStatus(Status.builder()
-                        .id(generatedLabel.getId())
-                        .title(generatedLabel.getTitle())
-                        .color(generatedLabel.getColor())
-                        .build());
+                    .anyMatch(existingStatus -> existingStatus.equals(label.getTitle()))) {
+                thisIssue.setStatus(label);
             }
         });
     }
 
-    private Milestone getMileStone(IssueNode issueNode) {
-        try {
-            Milestone milestoneNode = issueNode.getMilestone();
-            return Milestone.builder()
-                    .id(milestoneNode.getId())
-                    .title(milestoneNode.getTitle())
-                    .build();
-        } catch (NullPointerException e) {
-            return null;
-        }
-    }
-
     private Assignee getAssignee(IssueNode issueNode) {
         try {
-            Assignee assigneeNode = issueNode.getAssignees().getNodes().get(0);
-            return Assignee.builder()
-                    .id(assigneeNode.getId())
-                    .name(assigneeNode.getName())
-                    .avatarUrl(assigneeNode.getAvatarUrl())
-                    .build();
+            return issueNode.getAssignees().getNodes().get(0);
         } catch (IndexOutOfBoundsException e) {
             return null;
         }

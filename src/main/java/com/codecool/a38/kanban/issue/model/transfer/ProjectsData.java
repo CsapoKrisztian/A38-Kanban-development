@@ -1,7 +1,7 @@
 package com.codecool.a38.kanban.issue.model.transfer;
 
 import com.codecool.a38.kanban.issue.model.Project;
-import com.codecool.a38.kanban.issue.model.Story;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.Label;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.Milestone;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +22,7 @@ public class ProjectsData {
 
     private Set<Milestone> mileStones = new HashSet<>();
 
-    private Set<Story> stories = new HashSet<>();
+    private Set<Label> stories = new HashSet<>();
 
 
     public void addProject(Project project) {
@@ -33,7 +33,7 @@ public class ProjectsData {
         mileStones.add(milestone);
     }
 
-    public void addStory(Story story) {
+    public void addStory(Label story) {
         stories.add(story);
     }
 

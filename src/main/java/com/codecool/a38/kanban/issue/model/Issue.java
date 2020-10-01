@@ -1,6 +1,7 @@
 package com.codecool.a38.kanban.issue.model;
 
 import com.codecool.a38.kanban.issue.model.graphQLResponse.Assignee;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.Label;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.Milestone;
 import lombok.Builder;
 import lombok.Data;
@@ -29,11 +30,11 @@ public class Issue {
     private Milestone mileStone;
 
 
-    private Story story;
+    private Label story;
 
-    private Status status;
+    private Label status;
 
-    private Priority priority;
+    private Label priority;
 
 
     private Project project;
