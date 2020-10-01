@@ -1,6 +1,7 @@
 package com.codecool.a38.kanban.issue.service;
 
-import com.codecool.a38.kanban.issue.model.graphQLResponse.ProjectsDataResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.projectsIssues.ProjectsIssuesResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.userIssues.AssigneeIssuesResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -29,7 +30,7 @@ public class GitLabGraphQLCaller {
         this.restTemplate = restTemplate;
     }
 
-    public ProjectsDataResponse getProjectsDataResponse() {
+    public ProjectsIssuesResponse getProjectsDataResponse() {
         String query = "{\"query\":\"{\\n" +
                 "projects {\\n" +
                 "    nodes {\\n" +
@@ -68,14 +69,14 @@ public class GitLabGraphQLCaller {
                 "}\\n" +
                 "}\",\"variables\":{}}";
 
-        ResponseEntity<ProjectsDataResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, HEADERS), ProjectsDataResponse.class);
+        ResponseEntity<ProjectsIssuesResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, HEADERS), ProjectsIssuesResponse.class);
 
-        log.info("Get all project data, the response: " + Objects.requireNonNull(responseEntity.getBody()).toString());
+        log.info("Get ProjectsIssuesResponse: " + Objects.requireNonNull(responseEntity.getBody()).toString());
         return responseEntity.getBody();
     }
 
-    public String getAssigneesIssues() {
+    public AssigneeIssuesResponse getAssigneesIssues() {
         String query = "{\"query\":\"{\\n" +
                 "  user(id: \\\"gid://gitlab/User/5\\\") {\\n" +
                 "    id\\n" +
@@ -124,7 +125,6 @@ public class GitLabGraphQLCaller {
                 "    }\\n" +
                 "    projectMemberships {\\n" +
                 "      nodes {\\n" +
-                "        id\\n" +
                 "        project {\\n" +
                 "          id\\n" +
                 "          name\\n" +
@@ -164,10 +164,10 @@ public class GitLabGraphQLCaller {
                 "}\\n" +
                 "\",\"variables\":{}}";
 
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, HEADERS), String.class);
+        ResponseEntity<AssigneeIssuesResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, HEADERS), AssigneeIssuesResponse.class);
 
-        log.info("Get all project data, the response: " + Objects.requireNonNull(responseEntity.getBody()));
+        log.info("Get UserIssuesResponse: " + Objects.requireNonNull(responseEntity.getBody().toString()));
         return responseEntity.getBody();
     }
 

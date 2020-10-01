@@ -12,11 +12,11 @@ import java.util.Set;
 
 @Data
 @NoArgsConstructor
-public class ProjectsData {
+public class UniversalProjectsData {
 
-    private List<AssigneesIssues> assigneesIssuesList;
+    private List<AssigneeIssues> assigneeIssuesList;
 
-    private List<StoriesIssues> storiesIssuesList;
+    private List<StoryIssues> storyIssuesList;
 
     private Set<Project> projects = new HashSet<>();
 

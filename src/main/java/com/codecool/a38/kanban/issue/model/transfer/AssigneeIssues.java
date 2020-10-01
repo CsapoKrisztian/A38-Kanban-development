@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AssigneesIssues {
+public class AssigneeIssues {
 
     private User assignee;
 

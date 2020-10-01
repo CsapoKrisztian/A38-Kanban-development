@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class StoriesIssues {
+public class StoryIssues {
 
     private Label story;
 

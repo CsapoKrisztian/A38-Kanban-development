@@ -1,9 +1,7 @@
 package com.codecool.a38.kanban.issue.controller;
 
-import com.codecool.a38.kanban.issue.model.*;
-import com.codecool.a38.kanban.issue.model.transfer.AssigneesIssues;
-import com.codecool.a38.kanban.issue.model.transfer.ProjectsData;
-import com.codecool.a38.kanban.issue.model.transfer.StoriesIssues;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.userIssues.AssigneeIssuesResponse;
+import com.codecool.a38.kanban.issue.model.transfer.UniversalProjectsData;
 import com.codecool.a38.kanban.issue.service.DataManager;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,12 +23,12 @@ public class IssueController {
     }
 
     @GetMapping("/projectsData")
-    public ProjectsData getProjectsData() {
+    public UniversalProjectsData getProjectsData() {
         return dataManager.getProjectData();
     }
 
     @GetMapping("/issues/orderByAssignee")
-    public String getIssuesOrderedByAssignee() {
+    public AssigneeIssuesResponse getIssuesOrderedByAssignee() {
         return dataManager.getAssigneesIssues();
     }
 
