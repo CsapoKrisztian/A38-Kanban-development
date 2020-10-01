@@ -29,34 +29,9 @@ public class IssueController {
         return dataManager.getProjectData();
     }
 
-//    @GetMapping("/projects")
-//    public List<Project> getProjects() {
-//        return null;
-//    }
-//
-//    @GetMapping("/mileStones")
-//    public List<MileStone> getMilestones() {
-//        return null;
-//    }
-//
-//    @GetMapping("/stories")
-//    public List<Story> getStories() {
-//        return null;
-//    }
-//
-//    @GetMapping("/issues/orderByAssignee")
-//    public List<AssigneesIssues> getIssuesOrderedByAssignee() {
-//        return null;
-//    }
-//
-//    @GetMapping("/issues/orderByStory")
-//    public List<StoriesIssues> getIssuesOrderedByStory() {
-//        return null;
-//    }
-//
-//    @GetMapping("/issues")
-//    public List<Issue> getIssues() {
-//        return null;
-//    }
+    @GetMapping("/issues/orderByAssignee")
+    public String getIssuesOrderedByAssignee() {
+        return dataManager.getAssigneesIssues();
+    }
 
 }

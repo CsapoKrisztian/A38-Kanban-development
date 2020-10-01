@@ -8,5 +8,5 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Assignees {
 
     @JsonProperty("nodes")
-    private List<Assignee> nodes;
+    private List<User> nodes;
 }

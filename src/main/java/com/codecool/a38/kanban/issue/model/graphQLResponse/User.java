@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Assignee {
+public class User {
 
     @JsonProperty("id")
     private String id;

@@ -62,12 +62,12 @@ public class DataManager {
     }
 
     private void setAssigneesStoriesIssues(ProjectsData projectsData, List<Issue> issues) {
-        Map<Assignee, List<Issue>> issuesOrderedByAssignees = new HashMap<>();
+        Map<User, List<Issue>> issuesOrderedByAssignees = new HashMap<>();
         Map<Label, List<Issue>> issuesOrderedByStory = new HashMap<>();
 
         issues.forEach(issue -> {
             if (issue.getStatus() != null) {
-                Assignee assignee = issue.getAssignee();
+                User assignee = issue.getAssignee();
                 if (!issuesOrderedByAssignees.containsKey(assignee)) {
                     issuesOrderedByAssignees.put(assignee, new ArrayList<>());
                 }
@@ -138,7 +138,7 @@ public class DataManager {
         });
     }
 
-    private Assignee getAssignee(IssueNode issueNode) {
+    private User getAssignee(IssueNode issueNode) {
         try {
             return issueNode.getAssignees().getNodes().get(0);
         } catch (IndexOutOfBoundsException e) {
@@ -146,8 +146,8 @@ public class DataManager {
         }
     }
 
-    public ProjectsDataResponse getProjectDataResponse() {
-        return gitLabGraphQLCaller.getProjectsDataResponse();
+    public String getAssigneesIssues() {
+        return gitLabGraphQLCaller.getAssigneesIssues();
     }
 
 }

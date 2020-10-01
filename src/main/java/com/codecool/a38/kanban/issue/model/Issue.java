@@ -1,6 +1,6 @@
 package com.codecool.a38.kanban.issue.model;
 
-import com.codecool.a38.kanban.issue.model.graphQLResponse.Assignee;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.User;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.Label;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.Milestone;
 import lombok.Builder;
@@ -25,7 +25,7 @@ public class Issue {
     private String reference;
 
 
-    private Assignee assignee;
+    private User assignee;
 
     private Milestone mileStone;
 
