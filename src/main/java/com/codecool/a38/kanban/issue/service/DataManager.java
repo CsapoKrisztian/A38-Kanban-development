@@ -173,7 +173,7 @@ public class DataManager {
         Set<String> stories = new HashSet<>();
         gitLabGraphQLCaller.getStoriesResponse().getData().getProjects().getNodes()
                 .forEach(projectNode -> projectNode.getLabels().getNodes()
-                        .forEach(label -> stories.add(label.getTitle())));
+                        .forEach(label -> stories.add(label.getTitle().substring(storyPrefix.length()))));
         return stories;
     }
 
