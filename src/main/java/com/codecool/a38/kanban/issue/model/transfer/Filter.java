@@ -2,15 +2,15 @@ package com.codecool.a38.kanban.issue.model.transfer;
 
 import lombok.Data;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 public class Filter {
 
-    private List<String> projectIds;
+    private Set<String> projectIds;
 
-    private List<String> milestoneTitles;
+    private Set<String> milestoneTitles;
 
-    private List<String> storyTitles;
+    private Set<String> storyTitles;
 
 }

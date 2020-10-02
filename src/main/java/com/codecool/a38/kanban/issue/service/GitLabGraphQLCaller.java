@@ -11,8 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -33,7 +33,7 @@ public class GitLabGraphQLCaller {
         this.restTemplate = restTemplate;
     }
 
-    public ProjectsIssuesResponse getProjectsIssuesResponse(List<String> projectIds, List<String> milestoneTitles) {
+    public ProjectsIssuesResponse getProjectsIssuesResponse(Set<String> projectIds, Set<String> milestoneTitles) {
         String start = "[\\\"";
         String delimiter = "\\\", \\\"";
         String end = "\\\"]";

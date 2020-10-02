@@ -51,7 +51,7 @@ public class DataManager {
                                 Issue issue = createIssueFromIssueNode(issueNode);
                                 issue.setProject(thisProject);
 
-                                if (issue.getStatus() != null
+                                if (issue.getStatus() != null && issue.getStory() != null
                                         && filter.getStoryTitles().contains(issue.getStory().getTitle())) {
                                     User assignee = issue.getAssignee();
                                     if (!assigneeIssuesMap.containsKey(assignee)) {
@@ -85,7 +85,7 @@ public class DataManager {
                                 issue.setProject(thisProject);
 
                                 Label story = issue.getStory();
-                                if (issue.getStatus() != null
+                                if (issue.getStatus() != null && story != null
                                         && filter.getStoryTitles().contains(story.getTitle())) {
                                     if (!storyIssuesMap.containsKey(story)) {
                                         storyIssuesMap.put(story, new ArrayList<>());
