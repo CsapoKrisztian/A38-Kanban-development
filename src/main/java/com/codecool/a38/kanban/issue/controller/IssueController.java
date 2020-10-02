@@ -45,7 +45,7 @@ public class IssueController {
 
     @GetMapping("/statuses")
     public Set<String> getStatusTitles() {
-        return DataManager.getSTATUS_TITLES();
+        return DataManager.getStatusTitles();
     }
 
 }

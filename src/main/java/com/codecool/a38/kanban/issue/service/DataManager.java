@@ -18,7 +18,7 @@ public class DataManager {
 
     private GitLabGraphQLCaller gitLabGraphQLCaller;
 
-    private static final Set<String> STATUS_TITLES = Stream.of(
+    private static final Set<String> statusTitles = Stream.of(
             "Backlog",
             "Todo",
             "Development",
@@ -26,8 +26,8 @@ public class DataManager {
             "Final review",
             "Documentation").collect(Collectors.toSet());
 
-    public static Set<String> getSTATUS_TITLES() {
-        return STATUS_TITLES;
+    public static Set<String> getStatusTitles() {
+        return statusTitles;
     }
 
     private static final String priorityPrefix = "Priority: ";
@@ -134,7 +134,7 @@ public class DataManager {
             } else if (label.getTitle().startsWith(priorityPrefix)) {
                 label.setTitle(label.getTitle().substring(priorityPrefix.length()));
                 thisIssue.setPriority(label);
-            } else if (STATUS_TITLES.stream()
+            } else if (statusTitles.stream()
                     .anyMatch(existingStatus -> existingStatus.equals(label.getTitle()))) {
                 thisIssue.setStatus(label);
             }
