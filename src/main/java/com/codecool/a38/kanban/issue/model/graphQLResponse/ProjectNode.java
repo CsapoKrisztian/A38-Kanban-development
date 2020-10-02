@@ -1,6 +1,5 @@
 package com.codecool.a38.kanban.issue.model.graphQLResponse;
 
-import com.codecool.a38.kanban.issue.model.graphQLResponse.milestones.Milestones;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,5 +24,8 @@ public class ProjectNode {
 
     @JsonProperty("milestones")
     private Milestones milestones;
+
+    @JsonProperty("labels")
+    private Labels labels;
 
 }

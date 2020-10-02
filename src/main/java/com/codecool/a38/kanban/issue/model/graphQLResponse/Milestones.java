@@ -1,4 +1,4 @@
-package com.codecool.a38.kanban.issue.model.graphQLResponse.milestones;
+package com.codecool.a38.kanban.issue.model.graphQLResponse;
 
 import java.util.List;
 
