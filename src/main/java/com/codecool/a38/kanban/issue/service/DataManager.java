@@ -46,12 +46,14 @@ public class DataManager {
                                 Issue issue = createIssueFromIssueNode(issueNode);
                                 issue.setProject(thisProject);
 
-                                User assignee = issue.getAssignee();
-                                if (issue.getStatus() != null) {
-                                    if (!assigneeIssuesMap.containsKey(assignee)) {
-                                        assigneeIssuesMap.put(assignee, new ArrayList<>());
+                                if (filter.getStories().contains(issue.getStory())) {
+                                    User assignee = issue.getAssignee();
+                                    if (issue.getStatus() != null) {
+                                        if (!assigneeIssuesMap.containsKey(assignee)) {
+                                            assigneeIssuesMap.put(assignee, new ArrayList<>());
+                                        }
+                                        assigneeIssuesMap.get(assignee).add(issue);
                                     }
-                                    assigneeIssuesMap.get(assignee).add(issue);
                                 }
                             });
                 });
@@ -74,13 +76,14 @@ public class DataManager {
                             .forEach((issueNode) -> {
                                 Issue issue = createIssueFromIssueNode(issueNode);
                                 issue.setProject(thisProject);
-
-                                Label story = issue.getStory();
-                                if (issue.getStatus() != null && story != null) {
-                                    if (!storyIssuesMap.containsKey(story)) {
-                                        storyIssuesMap.put(story, new ArrayList<>());
+                                if (filter.getStories().contains(issue.getStory())) {
+                                    Label story = issue.getStory();
+                                    if (issue.getStatus() != null && story != null) {
+                                        if (!storyIssuesMap.containsKey(story)) {
+                                            storyIssuesMap.put(story, new ArrayList<>());
+                                        }
+                                        storyIssuesMap.get(story).add(issue);
                                     }
-                                    storyIssuesMap.get(story).add(issue);
                                 }
                             });
                 });
