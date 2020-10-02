@@ -112,6 +112,10 @@ public class GitLabGraphQLCaller {
                 "    nodes {\\n" +
                 "      id\\n" +
                 "      name\\n" +
+                "      group {\\n" +
+                "        id\\n" +
+                "        name\\n" +
+                "      }\\n" +
                 "    }\\n" +
                 "  }\\n" +
                 "}\\n" +

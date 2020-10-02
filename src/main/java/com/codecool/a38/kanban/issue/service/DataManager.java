@@ -146,7 +146,14 @@ public class DataManager {
     }
 
     public Set<Project> getProjects() {
-
-        return null;
+        Set<Project> projects = new HashSet<>();
+        gitLabGraphQLCaller.getProjectsResponse().getData().getProjects().getNodes()
+                .forEach(projectNode -> projects.add(
+                        Project.builder()
+                                .id(projectNode.getId())
+                                .name(projectNode.getName())
+                                .group(projectNode.getGroup())
+                                .build()));
+        return projects;
     }
 }
