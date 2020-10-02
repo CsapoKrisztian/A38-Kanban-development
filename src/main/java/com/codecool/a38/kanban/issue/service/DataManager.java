@@ -138,7 +138,10 @@ public class DataManager {
         }
     }
 
-    public List<Milestone> getMilestones() {
-
+    public Set<Milestone> getMilestones() {
+        Set<Milestone> milestones = new HashSet<>();
+        gitLabGraphQLCaller.getMilestonesResponse().getData().getProjects().getNodes()
+                .forEach(projectNode -> milestones.addAll(projectNode.getMilestones().getNodes()));
+        return milestones;
     }
 }

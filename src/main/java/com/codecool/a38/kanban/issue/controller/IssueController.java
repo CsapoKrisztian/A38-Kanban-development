@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -33,7 +34,7 @@ public class IssueController {
     }
 
     @GetMapping("/milestones")
-    public List<Milestone> getMilestones() {
+    public Set<Milestone> getMilestones() {
         return dataManager.getMilestones();
     }
 

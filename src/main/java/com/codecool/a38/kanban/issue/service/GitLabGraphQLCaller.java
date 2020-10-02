@@ -83,7 +83,7 @@ public class GitLabGraphQLCaller {
         return responseEntity.getBody();
     }
 
-    public MilestonesResponse getMilestones() {
+    public MilestonesResponse getMilestonesResponse() {
         String query = "{\"query\":\"{\\n" +
                 "  projects {\\n" +
                 "    nodes {\\n" +
