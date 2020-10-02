@@ -5,10 +5,7 @@ import com.codecool.a38.kanban.issue.model.graphQLResponse.IssueNode;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.Label;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.ProjectNode;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.User;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.userIssues.AssigneeIssuesResponse;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.userIssues.UserWithMemberships;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
-import com.codecool.a38.kanban.issue.model.transfer.UniversalData;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +19,7 @@ public class DataManager {
 
     private GitLabGraphQLCaller gitLabGraphQLCaller;
 
-    private static final List<String> statuses = Arrays.asList(
+    private static final List<String> STATUS_TITLES = Arrays.asList(
             "Backlog",
             "Todo",
             "Development",
@@ -30,8 +27,8 @@ public class DataManager {
             "Final review",
             "Documentation");
 
-    public static List<String> getStatuses() {
-        return statuses;
+    public static List<String> getSTATUS_TITLES() {
+        return STATUS_TITLES;
     }
 
     private static final String priorityPrefix = "Priority: ";
@@ -39,84 +36,66 @@ public class DataManager {
     private static final String storyPrefix = "Story: ";
 
 
-    public UniversalData getUniversalData() {
-        UniversalData universalData = new UniversalData();
-        List<Issue> issues = new ArrayList<>();
+    public List<AssigneeIssues> getAssigneeIssuesList(List<String> projectIds, List<String> milestoneTitles) {
+        Map<User, List<Issue>> assigneeIssuesMap = new HashMap<>();
 
-        gitLabGraphQLCaller.getProjectsIssuesResponse().getData().getProjects().getNodes()
+        gitLabGraphQLCaller.getProjectsIssuesResponse(projectIds, milestoneTitles).getData().getProjects().getNodes()
                 .forEach((projectNode) -> {
                     Project thisProject = createProjectFromProjectNode(projectNode);
-                    universalData.addProject(thisProject);
 
                     projectNode.getIssues().getNodes()
                             .forEach((issueNode) -> {
-                                Issue thisIssue = createIssueFromIssueNode(issueNode);
-                                thisIssue.setProject(thisProject);
-                                thisIssue.setAssignee(getAssigneeFromIssueNode(issueNode));
-                                setStoryPriorityStatusOfIssueFromIssueNode(thisIssue, issueNode);
+                                Issue issue = createIssueFromIssueNode(issueNode);
+                                issue.setProject(thisProject);
 
-                                universalData.addMileStone(thisIssue.getMileStone());
-                                universalData.addStory(thisIssue.getStory());
-                                issues.add(thisIssue);
+                                User assignee = issue.getAssignee();
+                                if (issue.getStatus() != null) {
+                                    if (!assigneeIssuesMap.containsKey(assignee)) {
+                                        assigneeIssuesMap.put(assignee, new ArrayList<>());
+                                    }
+                                    assigneeIssuesMap.get(assignee).add(issue);
+                                }
                             });
                 });
-
-        removeNullMilestoneStoryOfUniversalData(universalData);
-        setAssigneesStoriesIssuesOfUniversalData(universalData, issues);
-        return universalData;
-    }
-
-    private void setAssigneesStoriesIssuesOfUniversalData(UniversalData universalData, List<Issue> issues) {
-        Map<User, List<Issue>> issuesOrderedByAssignees = new HashMap<>();
-        Map<Label, List<Issue>> issuesOrderedByStory = new HashMap<>();
-
-        issues.forEach(issue -> {
-            if (issue.getStatus() != null) {
-                User assignee = issue.getAssignee();
-                if (!issuesOrderedByAssignees.containsKey(assignee)) {
-                    issuesOrderedByAssignees.put(assignee, new ArrayList<>());
-                }
-                issuesOrderedByAssignees.get(assignee).add(issue);
-
-                Label story = issue.getStory();
-                if (story != null) {
-                    if (!issuesOrderedByStory.containsKey(story)) {
-                        issuesOrderedByStory.put(story, new ArrayList<>());
-                    }
-                    issuesOrderedByStory.get(story).add(issue);
-                }
-            }
-        });
-
-        universalData.setAssigneeIssuesList(issuesOrderedByAssignees.entrySet().stream()
+        return assigneeIssuesMap.entrySet().stream()
                 .map(e -> AssigneeIssues.builder()
                         .assignee(e.getKey())
                         .issues(e.getValue())
                         .build())
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
+    }
 
-        universalData.setStoryIssuesList(issuesOrderedByStory.entrySet().stream()
+    public List<StoryIssues> getStoryIssuesList(List<String> projectIds, List<String> milestoneTitles) {
+        Map<Label, List<Issue>> storyIssuesMap = new HashMap<>();
+
+        gitLabGraphQLCaller.getProjectsIssuesResponse(projectIds, milestoneTitles).getData().getProjects().getNodes()
+                .forEach((projectNode) -> {
+                    Project thisProject = createProjectFromProjectNode(projectNode);
+
+                    projectNode.getIssues().getNodes()
+                            .forEach((issueNode) -> {
+                                Issue issue = createIssueFromIssueNode(issueNode);
+                                issue.setProject(thisProject);
+
+                                Label story = issue.getStory();
+                                if (issue.getStatus() != null && story != null) {
+                                    if (!storyIssuesMap.containsKey(story)) {
+                                        storyIssuesMap.put(story, new ArrayList<>());
+                                    }
+                                    storyIssuesMap.get(story).add(issue);
+                                }
+                            });
+                });
+        return storyIssuesMap.entrySet().stream()
                 .map(e -> StoryIssues.builder()
                         .story(e.getKey())
                         .issues(e.getValue())
                         .build())
-                .collect(Collectors.toList()));
-    }
-
-    private void removeNullMilestoneStoryOfUniversalData(UniversalData universalData) {
-        universalData.getMileStones().remove(null);
-        universalData.getStories().remove(null);
-    }
-
-    private Project createProjectFromProjectNode(ProjectNode projectNode) {
-        return Project.builder()
-                .id(projectNode.getId())
-                .name(projectNode.getName())
-                .build();
+                .collect(Collectors.toList());
     }
 
     private Issue createIssueFromIssueNode(IssueNode issueNode) {
-        return Issue.builder()
+        Issue issue = Issue.builder()
                 .id(issueNode.getId())
                 .title(issueNode.getTitle())
                 .description(issueNode.getDescription())
@@ -125,6 +104,17 @@ public class DataManager {
                 .userNotesCount(issueNode.getUserNotesCount())
                 .reference(issueNode.getReference())
                 .mileStone(issueNode.getMilestone())
+                .assignee(getAssigneeFromIssueNode(issueNode))
+                .build();
+        setStoryPriorityStatusOfIssueFromIssueNode(issue, issueNode);
+        return issue;
+    }
+
+    private Project createProjectFromProjectNode(ProjectNode projectNode) {
+        return Project.builder()
+                .id(projectNode.getId())
+                .name(projectNode.getName())
+                .group(projectNode.getGroup())
                 .build();
     }
 
@@ -136,7 +126,7 @@ public class DataManager {
             } else if (label.getTitle().startsWith(priorityPrefix)) {
                 label.setTitle(label.getTitle().substring(priorityPrefix.length()));
                 thisIssue.setPriority(label);
-            } else if (statuses.stream()
+            } else if (STATUS_TITLES.stream()
                     .anyMatch(existingStatus -> existingStatus.equals(label.getTitle()))) {
                 thisIssue.setStatus(label);
             }
@@ -149,46 +139,6 @@ public class DataManager {
         } catch (IndexOutOfBoundsException e) {
             return null;
         }
-    }
-
-    public AssigneeIssues getAssigneeIssues(String userId) {
-        AssigneeIssuesResponse assigneeIssuesResponse = gitLabGraphQLCaller.getAssigneeIssuesResponse(userId);
-        List<Issue> issues = new ArrayList<>();
-        UserWithMemberships userWithMemberships = assigneeIssuesResponse.getData().getUser();
-
-        userWithMemberships.getGroupMemberships().getNodes()
-                .forEach(groupMembershipNode -> groupMembershipNode.getGroup().getProjects().getNodes()
-                        .forEach(projectNode -> {
-                            issues.addAll(generateIssuesFromProjectNode(projectNode));
-                        }));
-        userWithMemberships.getProjectMemberships().getNodes()
-                .forEach(projectMembershipNode -> issues.addAll
-                        (generateIssuesFromProjectNode(projectMembershipNode.getProject())));
-
-        return AssigneeIssues.builder()
-                .assignee(User.builder()
-                        .id(userWithMemberships.getId())
-                        .name(userWithMemberships.getName())
-                        .avatarUrl(userWithMemberships.getAvatarUrl())
-                        .build())
-                .issues(issues)
-                .build();
-    }
-
-    private List<Issue> generateIssuesFromProjectNode(ProjectNode projectNode) {
-        Project thisProject = createProjectFromProjectNode(projectNode);
-        List<Issue> issues = new ArrayList<>();
-
-        projectNode.getIssues().getNodes()
-                .forEach((issueNode) -> {
-                    Issue thisIssue = createIssueFromIssueNode(issueNode);
-                    thisIssue.setProject(thisProject);
-                    thisIssue.setAssignee(getAssigneeFromIssueNode(issueNode));
-                    setStoryPriorityStatusOfIssueFromIssueNode(thisIssue, issueNode);
-
-                    issues.add(thisIssue);
-                });
-        return issues;
     }
 
 }

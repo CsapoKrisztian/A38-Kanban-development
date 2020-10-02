@@ -1,8 +1,8 @@
 package com.codecool.a38.kanban.issue.controller;
 
-import com.codecool.a38.kanban.issue.model.graphQLResponse.User;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
-import com.codecool.a38.kanban.issue.model.transfer.UniversalData;
+import com.codecool.a38.kanban.issue.model.transfer.FilterProjectsMilestones;
+import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
 import com.codecool.a38.kanban.issue.service.DataManager;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,24 +16,19 @@ public class IssueController {
 
     private DataManager dataManager;
 
-    @GetMapping("/universalData")
-    public UniversalData getProjectsData() {
-        return dataManager.getUniversalData();
+    @GetMapping("/issues/orderByAssignee")
+    public List<AssigneeIssues> getAssigneeIssuesList(@RequestBody FilterProjectsMilestones filter) {
+        return dataManager.getAssigneeIssuesList(filter.getProjectIds(), filter.getMilestoneTitles());
     }
 
-    @GetMapping("/issues")
-    public AssigneeIssues getAssigneeIssues(@RequestParam String userId) {
-        return dataManager.getAssigneeIssues(userId);
+    @GetMapping("/issues/orderByStory")
+    public List<StoryIssues> getStoryIssuesList(@RequestBody FilterProjectsMilestones filter) {
+        return dataManager.getStoryIssuesList(filter.getProjectIds(), filter.getMilestoneTitles());
     }
 
     @GetMapping("/statuses")
     public List<String> getStatuses() {
-        return DataManager.getStatuses();
+        return DataManager.getSTATUS_TITLES();
     }
-
-//    @GetMapping("/issues/orderByAssignee")
-//    public AssigneeIssuesResponse getIssuesOrderedByAssignee() {
-//        return dataManager.getAssigneesIssues();
-//    }
 
 }
