@@ -162,9 +162,8 @@ public class DataManager {
                             issues.addAll(generateIssuesFromProjectNode(projectNode));
                         }));
         userWithMemberships.getProjectMemberships().getNodes()
-                .forEach(projectMembershipNode -> {
-                    issues.addAll(generateIssuesFromProjectNode(projectMembershipNode.getProject()));
-                });
+                .forEach(projectMembershipNode -> issues.addAll
+                        (generateIssuesFromProjectNode(projectMembershipNode.getProject())));
 
         return AssigneeIssues.builder()
                 .assignee(User.builder()

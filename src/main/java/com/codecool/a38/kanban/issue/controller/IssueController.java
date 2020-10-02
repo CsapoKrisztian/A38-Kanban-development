@@ -1,5 +1,6 @@
 package com.codecool.a38.kanban.issue.controller;
 
+import com.codecool.a38.kanban.issue.model.graphQLResponse.User;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
 import com.codecool.a38.kanban.issue.model.transfer.UniversalData;
 import com.codecool.a38.kanban.issue.service.DataManager;
