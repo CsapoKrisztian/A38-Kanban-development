@@ -38,18 +38,12 @@ public class GitLabGraphQLCaller {
     }
 
     public ProjectsIssuesResponse getProjectsIssuesResponse(Filter filter) {
-        List<String> projectIds = filter.getProjects().stream()
-                .map(Project::getId)
-                .collect(Collectors.toList());
-        List<String> milestoneTitles = filter.getMilestones().stream()
-                .map(Milestone::getTitle)
-                .collect(Collectors.toList());
         String start = "[\\\"";
         String delimiter = "\\\", \\\"";
         String end = "\\\"]";
 
-        String formattedProjectIds =  start + String.join(delimiter, projectIds) + end;
-        String formattedMilestoneTitles = start + String.join(delimiter, milestoneTitles) + end;
+        String formattedProjectIds = start + String.join(delimiter, getProjectIds(filter)) + end;
+        String formattedMilestoneTitles = start + String.join(delimiter, getMilestoneTitles(filter)) + end;
 
         String query = "{\"query\":\"{\\n" +
                 "projects(ids:" + formattedProjectIds + ") {\\n" +
@@ -94,6 +88,18 @@ public class GitLabGraphQLCaller {
 
         log.info("Get ProjectsIssuesResponse: " + Objects.requireNonNull(responseEntity.getBody()).toString());
         return responseEntity.getBody();
+    }
+
+    private List<String> getMilestoneTitles(Filter filter) {
+        return filter.getMilestones().stream()
+                .map(Milestone::getTitle)
+                .collect(Collectors.toList());
+    }
+
+    private List<String> getProjectIds(Filter filter) {
+        return filter.getProjects().stream()
+                .map(Project::getId)
+                .collect(Collectors.toList());
     }
 
     public MilestonesResponse getMilestonesResponse() {

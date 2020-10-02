@@ -161,8 +161,7 @@ public class DataManager {
     public Set<Label> getStories() {
         Set<Label> stories = new HashSet<>();
         gitLabGraphQLCaller.getStoriesResponse().getData().getProjects().getNodes()
-                .forEach(projectNode -> projectNode.getLabels().getNodes()
-                .forEach(label -> stories.add(label)));
+                .forEach(projectNode -> stories.addAll(projectNode.getLabels().getNodes()));
         return stories;
     }
 
