@@ -21,7 +21,7 @@ public class IssueController {
     }
 
     @GetMapping("/issues")
-    public AssigneeIssues getIssuesOrderedByAssignee(@RequestParam String userId) {
+    public AssigneeIssues getAssigneeIssues(@RequestParam String userId) {
         return dataManager.getAssigneeIssues(userId);
     }
 

@@ -6,6 +6,7 @@ import com.codecool.a38.kanban.issue.model.graphQLResponse.Label;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.ProjectNode;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.User;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.userIssues.AssigneeIssuesResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.userIssues.UserWithMemberships;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
 import com.codecool.a38.kanban.issue.model.transfer.UniversalData;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
@@ -153,21 +154,42 @@ public class DataManager {
     public AssigneeIssues getAssigneeIssues(String userId) {
         AssigneeIssuesResponse assigneeIssuesResponse = gitLabGraphQLCaller.getAssigneeIssuesResponse(userId);
         List<Issue> issues = new ArrayList<>();
+        UserWithMemberships userWithMemberships = assigneeIssuesResponse.getData().getUser();
 
-        assigneeIssuesResponse.getData().getUser().getGroupMemberships().getNodes()
+        userWithMemberships.getGroupMemberships().getNodes()
                 .forEach(groupMembershipNode -> groupMembershipNode.getGroup().getProjects().getNodes()
                         .forEach(projectNode -> {
-                            issues.addAll(Objects.requireNonNull(generateIssuesFromProjectNode(projectNode)));
+                            issues.addAll(generateIssuesFromProjectNode(projectNode));
                         }));
+        userWithMemberships.getProjectMemberships().getNodes()
+                .forEach(projectMembershipNode -> {
+                    issues.addAll(generateIssuesFromProjectNode(projectMembershipNode.getProject()));
+                });
 
         return AssigneeIssues.builder()
-                .assignee(assigneeIssuesResponse.getData().getUser())
+                .assignee(User.builder()
+                        .id(userWithMemberships.getId())
+                        .name(userWithMemberships.getName())
+                        .avatarUrl(userWithMemberships.getAvatarUrl())
+                        .build())
                 .issues(issues)
                 .build();
     }
 
     private List<Issue> generateIssuesFromProjectNode(ProjectNode projectNode) {
-        return null;
+        Project thisProject = createProjectFromProjectNode(projectNode);
+        List<Issue> issues = new ArrayList<>();
+
+        projectNode.getIssues().getNodes()
+                .forEach((issueNode) -> {
+                    Issue thisIssue = createIssueFromIssueNode(issueNode);
+                    thisIssue.setProject(thisProject);
+                    thisIssue.setAssignee(getAssigneeFromIssueNode(issueNode));
+                    setStoryPriorityStatusOfIssueFromIssueNode(thisIssue, issueNode);
+
+                    issues.add(thisIssue);
+                });
+        return issues;
     }
 
 }
