@@ -144,4 +144,9 @@ public class DataManager {
                 .forEach(projectNode -> milestones.addAll(projectNode.getMilestones().getNodes()));
         return milestones;
     }
+
+    public Set<Project> getProjects() {
+
+        return null;
+    }
 }

@@ -1,5 +1,6 @@
 package com.codecool.a38.kanban.issue.controller;
 
+import com.codecool.a38.kanban.issue.model.Project;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.Milestone;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
 import com.codecool.a38.kanban.issue.model.transfer.FilterProjectsMilestones;
@@ -36,6 +37,11 @@ public class IssueController {
     @GetMapping("/milestones")
     public Set<Milestone> getMilestones() {
         return dataManager.getMilestones();
+    }
+
+    @GetMapping("/projects")
+    public Set<Project> getProjects() {
+        return dataManager.getProjects();
     }
 
 }
