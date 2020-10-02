@@ -1,11 +1,11 @@
-package com.codecool.a38.kanban.issue.model.graphQLResponse;
+package com.codecool.a38.kanban.issue.model.graphQLResponse.milestones;
 
 import com.codecool.a38.kanban.issue.model.graphQLResponse.Projects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@lombok.Data
-public class ProjectsIssuesData {
+public class MileStonesData {
 
     @JsonProperty("projects")
     private Projects projects;
+
 }

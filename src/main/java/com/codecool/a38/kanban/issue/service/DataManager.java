@@ -1,10 +1,7 @@
 package com.codecool.a38.kanban.issue.service;
 
 import com.codecool.a38.kanban.issue.model.*;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.IssueNode;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.Label;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.ProjectNode;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.User;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.*;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
 import lombok.AllArgsConstructor;
@@ -94,6 +91,14 @@ public class DataManager {
                 .collect(Collectors.toList());
     }
 
+    private Project createProjectFromProjectNode(ProjectNode projectNode) {
+        return Project.builder()
+                .id(projectNode.getId())
+                .name(projectNode.getName())
+                .group(projectNode.getGroup())
+                .build();
+    }
+
     private Issue createIssueFromIssueNode(IssueNode issueNode) {
         Issue issue = Issue.builder()
                 .id(issueNode.getId())
@@ -108,14 +113,6 @@ public class DataManager {
                 .build();
         setStoryPriorityStatusOfIssueFromIssueNode(issue, issueNode);
         return issue;
-    }
-
-    private Project createProjectFromProjectNode(ProjectNode projectNode) {
-        return Project.builder()
-                .id(projectNode.getId())
-                .name(projectNode.getName())
-                .group(projectNode.getGroup())
-                .build();
     }
 
     private void setStoryPriorityStatusOfIssueFromIssueNode(Issue thisIssue, IssueNode issueNode) {
@@ -141,4 +138,7 @@ public class DataManager {
         }
     }
 
+    public List<Milestone> getMilestones() {
+
+    }
 }

@@ -1,4 +1,4 @@
-package com.codecool.a38.kanban.issue.model.graphQLResponse;
+package com.codecool.a38.kanban.issue.model.graphQLResponse.projectsIssues;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

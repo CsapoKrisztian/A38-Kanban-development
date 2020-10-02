@@ -1,6 +1,7 @@
 package com.codecool.a38.kanban.issue.service;
 
-import com.codecool.a38.kanban.issue.model.graphQLResponse.ProjectsIssuesResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.milestones.MilestonesResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.projectsIssues.ProjectsIssuesResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -79,6 +80,28 @@ public class GitLabGraphQLCaller {
                 URL, new HttpEntity<>(query, HEADERS), ProjectsIssuesResponse.class);
 
         log.info("Get ProjectsIssuesResponse: " + Objects.requireNonNull(responseEntity.getBody()).toString());
+        return responseEntity.getBody();
+    }
+
+    public MilestonesResponse getMilestones() {
+        String query = "{\"query\":\"{\\n" +
+                "  projects {\\n" +
+                "    nodes {\\n" +
+                "      milestones {\\n" +
+                "        nodes {\\n" +
+                "          id\\n" +
+                "          title\\n" +
+                "        }\\n" +
+                "      }\\n" +
+                "    }\\n" +
+                "  }\\n" +
+                "}\\n" +
+                "\",\"variables\":{}}";
+
+        ResponseEntity<MilestonesResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, HEADERS), MilestonesResponse.class);
+
+        log.info("Get MilestonesResponse: " + Objects.requireNonNull(responseEntity.getBody()).toString());
         return responseEntity.getBody();
     }
 
