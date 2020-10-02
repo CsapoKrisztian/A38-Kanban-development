@@ -34,14 +34,14 @@ public class IssueController {
         return DataManager.getSTATUS_TITLES();
     }
 
-    @GetMapping("/milestones")
-    public Set<Milestone> getMilestones() {
-        return dataManager.getMilestones();
-    }
-
     @GetMapping("/projects")
     public Set<Project> getProjects() {
         return dataManager.getProjects();
+    }
+
+    @GetMapping("/milestones")
+    public Set<Milestone> getMilestones() {
+        return dataManager.getMilestones();
     }
 
 }
