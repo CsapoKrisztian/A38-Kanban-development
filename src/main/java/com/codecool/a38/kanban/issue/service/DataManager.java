@@ -1,6 +1,7 @@
 package com.codecool.a38.kanban.issue.service;
 
-import com.codecool.a38.kanban.issue.model.*;
+import com.codecool.a38.kanban.issue.model.Issue;
+import com.codecool.a38.kanban.issue.model.Project;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.*;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneesIssues;
 import com.codecool.a38.kanban.issue.model.transfer.ProjectsData;
@@ -150,4 +151,7 @@ public class DataManager {
         return gitLabGraphQLCaller.getProjectsDataResponse();
     }
 
+    public List<ProjectNode> getAllProjects() {
+        return gitLabGraphQLCaller.getAllProjects();
+    }
 }
