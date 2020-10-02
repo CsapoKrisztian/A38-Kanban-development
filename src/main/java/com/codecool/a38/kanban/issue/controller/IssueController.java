@@ -1,8 +1,6 @@
 package com.codecool.a38.kanban.issue.controller;
 
 import com.codecool.a38.kanban.issue.model.Project;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.Label;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.Milestone;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
 import com.codecool.a38.kanban.issue.model.transfer.Filter;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
@@ -30,24 +28,24 @@ public class IssueController {
         return dataManager.getStoryIssuesList(filter);
     }
 
-    @GetMapping("/statuses")
-    public List<String> getStatuses() {
-        return DataManager.getSTATUS_TITLES();
-    }
-
     @GetMapping("/projects")
     public Set<Project> getProjects() {
         return dataManager.getProjects();
     }
 
     @GetMapping("/milestones")
-    public Set<Milestone> getMilestones() {
-        return dataManager.getMilestones();
+    public Set<String> getMilestoneTitles() {
+        return dataManager.getMilestoneTitles();
     }
 
     @GetMapping("/stories")
-    public Set<Label> getStories() {
-        return dataManager.getStories();
+    public Set<String> getStoryTitles() {
+        return dataManager.getStoryTitles();
+    }
+
+    @GetMapping("/statuses")
+    public Set<String> getStatusTitles() {
+        return DataManager.getSTATUS_TITLES();
     }
 
 }

@@ -1,12 +1,9 @@
 package com.codecool.a38.kanban.issue.service;
 
-import com.codecool.a38.kanban.issue.model.Project;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.Milestone;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.milestones.MilestonesResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.projects.ProjectsResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.projectsIssues.ProjectsIssuesResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.stories.StoriesResponse;
-import com.codecool.a38.kanban.issue.model.transfer.Filter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -16,7 +13,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -37,13 +33,13 @@ public class GitLabGraphQLCaller {
         this.restTemplate = restTemplate;
     }
 
-    public ProjectsIssuesResponse getProjectsIssuesResponse(Filter filter) {
+    public ProjectsIssuesResponse getProjectsIssuesResponse(List<String> projectIds, List<String> milestoneTitles) {
         String start = "[\\\"";
         String delimiter = "\\\", \\\"";
         String end = "\\\"]";
 
-        String formattedProjectIds = start + String.join(delimiter, getProjectIds(filter)) + end;
-        String formattedMilestoneTitles = start + String.join(delimiter, getMilestoneTitles(filter)) + end;
+        String formattedProjectIds = start + String.join(delimiter, projectIds) + end;
+        String formattedMilestoneTitles = start + String.join(delimiter, milestoneTitles) + end;
 
         String query = "{\"query\":\"{\\n" +
                 "projects(ids:" + formattedProjectIds + ") {\\n" +
@@ -88,18 +84,6 @@ public class GitLabGraphQLCaller {
 
         log.info("Get ProjectsIssuesResponse: " + Objects.requireNonNull(responseEntity.getBody()).toString());
         return responseEntity.getBody();
-    }
-
-    private List<String> getMilestoneTitles(Filter filter) {
-        return filter.getMilestones().stream()
-                .map(Milestone::getTitle)
-                .collect(Collectors.toList());
-    }
-
-    private List<String> getProjectIds(Filter filter) {
-        return filter.getProjects().stream()
-                .map(Project::getId)
-                .collect(Collectors.toList());
     }
 
     public MilestonesResponse getMilestonesResponse() {

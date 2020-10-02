@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
@@ -17,15 +18,15 @@ public class DataManager {
 
     private GitLabGraphQLCaller gitLabGraphQLCaller;
 
-    private static final List<String> STATUS_TITLES = Arrays.asList(
+    private static final Set<String> STATUS_TITLES = Stream.of(
             "Backlog",
             "Todo",
             "Development",
             "Dev review",
             "Final review",
-            "Documentation");
+            "Documentation").collect(Collectors.toSet());
 
-    public static List<String> getSTATUS_TITLES() {
+    public static Set<String> getSTATUS_TITLES() {
         return STATUS_TITLES;
     }
 
@@ -35,9 +36,13 @@ public class DataManager {
 
 
     public List<AssigneeIssues> getAssigneeIssuesList(Filter filter) {
+        if (filter.getProjectIds() == null || filter.getMilestoneTitles() == null
+                || filter.getStoryTitles() == null) return null;
+
         Map<User, List<Issue>> assigneeIssuesMap = new HashMap<>();
 
-        gitLabGraphQLCaller.getProjectsIssuesResponse(filter).getData().getProjects().getNodes()
+        gitLabGraphQLCaller.getProjectsIssuesResponse(filter.getProjectIds(), filter.getMilestoneTitles())
+                .getData().getProjects().getNodes()
                 .forEach((projectNode) -> {
                     Project thisProject = createProjectFromProjectNode(projectNode);
 
@@ -46,14 +51,13 @@ public class DataManager {
                                 Issue issue = createIssueFromIssueNode(issueNode);
                                 issue.setProject(thisProject);
 
-                                if (filter.getStories().contains(issue.getStory())) {
+                                if (issue.getStatus() != null
+                                        && filter.getStoryTitles().contains(issue.getStory().getTitle())) {
                                     User assignee = issue.getAssignee();
-                                    if (issue.getStatus() != null) {
-                                        if (!assigneeIssuesMap.containsKey(assignee)) {
-                                            assigneeIssuesMap.put(assignee, new ArrayList<>());
-                                        }
-                                        assigneeIssuesMap.get(assignee).add(issue);
+                                    if (!assigneeIssuesMap.containsKey(assignee)) {
+                                        assigneeIssuesMap.put(assignee, new ArrayList<>());
                                     }
+                                    assigneeIssuesMap.get(assignee).add(issue);
                                 }
                             });
                 });
@@ -66,9 +70,12 @@ public class DataManager {
     }
 
     public List<StoryIssues> getStoryIssuesList(Filter filter) {
-        Map<Label, List<Issue>> storyIssuesMap = new HashMap<>();
+        if (filter.getProjectIds() == null || filter.getMilestoneTitles() == null
+                || filter.getStoryTitles() == null) return null;
 
-        gitLabGraphQLCaller.getProjectsIssuesResponse(filter).getData().getProjects().getNodes()
+        Map<Label, List<Issue>> storyIssuesMap = new HashMap<>();
+        gitLabGraphQLCaller.getProjectsIssuesResponse(filter.getProjectIds(), filter.getMilestoneTitles())
+                .getData().getProjects().getNodes()
                 .forEach((projectNode) -> {
                     Project thisProject = createProjectFromProjectNode(projectNode);
 
@@ -76,14 +83,14 @@ public class DataManager {
                             .forEach((issueNode) -> {
                                 Issue issue = createIssueFromIssueNode(issueNode);
                                 issue.setProject(thisProject);
-                                if (filter.getStories().contains(issue.getStory())) {
-                                    Label story = issue.getStory();
-                                    if (issue.getStatus() != null && story != null) {
-                                        if (!storyIssuesMap.containsKey(story)) {
-                                            storyIssuesMap.put(story, new ArrayList<>());
-                                        }
-                                        storyIssuesMap.get(story).add(issue);
+
+                                Label story = issue.getStory();
+                                if (issue.getStatus() != null
+                                        && filter.getStoryTitles().contains(story.getTitle())) {
+                                    if (!storyIssuesMap.containsKey(story)) {
+                                        storyIssuesMap.put(story, new ArrayList<>());
                                     }
+                                    storyIssuesMap.get(story).add(issue);
                                 }
                             });
                 });
@@ -142,13 +149,6 @@ public class DataManager {
         }
     }
 
-    public Set<Milestone> getMilestones() {
-        Set<Milestone> milestones = new HashSet<>();
-        gitLabGraphQLCaller.getMilestonesResponse().getData().getProjects().getNodes()
-                .forEach(projectNode -> milestones.addAll(projectNode.getMilestones().getNodes()));
-        return milestones;
-    }
-
     public Set<Project> getProjects() {
         Set<Project> projects = new HashSet<>();
         gitLabGraphQLCaller.getProjectsResponse().getData().getProjects().getNodes()
@@ -161,10 +161,19 @@ public class DataManager {
         return projects;
     }
 
-    public Set<Label> getStories() {
-        Set<Label> stories = new HashSet<>();
+    public Set<String> getMilestoneTitles() {
+        Set<String> milestones = new HashSet<>();
+        gitLabGraphQLCaller.getMilestonesResponse().getData().getProjects().getNodes()
+                .forEach(projectNode -> projectNode.getMilestones().getNodes()
+                        .forEach(milestone -> milestones.add(milestone.getTitle())));
+        return milestones;
+    }
+
+    public Set<String> getStoryTitles() {
+        Set<String> stories = new HashSet<>();
         gitLabGraphQLCaller.getStoriesResponse().getData().getProjects().getNodes()
-                .forEach(projectNode -> stories.addAll(projectNode.getLabels().getNodes()));
+                .forEach(projectNode -> projectNode.getLabels().getNodes()
+                        .forEach(label -> stories.add(label.getTitle())));
         return stories;
     }
 
