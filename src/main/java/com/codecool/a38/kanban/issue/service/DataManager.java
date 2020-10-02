@@ -3,6 +3,7 @@ package com.codecool.a38.kanban.issue.service;
 import com.codecool.a38.kanban.issue.model.*;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.*;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
+import com.codecool.a38.kanban.issue.model.transfer.Filter;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,10 +34,10 @@ public class DataManager {
     private static final String storyPrefix = "Story: ";
 
 
-    public List<AssigneeIssues> getAssigneeIssuesList(List<String> projectIds, List<String> milestoneTitles) {
+    public List<AssigneeIssues> getAssigneeIssuesList(Filter filter) {
         Map<User, List<Issue>> assigneeIssuesMap = new HashMap<>();
 
-        gitLabGraphQLCaller.getProjectsIssuesResponse(projectIds, milestoneTitles).getData().getProjects().getNodes()
+        gitLabGraphQLCaller.getProjectsIssuesResponse(filter).getData().getProjects().getNodes()
                 .forEach((projectNode) -> {
                     Project thisProject = createProjectFromProjectNode(projectNode);
 
@@ -62,10 +63,10 @@ public class DataManager {
                 .collect(Collectors.toList());
     }
 
-    public List<StoryIssues> getStoryIssuesList(List<String> projectIds, List<String> milestoneTitles) {
+    public List<StoryIssues> getStoryIssuesList(Filter filter) {
         Map<Label, List<Issue>> storyIssuesMap = new HashMap<>();
 
-        gitLabGraphQLCaller.getProjectsIssuesResponse(projectIds, milestoneTitles).getData().getProjects().getNodes()
+        gitLabGraphQLCaller.getProjectsIssuesResponse(filter).getData().getProjects().getNodes()
                 .forEach((projectNode) -> {
                     Project thisProject = createProjectFromProjectNode(projectNode);
 
@@ -156,4 +157,13 @@ public class DataManager {
                                 .build()));
         return projects;
     }
+
+    public Set<Label> getStories() {
+        Set<Label> stories = new HashSet<>();
+        gitLabGraphQLCaller.getStoriesResponse().getData().getProjects().getNodes()
+                .forEach(projectNode -> projectNode.getLabels().getNodes()
+                .forEach(label -> stories.add(label)));
+        return stories;
+    }
+
 }

@@ -1,9 +1,10 @@
 package com.codecool.a38.kanban.issue.controller;
 
 import com.codecool.a38.kanban.issue.model.Project;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.Label;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.Milestone;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
-import com.codecool.a38.kanban.issue.model.transfer.FilterProjectsMilestones;
+import com.codecool.a38.kanban.issue.model.transfer.Filter;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
 import com.codecool.a38.kanban.issue.service.DataManager;
 import lombok.AllArgsConstructor;
@@ -20,13 +21,13 @@ public class IssueController {
     private DataManager dataManager;
 
     @GetMapping("/issues/orderByAssignee")
-    public List<AssigneeIssues> getAssigneeIssuesList(@RequestBody FilterProjectsMilestones filter) {
-        return dataManager.getAssigneeIssuesList(filter.getProjectIds(), filter.getMilestoneTitles());
+    public List<AssigneeIssues> getAssigneeIssuesList(@RequestBody Filter filter) {
+        return dataManager.getAssigneeIssuesList(filter);
     }
 
     @GetMapping("/issues/orderByStory")
-    public List<StoryIssues> getStoryIssuesList(@RequestBody FilterProjectsMilestones filter) {
-        return dataManager.getStoryIssuesList(filter.getProjectIds(), filter.getMilestoneTitles());
+    public List<StoryIssues> getStoryIssuesList(@RequestBody Filter filter) {
+        return dataManager.getStoryIssuesList(filter);
     }
 
     @GetMapping("/statuses")
@@ -42,6 +43,11 @@ public class IssueController {
     @GetMapping("/milestones")
     public Set<Milestone> getMilestones() {
         return dataManager.getMilestones();
+    }
+
+    @GetMapping("/stories")
+    public Set<Label> getStories() {
+        return dataManager.getStories();
     }
 
 }

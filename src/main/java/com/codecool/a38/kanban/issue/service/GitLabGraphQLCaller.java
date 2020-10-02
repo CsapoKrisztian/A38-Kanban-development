@@ -1,9 +1,12 @@
 package com.codecool.a38.kanban.issue.service;
 
+import com.codecool.a38.kanban.issue.model.Project;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.Milestone;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.milestones.MilestonesResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.projects.ProjectsResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.projectsIssues.ProjectsIssuesResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.stories.StoriesResponse;
+import com.codecool.a38.kanban.issue.model.transfer.Filter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -33,10 +37,17 @@ public class GitLabGraphQLCaller {
         this.restTemplate = restTemplate;
     }
 
-    public ProjectsIssuesResponse getProjectsIssuesResponse(List<String> projectIds, List<String> milestoneTitles) {
+    public ProjectsIssuesResponse getProjectsIssuesResponse(Filter filter) {
+        List<String> projectIds = filter.getProjects().stream()
+                .map(Project::getId)
+                .collect(Collectors.toList());
+        List<String> milestoneTitles = filter.getMilestones().stream()
+                .map(Milestone::getTitle)
+                .collect(Collectors.toList());
         String start = "[\\\"";
         String delimiter = "\\\", \\\"";
         String end = "\\\"]";
+
         String formattedProjectIds =  start + String.join(delimiter, projectIds) + end;
         String formattedMilestoneTitles = start + String.join(delimiter, milestoneTitles) + end;
 
@@ -129,7 +140,7 @@ public class GitLabGraphQLCaller {
         return responseEntity.getBody();
     }
 
-    public StoriesResponse geStoriesResponse() {
+    public StoriesResponse getStoriesResponse() {
         String query = "{\"query\":\"{\\n" +
                 "  projects {\\n" +
                 "    nodes {\\n" +
