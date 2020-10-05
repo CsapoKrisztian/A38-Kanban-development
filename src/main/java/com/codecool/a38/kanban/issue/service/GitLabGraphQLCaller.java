@@ -82,7 +82,7 @@ public class GitLabGraphQLCaller {
         ResponseEntity<ProjectsIssuesResponse> responseEntity = restTemplate.postForEntity(
                 URL, new HttpEntity<>(query, HEADERS), ProjectsIssuesResponse.class);
 
-        log.info("Get ProjectsIssuesResponse: " + Objects.requireNonNull(responseEntity.getBody()).toString());
+        log.info("Get ProjectsIssuesResponse");
         return responseEntity.getBody();
     }
 
@@ -104,7 +104,7 @@ public class GitLabGraphQLCaller {
         ResponseEntity<MilestonesResponse> responseEntity = restTemplate.postForEntity(
                 URL, new HttpEntity<>(query, HEADERS), MilestonesResponse.class);
 
-        log.info("Get MilestonesResponse: " + Objects.requireNonNull(responseEntity.getBody()).toString());
+        log.info("Get MilestonesResponse");
         return responseEntity.getBody();
     }
 
@@ -126,7 +126,7 @@ public class GitLabGraphQLCaller {
         ResponseEntity<ProjectsResponse> responseEntity = restTemplate.postForEntity(
                 URL, new HttpEntity<>(query, HEADERS), ProjectsResponse.class);
 
-        log.info("Get ProjectsResponse: " + Objects.requireNonNull(responseEntity.getBody()).toString());
+        log.info("Get ProjectsResponse");
         return responseEntity.getBody();
     }
 
@@ -149,7 +149,7 @@ public class GitLabGraphQLCaller {
         ResponseEntity<StoriesResponse> responseEntity = restTemplate.postForEntity(
                 URL, new HttpEntity<>(query, HEADERS), StoriesResponse.class);
 
-        log.info("Get StoriesResponse: " + Objects.requireNonNull(responseEntity.getBody()).toString());
+        log.info("Get StoriesResponse");
         return responseEntity.getBody();
     }
 

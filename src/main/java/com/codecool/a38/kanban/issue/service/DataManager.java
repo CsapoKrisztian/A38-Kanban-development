@@ -6,6 +6,7 @@ import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
 import com.codecool.a38.kanban.issue.model.transfer.Filter;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -14,6 +15,7 @@ import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class DataManager {
 
     private GitLabGraphQLCaller gitLabGraphQLCaller;
@@ -61,6 +63,7 @@ public class DataManager {
                                 }
                             });
                 });
+        log.info("Get assigneeIssuesList");
         return assigneeIssuesMap.entrySet().stream()
                 .map(e -> AssigneeIssues.builder()
                         .assignee(e.getKey())
@@ -94,6 +97,7 @@ public class DataManager {
                                 }
                             });
                 });
+        log.info("Get storyIssuesList");
         return storyIssuesMap.entrySet().stream()
                 .map(e -> StoryIssues.builder()
                         .story(e.getKey())
