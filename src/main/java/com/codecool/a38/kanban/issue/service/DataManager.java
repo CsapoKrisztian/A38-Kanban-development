@@ -20,15 +20,15 @@ public class DataManager {
 
     private GitLabGraphQLCaller gitLabGraphQLCaller;
 
-    private static final Set<String> statusTitles = Stream.of(
+    private static final List<String> statusTitles = Arrays.asList(
             "Backlog",
             "Todo",
             "Development",
             "Dev review",
             "Final review",
-            "Documentation").collect(Collectors.toSet());
+            "Documentation");
 
-    public static Set<String> getStatusTitles() {
+    public static List<String> getStatusTitles() {
         return statusTitles;
     }
 
