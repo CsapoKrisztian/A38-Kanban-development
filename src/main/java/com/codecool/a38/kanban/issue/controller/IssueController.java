@@ -40,13 +40,13 @@ public class IssueController {
     }
 
     @GetMapping("/milestones")
-    public Set<String> getMilestoneTitles() {
-        return dataManager.getMilestoneTitles();
+    public Set<String> getMilestoneTitles(@RequestBody Filter filter) {
+        return dataManager.getMilestoneTitles(filter);
     }
 
     @GetMapping("/stories")
-    public Set<String> getStoryTitles() {
-        return dataManager.getStoryTitles();
+    public Set<String> getStoryTitles(@RequestBody Filter filter) {
+        return dataManager.getStoryTitles(filter);
     }
 
     @GetMapping("/statuses")

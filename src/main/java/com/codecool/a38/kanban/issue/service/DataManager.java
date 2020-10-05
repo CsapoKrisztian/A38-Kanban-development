@@ -166,19 +166,19 @@ public class DataManager {
         return projects;
     }
 
-    public Set<String> getMilestoneTitles() {
+    public Set<String> getMilestoneTitles(Filter filter) {
         log.info("Get milestone titles");
         Set<String> milestones = new HashSet<>();
-        gitLabGraphQLCaller.getMilestonesResponse().getData().getProjects().getNodes()
+        gitLabGraphQLCaller.getMilestonesResponse(filter.getProjectIds()).getData().getProjects().getNodes()
                 .forEach(projectNode -> projectNode.getMilestones().getNodes()
                         .forEach(milestone -> milestones.add(milestone.getTitle())));
         return milestones;
     }
 
-    public Set<String> getStoryTitles() {
+    public Set<String> getStoryTitles(Filter filter) {
         log.info("Get story titles");
         Set<String> stories = new HashSet<>();
-        gitLabGraphQLCaller.getStoriesResponse().getData().getProjects().getNodes()
+        gitLabGraphQLCaller.getStoriesResponse(filter.getProjectIds()).getData().getProjects().getNodes()
                 .forEach(projectNode -> projectNode.getLabels().getNodes()
                         .forEach(label -> stories.add(label.getTitle().substring(storyPrefix.length()))));
         return stories;

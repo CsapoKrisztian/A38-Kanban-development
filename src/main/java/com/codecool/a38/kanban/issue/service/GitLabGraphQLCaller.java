@@ -36,7 +36,6 @@ public class GitLabGraphQLCaller {
         String start = "[\\\"";
         String delimiter = "\\\", \\\"";
         String end = "\\\"]";
-
         String formattedProjectIds = start + String.join(delimiter, projectIds) + end;
         String formattedMilestoneTitles = start + String.join(delimiter, milestoneTitles) + end;
 
@@ -85,15 +84,9 @@ public class GitLabGraphQLCaller {
         return responseEntity.getBody();
     }
 
-    public ProjectsResponse getProjectsResponse(Set<String> projectIds) {
-        String start = "[\\\"";
-        String delimiter = "\\\", \\\"";
-        String end = "\\\"]";
-
-        String formattedProjectIds = start + String.join(delimiter, projectIds) + end;
-
+    public ProjectsResponse getProjectsResponse() {
         String query = "{\"query\":\"{\\n" +
-                "  projects(ids:" + formattedProjectIds + ") {\\n" +
+                "  projects {\\n" +
                 "    nodes {\\n" +
                 "      id\\n" +
                 "      name\\n" +
@@ -117,7 +110,6 @@ public class GitLabGraphQLCaller {
         String start = "[\\\"";
         String delimiter = "\\\", \\\"";
         String end = "\\\"]";
-
         String formattedProjectIds = start + String.join(delimiter, projectIds) + end;
 
         String query = "{\"query\":\"{\\n" +
@@ -141,9 +133,14 @@ public class GitLabGraphQLCaller {
         return responseEntity.getBody();
     }
 
-    public StoriesResponse getStoriesResponse() {
+    public StoriesResponse getStoriesResponse(Set<String> projectIds) {
+        String start = "[\\\"";
+        String delimiter = "\\\", \\\"";
+        String end = "\\\"]";
+        String formattedProjectIds = start + String.join(delimiter, projectIds) + end;
+
         String query = "{\"query\":\"{\\n" +
-                "  projects {\\n" +
+                "  projects(ids:" + formattedProjectIds + ") {\\n" +
                 "    nodes {\\n" +
                 "      labels(searchTerm: \\\"Story: \\\") {\\n" +
                 "        nodes {\\n" +
