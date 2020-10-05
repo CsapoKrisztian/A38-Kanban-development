@@ -17,19 +17,12 @@ import java.util.Set;
 @Slf4j
 public class GitLabGraphQLCaller {
 
-    private static final String url = "https://gitlab.techpm.guru/api/graphql";
+    private static final String URL = "https://gitlab.techpm.guru/api/graphql";
 
     private RestTemplate restTemplate;
 
     public GitLabGraphQLCaller(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
-    }
-
-    private String getFormattedString(Set<String> strings) {
-        String before = "[\\\"";
-        String delimiter = "\\\", \\\"";
-        String after = "\\\"]";
-        return before + String.join(delimiter, strings) + after;
     }
 
     public ProjectsIssuesResponse getProjectsIssuesResponse(String token,
@@ -72,12 +65,8 @@ public class GitLabGraphQLCaller {
                 "}\\n" +
                 "}\",\"variables\":{}}";
 
-        HttpHeaders headers = new HttpHeaders() {{
-            add("Authorization", "Bearer " + token);
-            add("Content-Type", "application/json");
-        }};
         ResponseEntity<ProjectsIssuesResponse> responseEntity = restTemplate.postForEntity(
-                url, new HttpEntity<>(query, headers), ProjectsIssuesResponse.class);
+                URL, new HttpEntity<>(query, getHeaders(token)), ProjectsIssuesResponse.class);
         log.info("Get projects issues response");
         return responseEntity.getBody();
     }
@@ -97,12 +86,8 @@ public class GitLabGraphQLCaller {
                 "}\\n" +
                 "\",\"variables\":{}}";
 
-        HttpHeaders headers = new HttpHeaders() {{
-            add("Authorization", "Bearer " + token);
-            add("Content-Type", "application/json");
-        }};
         ResponseEntity<ProjectsResponse> responseEntity = restTemplate.postForEntity(
-                url, new HttpEntity<>(query, headers), ProjectsResponse.class);
+                URL, new HttpEntity<>(query, getHeaders(token)), ProjectsResponse.class);
         log.info("Get projects response");
         return responseEntity.getBody();
     }
@@ -122,12 +107,8 @@ public class GitLabGraphQLCaller {
                 "}\\n" +
                 "\",\"variables\":{}}";
 
-        HttpHeaders headers = new HttpHeaders() {{
-            add("Authorization", "Bearer " + token);
-            add("Content-Type", "application/json");
-        }};
         ResponseEntity<MilestonesResponse> responseEntity = restTemplate.postForEntity(
-                url, new HttpEntity<>(query, headers), MilestonesResponse.class);
+                URL, new HttpEntity<>(query, getHeaders(token)), MilestonesResponse.class);
         log.info("Get milestones response");
         return responseEntity.getBody();
     }
@@ -148,14 +129,24 @@ public class GitLabGraphQLCaller {
                 "}\\n" +
                 "\",\"variables\":{}}";
 
-        HttpHeaders headers = new HttpHeaders() {{
+        ResponseEntity<StoriesResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), StoriesResponse.class);
+        log.info("Get stories response");
+        return responseEntity.getBody();
+    }
+
+    private String getFormattedString(Set<String> strings) {
+        String before = "[\\\"";
+        String delimiter = "\\\", \\\"";
+        String after = "\\\"]";
+        return before + String.join(delimiter, strings) + after;
+    }
+
+    private HttpHeaders getHeaders(String token) {
+        return new HttpHeaders() {{
             add("Authorization", "Bearer " + token);
             add("Content-Type", "application/json");
         }};
-        ResponseEntity<StoriesResponse> responseEntity = restTemplate.postForEntity(
-                url, new HttpEntity<>(query, headers), StoriesResponse.class);
-        log.info("Get stories response");
-        return responseEntity.getBody();
     }
 
 }
