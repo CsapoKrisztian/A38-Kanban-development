@@ -44,7 +44,8 @@ public class IssueController {
     }
 
     @GetMapping("/statuses")
-    public List<String> getStatusTitles() {
+    public List<String> getStatusTitles(@CookieValue(defaultValue = "token") String gitlabAccessToken) {
+        System.out.println(gitlabAccessToken);
         return DataManager.getStatusTitles();
     }
 

@@ -41,16 +41,18 @@ public class AuthController {
         OAuthResponse oAuthResponse = restTemplate.postForEntity(url + parameters,
                 request, OAuthResponse.class).getBody();
         if (oAuthResponse != null) {
-            String token = oAuthResponse.getAccess_token();
+            String gitlabAccessToken = oAuthResponse.getAccess_token();
+            log.info("gitlab access token received from gitlab: " + gitlabAccessToken);
 
-            Cookie cookie = new Cookie("accessToken", token);
+            Cookie cookie = new Cookie("gitlabAccessToken", gitlabAccessToken);
             cookie.setMaxAge(60 * 60 * 24);
             cookie.setHttpOnly(true);
             cookie.setPath("/");
             response.addCookie(cookie);
 
-            log.info("access token: " + token);
-            return ResponseEntity.ok("accessToken saved in cookie and sent back: " + token);
+            response.addHeader("Access-Control-Allow-Credentials", "true");
+
+            return ResponseEntity.ok("accessToken saved in cookie: " + gitlabAccessToken);
 
         } else {
             log.info("No oauth response returned");

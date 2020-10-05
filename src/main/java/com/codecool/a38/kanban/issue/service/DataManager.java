@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
@@ -29,6 +28,7 @@ public class DataManager {
             "Documentation");
 
     public static List<String> getStatusTitles() {
+        log.info("get status titles");
         return statusTitles;
     }
 
@@ -38,6 +38,7 @@ public class DataManager {
 
 
     public List<AssigneeIssues> getAssigneeIssuesList(Filter filter) {
+        log.info("Get assignee issues list");
         if (filter.getProjectIds() == null || filter.getMilestoneTitles() == null
                 || filter.getStoryTitles() == null) return null;
 
@@ -63,7 +64,6 @@ public class DataManager {
                                 }
                             });
                 });
-        log.info("Get assigneeIssuesList");
         return assigneeIssuesMap.entrySet().stream()
                 .map(e -> AssigneeIssues.builder()
                         .assignee(e.getKey())
@@ -73,6 +73,7 @@ public class DataManager {
     }
 
     public List<StoryIssues> getStoryIssuesList(Filter filter) {
+        log.info("Get story issues list");
         if (filter.getProjectIds() == null || filter.getMilestoneTitles() == null
                 || filter.getStoryTitles() == null) return null;
 
@@ -97,7 +98,6 @@ public class DataManager {
                                 }
                             });
                 });
-        log.info("Get storyIssuesList");
         return storyIssuesMap.entrySet().stream()
                 .map(e -> StoryIssues.builder()
                         .story(e.getKey())
@@ -154,6 +154,7 @@ public class DataManager {
     }
 
     public Set<Project> getProjects() {
+        log.info("Get projects");
         Set<Project> projects = new HashSet<>();
         gitLabGraphQLCaller.getProjectsResponse().getData().getProjects().getNodes()
                 .forEach(projectNode -> projects.add(
@@ -166,6 +167,7 @@ public class DataManager {
     }
 
     public Set<String> getMilestoneTitles() {
+        log.info("Get milestone titles");
         Set<String> milestones = new HashSet<>();
         gitLabGraphQLCaller.getMilestonesResponse().getData().getProjects().getNodes()
                 .forEach(projectNode -> projectNode.getMilestones().getNodes()
@@ -174,6 +176,7 @@ public class DataManager {
     }
 
     public Set<String> getStoryTitles() {
+        log.info("Get story titles");
         Set<String> stories = new HashSet<>();
         gitLabGraphQLCaller.getStoriesResponse().getData().getProjects().getNodes()
                 .forEach(projectNode -> projectNode.getLabels().getNodes()
