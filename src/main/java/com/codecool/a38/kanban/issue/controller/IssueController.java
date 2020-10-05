@@ -50,8 +50,7 @@ public class IssueController {
 
     @PostMapping("/issues/{issueId}/changeStatus")
     public String changeStatus(@PathVariable String issueId, @RequestParam String newStatus) {
-        dataManager.changeStatus(issueId, newStatus);
-        return null;
+        return dataManager.changeStatus(issueId, newStatus);
     }
 
 }

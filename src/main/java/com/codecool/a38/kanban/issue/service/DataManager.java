@@ -177,13 +177,13 @@ public class DataManager {
         return stories;
     }
 
-//    public void changeStatus(String issueId, String newStatus) {
+    public String changeStatus(String issueId, String newStatus) {
 //        String projectFullpath;
 //        String issueIid;
 //
 //        String oldLabelId;
 //        String newLabelId;
-//
-//    }
+        return null;
+    }
 
 }
