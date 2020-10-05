@@ -18,12 +18,9 @@ import java.util.Set;
 public class GitLabGraphQLCaller {
 
     private static final String URL = "https://gitlab.techpm.guru/api/graphql";
-    private static final String TOKEN = "JbHJ7hUuBpS3syCQn748";
-
-    private static final HttpHeaders HEADERS = new HttpHeaders() {{
-        add("Authorization", "Bearer " + TOKEN);
-        add("Content-Type", "application/json");
-    }};
+    private static final String start = "[\\\"";
+    private static final String delimiter = "\\\", \\\"";
+    private static final String end = "\\\"]";
 
     private RestTemplate restTemplate;
 
@@ -31,13 +28,11 @@ public class GitLabGraphQLCaller {
         this.restTemplate = restTemplate;
     }
 
-    private static final String start = "[\\\"";
-    private static final String delimiter = "\\\", \\\"";
-    private static final String end = "\\\"]";
-
-    public ProjectsIssuesResponse getProjectsIssuesResponse(Set<String> projectIds, Set<String> milestoneTitles) {
+    public ProjectsIssuesResponse getProjectsIssuesResponse(String token,
+                                                            Set<String> projectIds, Set<String> milestoneTitles) {
         String formattedProjectIds = start + String.join(delimiter, projectIds) + end;
         String formattedMilestoneTitles = start + String.join(delimiter, milestoneTitles) + end;
+
         String query = "{\"query\":\"{\\n" +
                 "projects(ids:" + formattedProjectIds + ") {\\n" +
                 "    nodes {\\n" +
@@ -76,14 +71,17 @@ public class GitLabGraphQLCaller {
                 "}\\n" +
                 "}\",\"variables\":{}}";
 
+        HttpHeaders headers = new HttpHeaders() {{
+            add("Authorization", "Bearer " + token);
+            add("Content-Type", "application/json");
+        }};
         ResponseEntity<ProjectsIssuesResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, HEADERS), ProjectsIssuesResponse.class);
-
+                URL, new HttpEntity<>(query, headers), ProjectsIssuesResponse.class);
         log.info("Get projects issues response");
         return responseEntity.getBody();
     }
 
-    public ProjectsResponse getProjectsResponse() {
+    public ProjectsResponse getProjectsResponse(String token) {
         String query = "{\"query\":\"{\\n" +
                 "  projects {\\n" +
                 "    nodes {\\n" +
@@ -98,14 +96,17 @@ public class GitLabGraphQLCaller {
                 "}\\n" +
                 "\",\"variables\":{}}";
 
+        HttpHeaders headers = new HttpHeaders() {{
+            add("Authorization", "Bearer " + token);
+            add("Content-Type", "application/json");
+        }};
         ResponseEntity<ProjectsResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, HEADERS), ProjectsResponse.class);
-
+                URL, new HttpEntity<>(query, headers), ProjectsResponse.class);
         log.info("Get projects response");
         return responseEntity.getBody();
     }
 
-    public MilestonesResponse getMilestonesResponse(Set<String> projectIds) {
+    public MilestonesResponse getMilestonesResponse(String token, Set<String> projectIds) {
         String formattedProjectIds = start + String.join(delimiter, projectIds) + end;
         String query = "{\"query\":\"{\\n" +
                 "  projects(ids:" + formattedProjectIds + ") {\\n" +
@@ -121,14 +122,17 @@ public class GitLabGraphQLCaller {
                 "}\\n" +
                 "\",\"variables\":{}}";
 
+        HttpHeaders headers = new HttpHeaders() {{
+            add("Authorization", "Bearer " + token);
+            add("Content-Type", "application/json");
+        }};
         ResponseEntity<MilestonesResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, HEADERS), MilestonesResponse.class);
-
+                URL, new HttpEntity<>(query, headers), MilestonesResponse.class);
         log.info("Get milestones response");
         return responseEntity.getBody();
     }
 
-    public StoriesResponse getStoriesResponse(Set<String> projectIds) {
+    public StoriesResponse getStoriesResponse(String token, Set<String> projectIds) {
         String formattedProjectIds = start + String.join(delimiter, projectIds) + end;
         String query = "{\"query\":\"{\\n" +
                 "  projects(ids:" + formattedProjectIds + ") {\\n" +
@@ -145,9 +149,12 @@ public class GitLabGraphQLCaller {
                 "}\\n" +
                 "\",\"variables\":{}}";
 
+        HttpHeaders headers = new HttpHeaders() {{
+            add("Authorization", "Bearer " + token);
+            add("Content-Type", "application/json");
+        }};
         ResponseEntity<StoriesResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, HEADERS), StoriesResponse.class);
-
+                URL, new HttpEntity<>(query, headers), StoriesResponse.class);
         log.info("Get stories response");
         return responseEntity.getBody();
     }

@@ -8,7 +8,6 @@ import com.codecool.a38.kanban.issue.service.DataManager;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Set;
 
@@ -20,33 +19,28 @@ public class IssueController {
     private DataManager dataManager;
 
     @GetMapping("/issues/orderByAssignee")
-    public List<AssigneeIssues> getAssigneeIssuesList(@RequestBody Filter filter) {
-        return dataManager.getAssigneeIssuesList(filter);
+    public List<AssigneeIssues> getAssigneeIssuesList(@CookieValue String gitlabAccessToken, @RequestBody Filter filter) {
+        return dataManager.getAssigneeIssuesList(gitlabAccessToken, filter);
     }
 
     @PostMapping("/issues/orderByStory")
-    public List<StoryIssues> getStoryIssuesList(@RequestBody Filter filter,
-                                                @CookieValue(value = "gitlabAccessToken", defaultValue = "default")
-                                                String gitlabAccessToken,
-                                                HttpServletRequest request) {
-        System.out.println("cookie gitlabAccessToken: " + gitlabAccessToken);
-
-        return dataManager.getStoryIssuesList(filter);
+    public List<StoryIssues> getStoryIssuesList(@CookieValue String gitlabAccessToken, @RequestBody Filter filter) {
+        return dataManager.getStoryIssuesList(gitlabAccessToken, filter);
     }
 
     @GetMapping("/projects")
-    public Set<Project> getProjects() {
-        return dataManager.getProjects();
+    public Set<Project> getProjects(@CookieValue String gitlabAccessToken) {
+        return dataManager.getProjects(gitlabAccessToken);
     }
 
     @GetMapping("/milestones")
-    public Set<String> getMilestoneTitles(@RequestBody Filter filter) {
-        return dataManager.getMilestoneTitles(filter);
+    public Set<String> getMilestoneTitles(@CookieValue String gitlabAccessToken, @RequestBody Filter filter) {
+        return dataManager.getMilestoneTitles(gitlabAccessToken, filter);
     }
 
     @GetMapping("/stories")
-    public Set<String> getStoryTitles(@RequestBody Filter filter) {
-        return dataManager.getStoryTitles(filter);
+    public Set<String> getStoryTitles(@CookieValue String gitlabAccessToken, @RequestBody Filter filter) {
+        return dataManager.getStoryTitles(gitlabAccessToken, filter);
     }
 
     @GetMapping("/statuses")

@@ -56,7 +56,7 @@ public class AuthController {
 
         } else {
             log.info("No oauth response returned");
-            return ResponseEntity.ok("OAuthResponse not returned, no");
+            return ResponseEntity.ok("OAuthResponse not returned");
         }
     }
 
