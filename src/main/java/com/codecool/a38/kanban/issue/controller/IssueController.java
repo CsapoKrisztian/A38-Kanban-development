@@ -8,6 +8,7 @@ import com.codecool.a38.kanban.issue.service.DataManager;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -23,7 +24,7 @@ public class IssueController {
         return dataManager.getAssigneeIssuesList(filter);
     }
 
-    @GetMapping("/issues/orderByStory")
+    @PostMapping("/issues/orderByStory")
     public List<StoryIssues> getStoryIssuesList(@RequestBody Filter filter) {
         return dataManager.getStoryIssuesList(filter);
     }
