@@ -8,7 +8,6 @@ import com.codecool.a38.kanban.issue.service.DataManager;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -47,11 +46,6 @@ public class IssueController {
     @GetMapping("/statuses")
     public Set<String> getStatusTitles() {
         return DataManager.getStatusTitles();
-    }
-
-    @PostMapping("/issues/{issueId}/changeStatus")
-    public String changeStatus(@PathVariable String issueId, @RequestParam String newStatus) {
-        return dataManager.changeStatus(issueId, newStatus);
     }
 
 }

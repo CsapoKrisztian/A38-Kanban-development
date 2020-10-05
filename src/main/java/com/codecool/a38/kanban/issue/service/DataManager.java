@@ -181,13 +181,4 @@ public class DataManager {
         return stories;
     }
 
-    public String changeStatus(String issueId, String newStatus) {
-//        String projectFullpath;
-//        String issueIid;
-//
-//        String oldLabelId;
-//        String newLabelId;
-        return null;
-    }
-
 }
