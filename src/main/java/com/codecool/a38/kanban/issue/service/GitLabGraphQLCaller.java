@@ -85,31 +85,15 @@ public class GitLabGraphQLCaller {
         return responseEntity.getBody();
     }
 
-    public MilestonesResponse getMilestonesResponse() {
+    public ProjectsResponse getProjectsResponse(Set<String> projectIds) {
+        String start = "[\\\"";
+        String delimiter = "\\\", \\\"";
+        String end = "\\\"]";
+
+        String formattedProjectIds = start + String.join(delimiter, projectIds) + end;
+
         String query = "{\"query\":\"{\\n" +
-                "  projects {\\n" +
-                "    nodes {\\n" +
-                "      milestones {\\n" +
-                "        nodes {\\n" +
-                "          id\\n" +
-                "          title\\n" +
-                "        }\\n" +
-                "      }\\n" +
-                "    }\\n" +
-                "  }\\n" +
-                "}\\n" +
-                "\",\"variables\":{}}";
-
-        ResponseEntity<MilestonesResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, HEADERS), MilestonesResponse.class);
-
-        log.info("Get milestones response");
-        return responseEntity.getBody();
-    }
-
-    public ProjectsResponse getProjectsResponse() {
-        String query = "{\"query\":\"{\\n" +
-                "  projects {\\n" +
+                "  projects(ids:" + formattedProjectIds + ") {\\n" +
                 "    nodes {\\n" +
                 "      id\\n" +
                 "      name\\n" +
@@ -126,6 +110,34 @@ public class GitLabGraphQLCaller {
                 URL, new HttpEntity<>(query, HEADERS), ProjectsResponse.class);
 
         log.info("Get projects response");
+        return responseEntity.getBody();
+    }
+
+    public MilestonesResponse getMilestonesResponse(Set<String> projectIds) {
+        String start = "[\\\"";
+        String delimiter = "\\\", \\\"";
+        String end = "\\\"]";
+
+        String formattedProjectIds = start + String.join(delimiter, projectIds) + end;
+
+        String query = "{\"query\":\"{\\n" +
+                "  projects(ids:" + formattedProjectIds + ") {\\n" +
+                "    nodes {\\n" +
+                "      milestones {\\n" +
+                "        nodes {\\n" +
+                "          id\\n" +
+                "          title\\n" +
+                "        }\\n" +
+                "      }\\n" +
+                "    }\\n" +
+                "  }\\n" +
+                "}\\n" +
+                "\",\"variables\":{}}";
+
+        ResponseEntity<MilestonesResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, HEADERS), MilestonesResponse.class);
+
+        log.info("Get milestones response");
         return responseEntity.getBody();
     }
 
