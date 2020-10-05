@@ -19,27 +19,31 @@ public class IssueController {
     private DataManager dataManager;
 
     @GetMapping("/issues/orderByAssignee")
-    public List<AssigneeIssues> getAssigneeIssuesList(@CookieValue String gitlabAccessToken, @RequestBody Filter filter) {
+    public List<AssigneeIssues> getAssigneeIssuesList(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                                                      @RequestBody Filter filter) {
         return dataManager.getAssigneeIssuesList(gitlabAccessToken, filter);
     }
 
     @PostMapping("/issues/orderByStory")
-    public List<StoryIssues> getStoryIssuesList(@CookieValue String gitlabAccessToken, @RequestBody Filter filter) {
+    public List<StoryIssues> getStoryIssuesList(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                                                @RequestBody Filter filter) {
         return dataManager.getStoryIssuesList(gitlabAccessToken, filter);
     }
 
     @GetMapping("/projects")
-    public Set<Project> getProjects(@CookieValue String gitlabAccessToken) {
+    public Set<Project> getProjects(@CookieValue(defaultValue = "default") String gitlabAccessToken) {
         return dataManager.getProjects(gitlabAccessToken);
     }
 
     @GetMapping("/milestones")
-    public Set<String> getMilestoneTitles(@CookieValue String gitlabAccessToken, @RequestBody Filter filter) {
+    public Set<String> getMilestoneTitles(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                                          @RequestBody Filter filter) {
         return dataManager.getMilestoneTitles(gitlabAccessToken, filter);
     }
 
     @GetMapping("/stories")
-    public Set<String> getStoryTitles(@CookieValue String gitlabAccessToken, @RequestBody Filter filter) {
+    public Set<String> getStoryTitles(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                                      @RequestBody Filter filter) {
         return dataManager.getStoryTitles(gitlabAccessToken, filter);
     }
 
