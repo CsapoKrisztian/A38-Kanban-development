@@ -18,7 +18,6 @@ import java.util.Set;
 public class GitLabGraphQLCaller {
 
     private static final String URL = "https://gitlab.techpm.guru/api/graphql";
-
     private static final String TOKEN = "JbHJ7hUuBpS3syCQn748";
 
     private static final HttpHeaders HEADERS = new HttpHeaders() {{
@@ -32,13 +31,13 @@ public class GitLabGraphQLCaller {
         this.restTemplate = restTemplate;
     }
 
+    private static final String start = "[\\\"";
+    private static final String delimiter = "\\\", \\\"";
+    private static final String end = "\\\"]";
+
     public ProjectsIssuesResponse getProjectsIssuesResponse(Set<String> projectIds, Set<String> milestoneTitles) {
-        String start = "[\\\"";
-        String delimiter = "\\\", \\\"";
-        String end = "\\\"]";
         String formattedProjectIds = start + String.join(delimiter, projectIds) + end;
         String formattedMilestoneTitles = start + String.join(delimiter, milestoneTitles) + end;
-
         String query = "{\"query\":\"{\\n" +
                 "projects(ids:" + formattedProjectIds + ") {\\n" +
                 "    nodes {\\n" +
@@ -107,11 +106,7 @@ public class GitLabGraphQLCaller {
     }
 
     public MilestonesResponse getMilestonesResponse(Set<String> projectIds) {
-        String start = "[\\\"";
-        String delimiter = "\\\", \\\"";
-        String end = "\\\"]";
         String formattedProjectIds = start + String.join(delimiter, projectIds) + end;
-
         String query = "{\"query\":\"{\\n" +
                 "  projects(ids:" + formattedProjectIds + ") {\\n" +
                 "    nodes {\\n" +
@@ -134,11 +129,7 @@ public class GitLabGraphQLCaller {
     }
 
     public StoriesResponse getStoriesResponse(Set<String> projectIds) {
-        String start = "[\\\"";
-        String delimiter = "\\\", \\\"";
-        String end = "\\\"]";
         String formattedProjectIds = start + String.join(delimiter, projectIds) + end;
-
         String query = "{\"query\":\"{\\n" +
                 "  projects(ids:" + formattedProjectIds + ") {\\n" +
                 "    nodes {\\n" +
