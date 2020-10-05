@@ -46,11 +46,12 @@ public class AuthController {
 
             Cookie cookie = new Cookie("gitlabAccessToken", gitlabAccessToken);
             cookie.setMaxAge(60 * 60 * 24);
-            cookie.setHttpOnly(true);
+//            cookie.setHttpOnly(true);
             cookie.setPath("/");
             response.addCookie(cookie);
 
             response.addHeader("Access-Control-Allow-Credentials", "true");
+            response.addHeader("Access-Control-Allow-Origin", "http://localhost:3000");
 
             return ResponseEntity.ok("accessToken saved in cookie: " + gitlabAccessToken);
 

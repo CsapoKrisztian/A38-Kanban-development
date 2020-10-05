@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -82,7 +81,7 @@ public class GitLabGraphQLCaller {
         ResponseEntity<ProjectsIssuesResponse> responseEntity = restTemplate.postForEntity(
                 URL, new HttpEntity<>(query, HEADERS), ProjectsIssuesResponse.class);
 
-        log.info("Get ProjectsIssuesResponse");
+        log.info("Get projects issues response");
         return responseEntity.getBody();
     }
 
@@ -104,7 +103,7 @@ public class GitLabGraphQLCaller {
         ResponseEntity<MilestonesResponse> responseEntity = restTemplate.postForEntity(
                 URL, new HttpEntity<>(query, HEADERS), MilestonesResponse.class);
 
-        log.info("Get MilestonesResponse");
+        log.info("Get milestones response");
         return responseEntity.getBody();
     }
 
@@ -126,7 +125,7 @@ public class GitLabGraphQLCaller {
         ResponseEntity<ProjectsResponse> responseEntity = restTemplate.postForEntity(
                 URL, new HttpEntity<>(query, HEADERS), ProjectsResponse.class);
 
-        log.info("Get ProjectsResponse");
+        log.info("Get projects response");
         return responseEntity.getBody();
     }
 
@@ -149,7 +148,7 @@ public class GitLabGraphQLCaller {
         ResponseEntity<StoriesResponse> responseEntity = restTemplate.postForEntity(
                 URL, new HttpEntity<>(query, HEADERS), StoriesResponse.class);
 
-        log.info("Get StoriesResponse");
+        log.info("Get stories response");
         return responseEntity.getBody();
     }
 
