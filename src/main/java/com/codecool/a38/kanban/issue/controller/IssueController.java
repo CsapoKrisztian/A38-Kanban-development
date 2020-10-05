@@ -25,12 +25,7 @@ public class IssueController {
     }
 
     @PostMapping("/issues/orderByStory")
-    public List<StoryIssues> getStoryIssuesList(@RequestBody Filter filter,
-                                                @CookieValue(value = "gitlabAccessToken", defaultValue = "defaultValue")
-                                                        String gitlabAccessToken,
-                                                HttpServletRequest request) {
-        System.out.println("cookie gitlabAccessToken: " + gitlabAccessToken);
-
+    public List<StoryIssues> getStoryIssuesList(@RequestBody Filter filter) {
         return dataManager.getStoryIssuesList(filter);
     }
 
