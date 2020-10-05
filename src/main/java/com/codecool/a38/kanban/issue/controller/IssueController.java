@@ -1,56 +1,57 @@
 package com.codecool.a38.kanban.issue.controller;
 
-import com.codecool.a38.kanban.issue.dao.IssueDao;
-import com.codecool.a38.kanban.issue.model.*;
-import com.codecool.a38.kanban.issue.model.transfer.AssigneesIssues;
-import com.codecool.a38.kanban.issue.model.transfer.StoriesIssues;
+import com.codecool.a38.kanban.issue.model.Project;
+import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
+import com.codecool.a38.kanban.issue.model.transfer.Filter;
+import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
+import com.codecool.a38.kanban.issue.service.DataManager;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @AllArgsConstructor
 public class IssueController {
 
-    private IssueDao issueDao;
+    private DataManager dataManager;
 
-    @GetMapping("/projects")
-    public List<Project> getProjects() {
-        return issueDao.getProjects();
+    @GetMapping("/issues/orderByAssignee")
+    public List<AssigneeIssues> getAssigneeIssuesList(@RequestBody Filter filter) {
+        return dataManager.getAssigneeIssuesList(filter);
     }
 
-    @GetMapping("/mileStones")
-    public List<MileStone> getMilestones() {
-        return issueDao.getMilestones();
+    @PostMapping("/issues/orderByStory")
+    public List<StoryIssues> getStoryIssuesList(@RequestBody Filter filter) {
+        return dataManager.getStoryIssuesList(filter);
+    }
+
+    @GetMapping("/projects")
+    public Set<Project> getProjects() {
+        return dataManager.getProjects();
+    }
+
+    @GetMapping("/milestones")
+    public Set<String> getMilestoneTitles() {
+        return dataManager.getMilestoneTitles();
     }
 
     @GetMapping("/stories")
-    public List<Story> getStories() {
-        return issueDao.getStories();
+    public Set<String> getStoryTitles() {
+        return dataManager.getStoryTitles();
     }
 
     @GetMapping("/statuses")
-    public List<String> getStatuses() {
-        return issueDao.getStatuses();
+    public Set<String> getStatusTitles() {
+        return DataManager.getStatusTitles();
     }
 
-    @GetMapping("/issues/orderByAssignee")
-    public List<AssigneesIssues> getIssuesOrderedByAssignee() {
-        return issueDao.getIssuesOrderedByAssignee();
-    }
-
-    @GetMapping("/issues/orderByStory")
-    public List<StoriesIssues> getIssuesOrderedByStory() {
-        return issueDao.getIssuesOrderedByStory();
-    }
-
-    @GetMapping("/issues")
-    public List<Issue> getIssues() {
-        return issueDao.getAll();
+    @PostMapping("/issues/{issueId}/changeStatus")
+    public String changeStatus(@PathVariable String issueId, @RequestParam String newStatus) {
+        return dataManager.changeStatus(issueId, newStatus);
     }
 
 }

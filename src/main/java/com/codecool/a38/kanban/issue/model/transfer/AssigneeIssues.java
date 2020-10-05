@@ -1,7 +1,7 @@
 package com.codecool.a38.kanban.issue.model.transfer;
 
-import com.codecool.a38.kanban.issue.model.Assignee;
 import com.codecool.a38.kanban.issue.model.Issue;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,9 +13,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AssigneesIssues {
+public class AssigneeIssues {
 
-    private Assignee assignee;
+    private User assignee;
 
     private List<Issue> issues;
 
