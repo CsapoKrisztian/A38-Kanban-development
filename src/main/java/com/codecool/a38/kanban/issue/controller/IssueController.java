@@ -52,4 +52,21 @@ public class IssueController {
         return DataManager.getStatusTitles();
     }
 
+    @PostMapping("/update")
+    public void updateIssue(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                            @RequestBody String path,
+                            @RequestBody int id,
+                            @RequestBody int removableLabelId,
+                            @RequestBody int newLabelId) {
+        dataManager.updateIssue(gitlabAccessToken, path, id, removableLabelId, newLabelId);
+    }
+
+    @GetMapping("/newAssignee")
+    public void changeAssignee(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                               @RequestBody String assignee,
+                               @RequestBody String path,
+                               @RequestBody int issueID) {
+        dataManager.changeAssignee(gitlabAccessToken, assignee, path, issueID);
+    }
+
 }

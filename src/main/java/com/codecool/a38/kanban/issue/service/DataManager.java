@@ -1,7 +1,11 @@
 package com.codecool.a38.kanban.issue.service;
 
-import com.codecool.a38.kanban.issue.model.*;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.*;
+import com.codecool.a38.kanban.issue.model.Issue;
+import com.codecool.a38.kanban.issue.model.Project;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.IssueNode;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.Label;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.ProjectNode;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.User;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
 import com.codecool.a38.kanban.issue.model.transfer.Filter;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
@@ -184,6 +188,14 @@ public class DataManager {
                         .forEach(label -> storyTitles.add(label.getTitle().substring(storyPrefix.length()))));
         log.info("Get story titles");
         return storyTitles;
+    }
+
+    public void updateIssue(String token, String path, int id, int removeableLabelId, int newLabelId) {
+        gitLabGraphQLCaller.updateIssue(token, path, id, removeableLabelId, newLabelId);
+    }
+
+    public void changeAssignee(String token, String assignee, String path, int issueID) {
+        gitLabGraphQLCaller.changeAssignee(token, assignee, path, issueID);
     }
 
 }

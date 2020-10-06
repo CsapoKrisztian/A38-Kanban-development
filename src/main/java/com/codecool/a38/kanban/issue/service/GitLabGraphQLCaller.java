@@ -149,4 +149,35 @@ public class GitLabGraphQLCaller {
         }};
     }
 
+    public void updateIssue(String token, String path, int id, int removableLabelId, int newLabelId) {
+        String query = "mutation {\n" +
+                "  updateIssue(input: {projectPath:\"" + path + "\", iid:\"" + id + "\", addLabelIds: " + newLabelId + ", removeLabelIds:" + removableLabelId + "})    {\n" +
+                "      issue{\n" +
+                "          labels{\n" +
+                "              nodes{\n" +
+                "              title\n" +
+                "            }\n" +
+                "          }\n" +
+                "      }\n" +
+                "  }\n" +
+                "}";
+
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), String.class);
+        log.info(responseEntity.getBody());
+    }
+
+    public void changeAssignee(String token, String assignee, String path, int issueID) {
+        String query = "mutation {\n" +
+                "issueSetAssignees(input: {assigneeUsernames: \"" + assignee + "\", projectPath:\"" + path + "\", iid:\"" + issueID + "\"}){\n" +
+                " issue{\n" +
+                "title" +
+                "}\n" +
+                "}\n" +
+                "}";
+
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), String.class);
+        log.info(responseEntity.toString());
+    }
 }
