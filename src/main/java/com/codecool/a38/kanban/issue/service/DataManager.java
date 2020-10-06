@@ -121,4 +121,8 @@ public class DataManager {
         return gitLabGraphQLCaller.getProjectData();
     }
 
+    public void createThousandsOfIssues(String path, String title) {
+        gitLabGraphQLCaller.createThousandIssues(path, title);
+    }
+
 }
