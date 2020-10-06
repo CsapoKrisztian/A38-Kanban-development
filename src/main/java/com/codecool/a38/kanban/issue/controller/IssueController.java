@@ -1,56 +1,55 @@
 package com.codecool.a38.kanban.issue.controller;
 
-import com.codecool.a38.kanban.issue.dao.IssueDao;
-import com.codecool.a38.kanban.issue.model.*;
-import com.codecool.a38.kanban.issue.model.transfer.AssigneesIssues;
-import com.codecool.a38.kanban.issue.model.transfer.StoriesIssues;
+import com.codecool.a38.kanban.issue.model.Project;
+import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
+import com.codecool.a38.kanban.issue.model.transfer.Filter;
+import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
+import com.codecool.a38.kanban.issue.service.DataManager;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @AllArgsConstructor
 public class IssueController {
 
-    private IssueDao issueDao;
+    private DataManager dataManager;
+
+    @PostMapping("/issues/orderByAssignee")
+    public List<AssigneeIssues> getAssigneeIssuesList(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                                                      @RequestBody Filter filter) {
+        return dataManager.getAssigneeIssuesList(gitlabAccessToken, filter);
+    }
+
+    @PostMapping("/issues/orderByStory")
+    public List<StoryIssues> getStoryIssuesList(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                                                @RequestBody Filter filter) {
+        return dataManager.getStoryIssuesList(gitlabAccessToken, filter);
+    }
 
     @GetMapping("/projects")
-    public List<Project> getProjects() {
-        return issueDao.getProjects();
+    public Set<Project> getProjects(@CookieValue(defaultValue = "default") String gitlabAccessToken) {
+        return dataManager.getProjects(gitlabAccessToken);
     }
 
-    @GetMapping("/mileStones")
-    public List<MileStone> getMilestones() {
-        return issueDao.getMilestones();
+    @PostMapping("/milestones")
+    public Set<String> getMilestoneTitles(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                                          @RequestBody Filter filter) {
+        return dataManager.getMilestoneTitles(gitlabAccessToken, filter);
     }
 
-    @GetMapping("/stories")
-    public List<Story> getStories() {
-        return issueDao.getStories();
+    @PostMapping("/stories")
+    public Set<String> getStoryTitles(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                                      @RequestBody Filter filter) {
+        return dataManager.getStoryTitles(gitlabAccessToken, filter);
     }
 
     @GetMapping("/statuses")
-    public List<String> getStatuses() {
-        return issueDao.getStatuses();
-    }
-
-    @GetMapping("/issues/orderByAssignee")
-    public List<AssigneesIssues> getIssuesOrderedByAssignee() {
-        return issueDao.getIssuesOrderedByAssignee();
-    }
-
-    @GetMapping("/issues/orderByStory")
-    public List<StoriesIssues> getIssuesOrderedByStory() {
-        return issueDao.getIssuesOrderedByStory();
-    }
-
-    @GetMapping("/issues")
-    public List<Issue> getIssues() {
-        return issueDao.getAll();
+    public List<String> getStatusTitles() {
+        return DataManager.getStatusTitles();
     }
 
 }

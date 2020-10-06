@@ -1,27 +1,22 @@
 package com.codecool.a38.kanban.issue.model;
 
-import lombok.AllArgsConstructor;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.User;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.Label;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.Milestone;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-
-@Entity
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class Issue {
 
-    @Id
-    private String issueId;
+    private String id;
 
     private String title;
 
     private String description;
 
-    private String issueUrl;
+    private String webUrl;
 
     private String dueDate;
 
@@ -29,22 +24,19 @@ public class Issue {
 
     private String reference;
 
-    @ManyToOne(cascade = {CascadeType.MERGE})
-    private Priority priority;
 
-    @ManyToOne(cascade = {CascadeType.MERGE})
-    private Status status;
+    private User assignee;
 
-    @ManyToOne(cascade = {CascadeType.MERGE})
-    private Story story;
+    private Milestone mileStone;
 
-    @ManyToOne(cascade = {CascadeType.MERGE})
+
+    private Label story;
+
+    private Label status;
+
+    private Label priority;
+
+
     private Project project;
-
-    @ManyToOne(cascade = {CascadeType.MERGE})
-    private MileStone mileStone;
-
-    @ManyToOne(cascade = {CascadeType.MERGE})
-    private Assignee assignee;
 
 }
