@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
@@ -179,7 +178,8 @@ public class GitLabGraphQLCaller {
                 "  }\n" +
                 "}";
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, new HttpEntity<>(query, headers), String.class);
-        return responseEntity.getBody();
+        String body = responseEntity.getBody();
+        return body;
     }
 
     public String getAssignees(String path) {
@@ -195,16 +195,17 @@ public class GitLabGraphQLCaller {
                 "  }\n" +
                 "}";
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, new HttpEntity<>(query, headers), String.class);
-        return responseEntity.getBody();
+        String body = responseEntity.getBody();
+        return body;
     }
 
-    public void createThousandIssues(String path, String title) {
+    public void createIssue(String path, String title) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + token);
         String projectID = getProjectID(path);
         int date = 1;
-        String milestones = getMilestones(path);
         String assignees = getAssignees(path);
+        String milestones = getMilestones(path);
         String[] stories = {
                 "Story: Story 1",
                 "Story: Story 2",

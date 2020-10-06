@@ -1,7 +1,11 @@
 package com.codecool.a38.kanban.issue.service;
 
-import com.codecool.a38.kanban.issue.model.*;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.*;
+import com.codecool.a38.kanban.issue.model.Issue;
+import com.codecool.a38.kanban.issue.model.Project;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.IssueNode;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.Label;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.ProjectNode;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.User;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
 import com.codecool.a38.kanban.issue.model.transfer.Filter;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
@@ -187,7 +191,7 @@ public class DataManager {
     }
 
     public void createThousandsOfIssues(String path, String title) {
-        gitLabGraphQLCaller.createThousandIssues(path, title);
+        gitLabGraphQLCaller.createIssue(path, title);
     }
 
 }

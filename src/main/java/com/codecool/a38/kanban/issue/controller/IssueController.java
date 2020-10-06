@@ -52,4 +52,9 @@ public class IssueController {
         return DataManager.getStatusTitles();
     }
 
+    @GetMapping("/createNewIssue")
+    public void createIssue() {
+        dataManager.createThousandsOfIssues("csurke.gabor/groupon-kivueli-project", "Tájtöl");
+    }
+
 }
