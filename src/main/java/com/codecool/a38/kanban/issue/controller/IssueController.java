@@ -12,35 +12,39 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @AllArgsConstructor
 public class IssueController {
 
     private DataManager dataManager;
 
     @GetMapping("/issues/orderByAssignee")
-    public List<AssigneeIssues> getAssigneeIssuesList(@RequestBody Filter filter) {
-        return dataManager.getAssigneeIssuesList(filter);
+    public List<AssigneeIssues> getAssigneeIssuesList(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                                                      @RequestBody Filter filter) {
+        return dataManager.getAssigneeIssuesList(gitlabAccessToken, filter);
     }
 
     @PostMapping("/issues/orderByStory")
-    public List<StoryIssues> getStoryIssuesList(@RequestBody Filter filter) {
-        return dataManager.getStoryIssuesList(filter);
+    public List<StoryIssues> getStoryIssuesList(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                                                @RequestBody Filter filter) {
+        return dataManager.getStoryIssuesList(gitlabAccessToken, filter);
     }
 
     @GetMapping("/projects")
-    public Set<Project> getProjects() {
-        return dataManager.getProjects();
+    public Set<Project> getProjects(@CookieValue(defaultValue = "default") String gitlabAccessToken) {
+        return dataManager.getProjects(gitlabAccessToken);
     }
 
     @GetMapping("/milestones")
-    public Set<String> getMilestoneTitles() {
-        return dataManager.getMilestoneTitles();
+    public Set<String> getMilestoneTitles(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                                          @RequestBody Filter filter) {
+        return dataManager.getMilestoneTitles(gitlabAccessToken, filter);
     }
 
     @GetMapping("/stories")
-    public Set<String> getStoryTitles() {
-        return dataManager.getStoryTitles();
+    public Set<String> getStoryTitles(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                                      @RequestBody Filter filter) {
+        return dataManager.getStoryTitles(gitlabAccessToken, filter);
     }
 
     @GetMapping("/statuses")
