@@ -18,7 +18,7 @@ public class IssueController {
 
     private DataManager dataManager;
 
-    @GetMapping("/issues/orderByAssignee")
+    @PostMapping("/issues/orderByAssignee")
     public List<AssigneeIssues> getAssigneeIssuesList(@CookieValue(defaultValue = "default") String gitlabAccessToken,
                                                       @RequestBody Filter filter) {
         return dataManager.getAssigneeIssuesList(gitlabAccessToken, filter);
@@ -35,13 +35,13 @@ public class IssueController {
         return dataManager.getProjects(gitlabAccessToken);
     }
 
-    @GetMapping("/milestones")
+    @PostMapping("/milestones")
     public Set<String> getMilestoneTitles(@CookieValue(defaultValue = "default") String gitlabAccessToken,
                                           @RequestBody Filter filter) {
         return dataManager.getMilestoneTitles(gitlabAccessToken, filter);
     }
 
-    @GetMapping("/stories")
+    @PostMapping("/stories")
     public Set<String> getStoryTitles(@CookieValue(defaultValue = "default") String gitlabAccessToken,
                                       @RequestBody Filter filter) {
         return dataManager.getStoryTitles(gitlabAccessToken, filter);
