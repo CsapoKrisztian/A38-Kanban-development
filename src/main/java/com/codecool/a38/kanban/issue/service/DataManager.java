@@ -108,6 +108,53 @@ public class DataManager {
                 .collect(Collectors.toList());
     }
 
+    public List<AssigneeIssues> getAssigneeIssuesList(String token, Filter filter) {
+        if (filter.getProjectFullPaths() == null || filter.getMilestoneTitles() == null
+                || filter.getStoryTitles() == null) return null;
+
+        Map<User, List<Issue>> assigneeIssuesMap = new HashMap<>();
+
+        filter.getProjectFullPaths().forEach(projectFullPath -> {
+            String endCursor = GitLabGraphQLCaller.getStartPagination();
+            boolean hasNextPage;
+            do {
+                ProjectNode projectNode = gitLabGraphQLCaller.getSingleProjectIssuesResponse(token, projectFullPath,
+                        filter.getMilestoneTitles(), endCursor)
+                        .getData().getProject();
+
+                Project thisProject = createProjectFromProjectNode(projectNode);
+
+                Issues currentIssues = projectNode.getIssues();
+                currentIssues.getNodes()
+                        .forEach((issueNode) -> {
+                            Issue issue = createIssueFromIssueNode(issueNode);
+                            issue.setProject(thisProject);
+
+                            if (issue.getStatus() != null && issue.getStory() != null
+                                    && filter.getStoryTitles().contains(issue.getStory().getTitle())) {
+                                User assignee = issue.getAssignee();
+                                if (!assigneeIssuesMap.containsKey(assignee)) {
+                                    assigneeIssuesMap.put(assignee, new ArrayList<>());
+                                }
+                                assigneeIssuesMap.get(assignee).add(issue);
+                            }
+                        });
+
+                PageInfo pageInfo = currentIssues.getPageInfo();
+                endCursor = pageInfo.getEndCursor();
+                hasNextPage = pageInfo.isHasNextPage();
+            } while (hasNextPage);
+        });
+
+        log.info("Get assignee issues list");
+        return assigneeIssuesMap.entrySet().stream()
+                .map(e -> AssigneeIssues.builder()
+                        .assignee(e.getKey())
+                        .issues(e.getValue())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
     private Project createProjectFromProjectNode(ProjectNode projectNode) {
         return Project.builder()
                 .id(projectNode.getId())
