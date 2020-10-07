@@ -21,13 +21,13 @@ public class IssueController {
     @PostMapping("/issues/orderByAssignee")
     public List<AssigneeIssues> getAssigneeIssuesList(@CookieValue(defaultValue = "default") String gitlabAccessToken,
                                                       @RequestBody Filter filter) {
-        return dataManager.getAssigneeIssuesListMax100IssuesPerProject(gitlabAccessToken, filter);
+        return dataManager.getAssigneeIssuesList(gitlabAccessToken, filter);
     }
 
     @PostMapping("/issues/orderByStory")
     public List<StoryIssues> getStoryIssuesList(@CookieValue(defaultValue = "default") String gitlabAccessToken,
                                                 @RequestBody Filter filter) {
-        return dataManager.getStoryIssuesListMax100IssuesPerProject(gitlabAccessToken, filter);
+        return dataManager.getStoryIssuesList(gitlabAccessToken, filter);
     }
 
     @GetMapping("/projects")
