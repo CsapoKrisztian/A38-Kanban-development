@@ -206,7 +206,7 @@ public class DataManager {
         }
 
         int removableLabelID = Integer.parseInt(currentStatus.replaceAll("([A-z /]).", ""));
-        log.info("cvbnm,.");
+
         gitLabGraphQLCaller.updateIssue(token, path, issuesIID, removableLabelID, newLabelID);
     }
 
