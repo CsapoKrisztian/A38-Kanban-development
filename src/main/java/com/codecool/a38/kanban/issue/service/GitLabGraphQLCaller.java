@@ -138,7 +138,26 @@ public class GitLabGraphQLCaller {
         return responseEntity.getBody();
     }
 
-    public StoriesResponse getStoriesResponse(String token, Set<String> projectIds) {
+    public StoriesResponse getStoriesResponse(String token, Set<String> projectIds, String endCursor) {
+        String q = "{\"query\":\"{\\n" +
+                "  projects(ids:" + getFormattedString(projectIds) + getPagination(endCursor) + ") {\\n" +
+                "    nodes {\\n" +
+                "      labels(searchTerm: \\\"Story: \\\") {\\n" +
+                "        nodes {\\n" +
+                "          id\\n" +
+                "          title\\n" +
+                "          color\\n" +
+                "        }\\n" +
+                "      }\\n" +
+                "    }\\n" +
+                "    pageInfo {\\n" +
+                "      hasNextPage\\n" +
+                "      endCursor\\n" +
+                "    }\\n" +
+                "  }\\n" +
+                "}\\n" +
+                "\",\"variables\":{}}";
+
         String query = "{\"query\":\"{\\n" +
                 "  projects(ids:" + getFormattedString(projectIds) + ") {\\n" +
                 "    nodes {\\n" +

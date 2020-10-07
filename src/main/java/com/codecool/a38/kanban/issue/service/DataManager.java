@@ -185,7 +185,8 @@ public class DataManager {
         String endCursor = GitLabGraphQLCaller.getStartPagination();
         boolean hasNextPage;
         do {
-            Projects currentProjects = gitLabGraphQLCaller.getMilestonesResponse(token, filter.getProjectIds(), endCursor).getData().getProjects();
+            Projects currentProjects = gitLabGraphQLCaller.getMilestonesResponse(token, filter.getProjectIds(), endCursor)
+                    .getData().getProjects();
             currentProjects.getNodes()
                     .forEach(projectNode -> {
                         projectNode.getMilestones().getNodes()
@@ -208,9 +209,21 @@ public class DataManager {
 
     public Set<String> getStoryTitles(String token, Filter filter) {
         Set<String> storyTitles = new HashSet<>();
-        gitLabGraphQLCaller.getStoriesResponse(token, filter.getProjectIds()).getData().getProjects().getNodes()
-                .forEach(projectNode -> projectNode.getLabels().getNodes()
-                        .forEach(label -> storyTitles.add(label.getTitle().substring(storyPrefix.length()))));
+
+        String endCursor = GitLabGraphQLCaller.getStartPagination();
+        boolean hasNextPage;
+        do {
+            Projects currentProjects = gitLabGraphQLCaller.getStoriesResponse(token, filter.getProjectIds(), endCursor)
+                    .getData().getProjects();
+            currentProjects.getNodes()
+                    .forEach(projectNode -> projectNode.getLabels().getNodes()
+                            .forEach(label -> storyTitles.add(label.getTitle().substring(storyPrefix.length()))));
+
+            PageInfo pageInfo = currentProjects.getPageInfo();
+            endCursor = pageInfo.getEndCursor();
+            hasNextPage = pageInfo.isHasNextPage();
+        } while (hasNextPage);
+
         log.info("Get story titles");
         return storyTitles;
     }
