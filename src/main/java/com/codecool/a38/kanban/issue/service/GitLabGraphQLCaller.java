@@ -139,7 +139,7 @@ public class GitLabGraphQLCaller {
     }
 
     public StoriesResponse getStoriesResponse(String token, Set<String> projectIds, String endCursor) {
-        String q = "{\"query\":\"{\\n" +
+        String query = "{\"query\":\"{\\n" +
                 "  projects(ids:" + getFormattedString(projectIds) + getPagination(endCursor) + ") {\\n" +
                 "    nodes {\\n" +
                 "      labels(searchTerm: \\\"Story: \\\") {\\n" +
@@ -153,21 +153,6 @@ public class GitLabGraphQLCaller {
                 "    pageInfo {\\n" +
                 "      hasNextPage\\n" +
                 "      endCursor\\n" +
-                "    }\\n" +
-                "  }\\n" +
-                "}\\n" +
-                "\",\"variables\":{}}";
-
-        String query = "{\"query\":\"{\\n" +
-                "  projects(ids:" + getFormattedString(projectIds) + ") {\\n" +
-                "    nodes {\\n" +
-                "      labels(searchTerm: \\\"Story: \\\") {\\n" +
-                "        nodes {\\n" +
-                "          id\\n" +
-                "          title\\n" +
-                "          color\\n" +
-                "        }\\n" +
-                "      }\\n" +
                 "    }\\n" +
                 "  }\\n" +
                 "}\\n" +
