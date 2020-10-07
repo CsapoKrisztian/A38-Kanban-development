@@ -73,7 +73,7 @@ public class GitLabGraphQLCaller {
 
     public ProjectsResponse getProjectsResponse(String token) {
         String query = "{\"query\":\"{\\n" +
-                "  projects {\\n" +
+                "  projects(after: \\\"eyJpZCI6IjUifQ\\\") {\\n" +
                 "    nodes {\\n" +
                 "      id\\n" +
                 "      name\\n" +
@@ -81,6 +81,10 @@ public class GitLabGraphQLCaller {
                 "        id\\n" +
                 "        name\\n" +
                 "      }\\n" +
+                "    }\\n" +
+                "    pageInfo {\\n" +
+                "      hasNextPage\\n" +
+                "      endCursor\\n" +
                 "    }\\n" +
                 "  }\\n" +
                 "}\\n" +

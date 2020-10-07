@@ -10,4 +10,7 @@ public class Projects {
     @JsonProperty("nodes")
     private List<ProjectNode> nodes;
 
+    @JsonProperty("pageInfo")
+    private PageInfo pageInfo;
+
 }
