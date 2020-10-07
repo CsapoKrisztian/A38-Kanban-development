@@ -4,8 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class MilestonesResponse{
+public class MilestonesResponse {
 
-	@JsonProperty("data")
-	private MileStonesData data;
+    @JsonProperty("data")
+    private MileStonesData data;
+
 }

@@ -96,15 +96,26 @@ public class GitLabGraphQLCaller {
         String query = "{\"query\":\"{\\n" +
                 "  projects(ids:" + getFormattedString(projectIds) + ") {\\n" +
                 "    nodes {\\n" +
+                "      id\\n" +
+                "      name\\n" +
                 "      milestones {\\n" +
                 "        nodes {\\n" +
                 "          id\\n" +
                 "          title\\n" +
                 "        }\\n" +
                 "      }\\n" +
+                "      group {\\n" +
+                "        milestones {\\n" +
+                "          nodes {\\n" +
+                "            id\\n" +
+                "            title\\n" +
+                "          }\\n" +
+                "        }\\n" +
+                "      }\\n" +
                 "    }\\n" +
                 "  }\\n" +
                 "}\\n" +
+                "\\n" +
                 "\",\"variables\":{}}";
 
         ResponseEntity<MilestonesResponse> responseEntity = restTemplate.postForEntity(

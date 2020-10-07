@@ -12,4 +12,7 @@ public class Group {
     @JsonProperty("name")
     private String name;
 
+    @JsonProperty("milestones")
+    private Milestones milestones;
+
 }
