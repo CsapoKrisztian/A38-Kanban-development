@@ -78,7 +78,7 @@ public class GitLabGraphQLCaller {
     }
 
     public ProjectsResponse getProjectsResponse(String token, String endCursor) {
-        String pagination = !endCursor.equals(startPagination) ? "(after: \\\"" + endCursor + "\\\")" : "";
+        String pagination = "(" + getPagination(endCursor) + ")";
         String query = "{\"query\":\"{\\n" +
                 "  projects" + pagination + " {\\n" +
                 "    nodes {\\n" +
@@ -103,9 +103,9 @@ public class GitLabGraphQLCaller {
         return responseEntity.getBody();
     }
 
-    public MilestonesResponse getMilestonesResponse(String token, Set<String> projectIds) {
+    public MilestonesResponse getMilestonesResponse(String token, Set<String> projectIds, String endCursor) {
         String query = "{\"query\":\"{\\n" +
-                "  projects(ids:" + getFormattedString(projectIds) + ") {\\n" +
+                "  projects(ids:" + getFormattedString(projectIds) + getPagination(endCursor) + ") {\\n" +
                 "    nodes {\\n" +
                 "      id\\n" +
                 "      name\\n" +
@@ -124,9 +124,12 @@ public class GitLabGraphQLCaller {
                 "        }\\n" +
                 "      }\\n" +
                 "    }\\n" +
+                "    pageInfo {\\n" +
+                "      hasNextPage\\n" +
+                "      endCursor\\n" +
+                "    }\\n" +
                 "  }\\n" +
                 "}\\n" +
-                "\\n" +
                 "\",\"variables\":{}}";
 
         ResponseEntity<MilestonesResponse> responseEntity = restTemplate.postForEntity(
@@ -155,6 +158,10 @@ public class GitLabGraphQLCaller {
                 URL, new HttpEntity<>(query, getHeaders(token)), StoriesResponse.class);
         log.info("Get stories response");
         return responseEntity.getBody();
+    }
+
+    private String getPagination(String endCursor) {
+        return !endCursor.equals(startPagination) ? "after: \\\"" + endCursor + "\\\"" : "";
     }
 
     private String getFormattedString(Set<String> strings) {

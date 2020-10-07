@@ -181,16 +181,27 @@ public class DataManager {
 
     public Set<String> getMilestoneTitles(String token, Filter filter) {
         Set<String> milestoneTitles = new HashSet<>();
-        gitLabGraphQLCaller.getMilestonesResponse(token, filter.getProjectIds()).getData().getProjects().getNodes()
-                .forEach(projectNode -> {
-                    projectNode.getMilestones().getNodes()
-                            .forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
 
-                    if (projectNode.getGroup() != null) {
-                        projectNode.getGroup().getMilestones().getNodes()
+        String endCursor = GitLabGraphQLCaller.getStartPagination();
+        boolean hasNextPage;
+        do {
+            Projects currentProjects = gitLabGraphQLCaller.getMilestonesResponse(token, filter.getProjectIds(), endCursor).getData().getProjects();
+            currentProjects.getNodes()
+                    .forEach(projectNode -> {
+                        projectNode.getMilestones().getNodes()
                                 .forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
-                    }
-                });
+
+                        if (projectNode.getGroup() != null) {
+                            projectNode.getGroup().getMilestones().getNodes()
+                                    .forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
+                        }
+                    });
+
+            PageInfo pageInfo = currentProjects.getPageInfo();
+            endCursor = pageInfo.getEndCursor();
+            hasNextPage = pageInfo.isHasNextPage();
+        } while (hasNextPage);
+
         log.info("Get milestone titles");
         return milestoneTitles;
     }
