@@ -155,6 +155,53 @@ public class DataManager {
                 .collect(Collectors.toList());
     }
 
+    public List<StoryIssues> getStoryIssuesList(String token, Filter filter) {
+        if (filter.getProjectFullPaths() == null || filter.getMilestoneTitles() == null
+                || filter.getStoryTitles() == null) return null;
+
+        Map<Label, List<Issue>> storyIssuesMap = new HashMap<>();
+
+        filter.getProjectFullPaths().forEach(projectFullPath -> {
+            String endCursor = GitLabGraphQLCaller.getStartPagination();
+            boolean hasNextPage;
+            do {
+                ProjectNode projectNode = gitLabGraphQLCaller.getSingleProjectIssuesResponse(token, projectFullPath,
+                        filter.getMilestoneTitles(), endCursor)
+                        .getData().getProject();
+
+                Project thisProject = createProjectFromProjectNode(projectNode);
+                Issues currentIssues = projectNode.getIssues();
+
+                currentIssues.getNodes()
+                        .forEach((issueNode) -> {
+                            Issue issue = createIssueFromIssueNode(issueNode);
+                            issue.setProject(thisProject);
+
+                            Label story = issue.getStory();
+                            if (issue.getStatus() != null && story != null
+                                    && filter.getStoryTitles().contains(story.getTitle())) {
+                                if (!storyIssuesMap.containsKey(story)) {
+                                    storyIssuesMap.put(story, new ArrayList<>());
+                                }
+                                storyIssuesMap.get(story).add(issue);
+                            }
+                        });
+
+                PageInfo pageInfo = currentIssues.getPageInfo();
+                endCursor = pageInfo.getEndCursor();
+                hasNextPage = pageInfo.isHasNextPage();
+            } while (hasNextPage);
+        });
+
+        log.info("Get story issues list");
+        return storyIssuesMap.entrySet().stream()
+                .map(e -> StoryIssues.builder()
+                        .story(e.getKey())
+                        .issues(e.getValue())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
     private Project createProjectFromProjectNode(ProjectNode projectNode) {
         return Project.builder()
                 .id(projectNode.getId())
