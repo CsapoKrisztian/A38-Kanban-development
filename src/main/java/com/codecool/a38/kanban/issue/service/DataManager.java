@@ -196,7 +196,7 @@ public class DataManager {
         List<NodesItem> issuesCurrentLabels = gitLabGraphQLCaller.getIssueCurrentStatus(token, data.getId());
         String currentStatus = "";
         String path = gitLabGraphQLCaller.getProjectPath(data.getId(), token);
-        int issuesIID = gitLabGraphQLCaller.getIssuesIID(token, data.getId());
+        int issueIID = gitLabGraphQLCaller.getIssuesIID(token, data.getId());
         int newLabelID = Integer.parseInt(gitLabGraphQLCaller.getStatusID(path, data.getNewLabel(), token).replaceAll("([A-z /]).", ""));
 
         for (NodesItem node : issuesCurrentLabels) {
@@ -207,11 +207,14 @@ public class DataManager {
 
         int removableLabelID = Integer.parseInt(currentStatus.replaceAll("([A-z /]).", ""));
 
-        gitLabGraphQLCaller.updateIssue(token, path, issuesIID, removableLabelID, newLabelID);
+        gitLabGraphQLCaller.updateIssue(token, path, issueIID, removableLabelID, newLabelID);
     }
 
-    public void changeAssignee(String token, String assignee, int projectID, int issueID) {
-        // gitLabGraphQLCaller.changeAssignee(token, assignee, projectID, issueID);
+    public void changeAssignee(String token, String assignee, String issueID) {
+        String path = gitLabGraphQLCaller.getProjectPath(issueID, token);
+        int issueIID = gitLabGraphQLCaller.getIssuesIID(token, issueID);
+
+        gitLabGraphQLCaller.changeAssignee(token, assignee, path, issueIID);
     }
 
 }

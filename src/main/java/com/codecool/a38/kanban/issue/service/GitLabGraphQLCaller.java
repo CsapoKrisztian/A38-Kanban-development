@@ -1,5 +1,6 @@
 package com.codecool.a38.kanban.issue.service;
 
+import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.changeAssigneeResponse.ChangeIssueAssigneeResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issueCurrentStatus.IssueCurrentLabelsResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issueCurrentStatus.NodesItem;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issueUpdateResponse.UpdateIssueResponse;
@@ -216,7 +217,6 @@ public class GitLabGraphQLCaller {
         return Integer.parseInt(responseEntity.getBody().getData().getIssue().getIid());
     }
 
-
     public void updateIssue(String token, String path, int id, int removableLabelId, int newLabelId) {
         String query = "{\"query\":\"mutation {\\n" +
                 "  updateIssue(input: {projectPath: \\\"" + path + "\\\", iid: \\\"" + id + "\\\", addLabelIds: \\\"" + newLabelId + "\\\", removeLabelIds: \\\"" + removableLabelId + "\\\"}) {\\n" +
@@ -236,17 +236,18 @@ public class GitLabGraphQLCaller {
         log.info(responseEntity.getBody().getData().getUpdateIssue().getIssue().getLabels().getNodes().toString());
     }
 
-    public void changeAssignee(String token, String assignee, String path, int issueID) {
-        String query = "mutation {\n" +
-                "issueSetAssignees(input: {assigneeUsernames: \"" + assignee + "\", projectPath:\"" + path + "\", iid:\"" + issueID + "\"}){\n" +
-                " issue{\n" +
-                "title" +
-                "}\n" +
-                "}\n" +
-                "}";
+    public void changeAssignee(String token, String assignee, String path, int issueIID) {
+        String q = "{\"query\":\"mutation {\\n" +
+                "  issueSetAssignees(input: {assigneeUsernames: \\\"" + assignee + "\\\", projectPath: \\\"" + path + "\\\", iid: \\\"" + issueIID + "\\\"}) {\\n" +
+                "    issue {\\n" +
+                "      title\\n" +
+                "    }\\n" +
+                "  }\\n" +
+                "}\\n" +
+                "\",\"variables\":{}}";
 
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, getHeaders(token)), String.class);
-        log.info(responseEntity.toString());
+        ResponseEntity<ChangeIssueAssigneeResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(q, getHeaders(token)), ChangeIssueAssigneeResponse.class);
+        log.info(responseEntity.getBody().getData().getIssueSetAssignees().getIssue().getTitle());
     }
 }
