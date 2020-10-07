@@ -171,8 +171,7 @@ public class GitLabGraphQLCaller {
                 "}\",\"variables\":{}}";
         ResponseEntity<ProjectPathResponse> responseEntity = restTemplate.postForEntity(
                 URL, new HttpEntity<>(query, getHeaders(token)), ProjectPathResponse.class);
-        String body = responseEntity.getBody().getData().getIssue().getDesignCollection().getProject().getFullPath();
-        return body;
+        return responseEntity.getBody().getData().getIssue().getDesignCollection().getProject().getFullPath();
     }
 
     public String getStatusID(String path, String labelTitle, String token) {
@@ -185,7 +184,6 @@ public class GitLabGraphQLCaller {
                 "}\",\"variables\":{}}";
         ResponseEntity<StatusIDResponse> responseEntity = restTemplate.postForEntity(
                 URL, new HttpEntity<>(query, getHeaders(token)), StatusIDResponse.class);
-        String body = responseEntity.getBody().toString();
         return responseEntity.getBody().getData().getProject().getLabel().getId();
     }
 
