@@ -1,5 +1,11 @@
 package com.codecool.a38.kanban.issue.service;
 
+import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issueCurrentStatus.IssueCurrentLabelsResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issueCurrentStatus.NodesItem;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issueUpdateResponse.UpdateIssueResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issuesIID.IssuesIIDResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.projectPathResponse.ProjectPathResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.statusIDresponse.StatusIDResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.milestones.MilestonesResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.projects.ProjectsResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.projectsIssues.ProjectsIssuesResponse;
@@ -11,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -149,22 +156,86 @@ public class GitLabGraphQLCaller {
         }};
     }
 
-    public void updateIssue(String token, String path, int id, int removableLabelId, int newLabelId) {
-        String query = "mutation {\n" +
-                "  updateIssue(input: {projectPath:\"" + path + "\", iid:\"" + id + "\", addLabelIds: " + newLabelId + ", removeLabelIds:" + removableLabelId + "})    {\n" +
-                "      issue{\n" +
-                "          labels{\n" +
-                "              nodes{\n" +
-                "              title\n" +
-                "            }\n" +
-                "          }\n" +
-                "      }\n" +
-                "  }\n" +
-                "}";
+    public String getProjectPath(String issueId, String token) {
+        String query = "{\"query\":\"{\\n" +
+                "  issue(id: \\\"" + issueId + "\\\") {\\n" +
+                "    iid\\n" +
+                "    designCollection {\\n" +
+                "      " +
+                "project {\\n" +
+                "        " +
+                "fullPath\\n" +
+                "      }\\n" +
+                "    }\\n" +
+                "  }\\n" +
+                "}\",\"variables\":{}}";
+        ResponseEntity<ProjectPathResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), ProjectPathResponse.class);
+        String body = responseEntity.getBody().getData().getIssue().getDesignCollection().getProject().getFullPath();
+        return body;
+    }
 
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, getHeaders(token)), String.class);
-        log.info(responseEntity.getBody());
+    public String getStatusID(String path, String labelTitle, String token) {
+        String query = "{\"query\":\"{\\n" +
+                "  project(fullPath: \\\"" + path + "\\\") {\\n" +
+                "    label(title: \\\"" + labelTitle + "\\\") {\\n" +
+                "      id\\n" +
+                "    }\\n" +
+                "  }\\n" +
+                "}\",\"variables\":{}}";
+        ResponseEntity<StatusIDResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), StatusIDResponse.class);
+        String body = responseEntity.getBody().toString();
+        return responseEntity.getBody().getData().getProject().getLabel().getId();
+    }
+
+    public List<NodesItem> getIssueCurrentStatus(String token, String issueID) {
+        String query = "{\"query\":\"{\\n" +
+                "    issue(id:\\\"" + issueID + "\\\"){\\n" +
+                "      labels{\\n" +
+                "        nodes{\\n" +
+                "          id\\n" +
+                "          title\\n" +
+                "        }\\n" +
+                "      }\\n" +
+                "    }\\n" +
+                "  }\\n" +
+                "" +
+                "\",\"variables\":{}}";
+        ResponseEntity<IssueCurrentLabelsResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), IssueCurrentLabelsResponse.class);
+        return responseEntity.getBody().getData().getIssue().getLabels().getNodes();
+    }
+
+    public Integer getIssuesIID(String token, String issueID) {
+        String query = "{\"query\":\"{\\n" +
+                "  issue(id: \\\"" + issueID + "\\\") {\\n" +
+                "    iid\\n" +
+                "  }\\n" +
+                "}\",\"variables\":{}}";
+        ResponseEntity<IssuesIIDResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), IssuesIIDResponse.class);
+        return Integer.parseInt(responseEntity.getBody().getData().getIssue().getIid());
+    }
+
+
+    public void updateIssue(String token, String path, int id, int removableLabelId, int newLabelId) {
+        String query = "{\"query\":\"mutation {\\n" +
+                "  updateIssue(input: {projectPath: \\\"" + path + "\\\", iid: \\\"" + id + "\\\", addLabelIds: \\\"" + newLabelId + "\\\", removeLabelIds: \\\"" + removableLabelId + "\\\"}) {\\n" +
+                "    issue {\\n" +
+                "      labels {\\n" +
+                "        nodes {\\n" +
+                "          title\\n" +
+                "        }\\n" +
+                "      }\\n" +
+                "    }\\n" +
+                "  }\\n" +
+                "}\\n" +
+                "\",\"variables\":{}}";
+
+        ResponseEntity<UpdateIssueResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), UpdateIssueResponse.class);
+        log.info(responseEntity.getBody().getData().getUpdateIssue().getIssue().getLabels().getNodes().toString());
     }
 
     public void changeAssignee(String token, String assignee, String path, int issueID) {

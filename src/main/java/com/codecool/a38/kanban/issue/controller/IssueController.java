@@ -1,6 +1,7 @@
 package com.codecool.a38.kanban.issue.controller;
 
 import com.codecool.a38.kanban.issue.model.Project;
+import com.codecool.a38.kanban.issue.model.UpdateIssueRequestBody;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
 import com.codecool.a38.kanban.issue.model.transfer.Filter;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
@@ -54,19 +55,16 @@ public class IssueController {
 
     @PostMapping("/update")
     public void updateIssue(@CookieValue(defaultValue = "default") String gitlabAccessToken,
-                            @RequestBody String path,
-                            @RequestBody int id,
-                            @RequestBody int removableLabelId,
-                            @RequestBody int newLabelId) {
-        dataManager.updateIssue(gitlabAccessToken, path, id, removableLabelId, newLabelId);
+                            @RequestBody UpdateIssueRequestBody data) {
+        dataManager.updateIssue(gitlabAccessToken, data);
     }
 
     @GetMapping("/newAssignee")
     public void changeAssignee(@CookieValue(defaultValue = "default") String gitlabAccessToken,
                                @RequestBody String assignee,
-                               @RequestBody String path,
+                               @RequestBody int projectID,
                                @RequestBody int issueID) {
-        dataManager.changeAssignee(gitlabAccessToken, assignee, path, issueID);
+        dataManager.changeAssignee(gitlabAccessToken, assignee, projectID, issueID);
     }
 
 }
