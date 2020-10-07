@@ -13,6 +13,9 @@ public class ProjectNode {
     @JsonProperty("id")
     private String id;
 
+    @JsonProperty("fullPath")
+    private Group fullPath;
+
     @JsonProperty("name")
     private String name;
 

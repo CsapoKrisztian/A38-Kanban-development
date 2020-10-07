@@ -77,12 +77,59 @@ public class GitLabGraphQLCaller {
         return responseEntity.getBody();
     }
 
+    public ProjectIssuesResponse getSingleProjectIssuesResponse(String token,
+                                                            Set<String> projectIds, Set<String> milestoneTitles) {
+        String query = "{\"query\":\"{\\n" +
+                "projects(ids:" + getFormattedString(projectIds) + ") {\\n" +
+                "    nodes {\\n" +
+                "      id\\n" +
+                "      name\\n" +
+                "      issues(state: opened, milestoneTitle:" + getFormattedString(milestoneTitles) + ") {\\n" +
+                "          nodes {\\n" +
+                "              id\\n" +
+                "              title\\n" +
+                "              description\\n" +
+                "              webUrl\\n" +
+                "              dueDate\\n" +
+                "              userNotesCount\\n" +
+                "              reference\\n" +
+                "              assignees(first: 1) {\\n" +
+                "                  nodes {\\n" +
+                "                      id\\n" +
+                "                      name\\n" +
+                "                      avatarUrl\\n" +
+                "                  }\\n" +
+                "              }\\n" +
+                "              milestone {\\n" +
+                "                  id\\n" +
+                "                  title\\n" +
+                "              }\\n" +
+                "              labels {\\n" +
+                "                  nodes {\\n" +
+                "                      id\\n" +
+                "                      title\\n" +
+                "                      color\\n" +
+                "                  }\\n" +
+                "              }\\n" +
+                "          }\\n" +
+                "      }\\n" +
+                "    }\\n" +
+                "}\\n" +
+                "}\",\"variables\":{}}";
+
+        ResponseEntity<ProjectsIssuesResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), ProjectsIssuesResponse.class);
+        log.info("Get projects issues response");
+        return responseEntity.getBody();
+    }
+
     public ProjectsResponse getProjectsResponse(String token, String endCursor) {
         String pagination = "(" + getPagination(endCursor) + ")";
         String query = "{\"query\":\"{\\n" +
                 "  projects" + pagination + " {\\n" +
                 "    nodes {\\n" +
                 "      id\\n" +
+                "      fullPath\\n" +
                 "      name\\n" +
                 "      group {\\n" +
                 "        id\\n" +
