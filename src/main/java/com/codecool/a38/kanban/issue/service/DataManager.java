@@ -171,8 +171,12 @@ public class DataManager {
     public Set<String> getMilestoneTitles(String token, Filter filter) {
         Set<String> milestoneTitles = new HashSet<>();
         gitLabGraphQLCaller.getMilestonesResponse(token, filter.getProjectIds()).getData().getProjects().getNodes()
-                .forEach(projectNode -> projectNode.getMilestones().getNodes()
-                        .forEach(milestone -> milestoneTitles.add(milestone.getTitle())));
+                .forEach(projectNode -> {
+                    projectNode.getMilestones().getNodes()
+                            .forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
+                    projectNode.getGroup().getMilestones().getNodes()
+                            .forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
+                });
         log.info("Get milestone titles");
         return milestoneTitles;
     }
