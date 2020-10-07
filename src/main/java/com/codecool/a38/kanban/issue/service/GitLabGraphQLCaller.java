@@ -19,6 +19,12 @@ public class GitLabGraphQLCaller {
 
     private static final String URL = "https://gitlab.techpm.guru/api/graphql";
 
+    private static final String startPagination = "start";
+
+    public static String getStartPagination() {
+        return startPagination;
+    }
+
     private RestTemplate restTemplate;
 
     public GitLabGraphQLCaller(RestTemplate restTemplate) {
@@ -71,9 +77,10 @@ public class GitLabGraphQLCaller {
         return responseEntity.getBody();
     }
 
-    public ProjectsResponse getProjectsResponse(String token) {
+    public ProjectsResponse getProjectsResponse(String token, String endCursor) {
+        String pagination = !endCursor.equals(startPagination) ? "(after: \\\"" + endCursor + "\\\")" : "";
         String query = "{\"query\":\"{\\n" +
-                "  projects(after: \\\"eyJpZCI6IjUifQ\\\") {\\n" +
+                "  projects" + pagination + " {\\n" +
                 "    nodes {\\n" +
                 "      id\\n" +
                 "      name\\n" +

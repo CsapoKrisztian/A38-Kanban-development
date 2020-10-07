@@ -157,13 +157,24 @@ public class DataManager {
 
     public Set<Project> getProjects(String token) {
         Set<Project> projects = new HashSet<>();
-        gitLabGraphQLCaller.getProjectsResponse(token).getData().getProjects().getNodes()
-                .forEach(projectNode -> projects.add(
-                        Project.builder()
-                                .id(projectNode.getId())
-                                .name(projectNode.getName())
-                                .group(projectNode.getGroup())
-                                .build()));
+
+        String endCursor = GitLabGraphQLCaller.getStartPagination();
+        boolean hasNextPage;
+        do {
+            Projects currentProjects = gitLabGraphQLCaller.getProjectsResponse(token, endCursor).getData().getProjects();
+            currentProjects.getNodes()
+                    .forEach(projectNode -> projects.add(
+                            Project.builder()
+                                    .id(projectNode.getId())
+                                    .name(projectNode.getName())
+                                    .group(projectNode.getGroup())
+                                    .build()));
+
+            PageInfo pageInfo = currentProjects.getPageInfo();
+            endCursor = pageInfo.getEndCursor();
+            hasNextPage = pageInfo.isHasNextPage();
+        } while (hasNextPage);
+
         log.info("Get projects");
         return projects;
     }
