@@ -174,8 +174,11 @@ public class DataManager {
                 .forEach(projectNode -> {
                     projectNode.getMilestones().getNodes()
                             .forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
-                    projectNode.getGroup().getMilestones().getNodes()
-                            .forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
+
+                    if (projectNode.getGroup() != null) {
+                        projectNode.getGroup().getMilestones().getNodes()
+                                .forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
+                    }
                 });
         log.info("Get milestone titles");
         return milestoneTitles;
