@@ -8,4 +8,5 @@ public class ProjectsIssuesData {
 
     @JsonProperty("projects")
     private Projects projects;
+
 }

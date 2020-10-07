@@ -7,4 +7,5 @@ public class ProjectsIssuesResponse {
 
 	@JsonProperty("data")
 	private ProjectsIssuesData data;
+
 }

@@ -37,7 +37,7 @@ public class DataManager {
     private static final String storyPrefix = "Story: ";
 
 
-    public List<AssigneeIssues> getAssigneeIssuesList(String token, Filter filter) {
+    public List<AssigneeIssues> getAssigneeIssuesListMax100IssuesPerProject(String token, Filter filter) {
         if (filter.getProjectIds() == null || filter.getMilestoneTitles() == null
                 || filter.getStoryTitles() == null) return null;
 
@@ -73,7 +73,7 @@ public class DataManager {
                 .collect(Collectors.toList());
     }
 
-    public List<StoryIssues> getStoryIssuesList(String token, Filter filter) {
+    public List<StoryIssues> getStoryIssuesListMax100IssuesPerProject(String token, Filter filter) {
         if (filter.getProjectIds() == null || filter.getMilestoneTitles() == null
                 || filter.getStoryTitles() == null) return null;
 
@@ -111,6 +111,7 @@ public class DataManager {
     private Project createProjectFromProjectNode(ProjectNode projectNode) {
         return Project.builder()
                 .id(projectNode.getId())
+                .fullPath(projectNode.getFullPath())
                 .name(projectNode.getName())
                 .group(projectNode.getGroup())
                 .build();
@@ -163,12 +164,7 @@ public class DataManager {
         do {
             Projects currentProjects = gitLabGraphQLCaller.getProjectsResponse(token, endCursor).getData().getProjects();
             currentProjects.getNodes()
-                    .forEach(projectNode -> projects.add(
-                            Project.builder()
-                                    .id(projectNode.getId())
-                                    .name(projectNode.getName())
-                                    .group(projectNode.getGroup())
-                                    .build()));
+                    .forEach(projectNode -> projects.add(createProjectFromProjectNode(projectNode)));
 
             PageInfo pageInfo = currentProjects.getPageInfo();
             endCursor = pageInfo.getEndCursor();
