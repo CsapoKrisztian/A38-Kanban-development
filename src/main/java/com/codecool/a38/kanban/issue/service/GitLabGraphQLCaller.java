@@ -39,6 +39,10 @@ public class GitLabGraphQLCaller {
                 "      id\\n" +
                 "      fullPath\\n" +
                 "      name\\n" +
+                "      group {\\n" +
+                "        id\\n" +
+                "        name\\n" +
+                "      }\\n" +
                 "      issues(state: opened, milestoneTitle:" + getFormattedFilter(milestoneTitles) + ") {\\n" +
                 "          nodes {\\n" +
                 "              id\\n" +
