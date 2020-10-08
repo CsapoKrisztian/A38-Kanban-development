@@ -271,29 +271,81 @@ public class DataManager {
 
     public Set<String> getMilestoneTitles(String token, Filter filter) {
         Set<String> milestoneTitles = new HashSet<>();
-
-        String endCursor = GitLabGraphQLCaller.getStartPagination();
+        String currentEndCursor = GitLabGraphQLCaller.getStartPagination();
         boolean hasNextPage;
         do {
-            Projects currentProjects = gitLabGraphQLCaller.getMilestonesResponse(token, filter.getProjectIds(), endCursor)
-                    .getData().getProjects();
+            Projects currentProjects = gitLabGraphQLCaller
+                    .getMilestonesResponse(token, filter.getProjectIds(), currentEndCursor).getData().getProjects();
             currentProjects.getNodes()
                     .forEach(projectNode -> {
-                        projectNode.getMilestones().getNodes()
+                        Milestones projectMilestones = projectNode.getMilestones();
+                        projectMilestones.getNodes()
                                 .forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
 
-                        if (projectNode.getGroup() != null) {
-                            projectNode.getGroup().getMilestones().getNodes()
+                        PageInfo projectMilestonesPageInfo = projectMilestones.getPageInfo();
+                        if (projectMilestonesPageInfo.isHasNextPage()) {
+                            milestoneTitles.addAll(getSingleProjectMilestoneTitles(token, projectNode.getFullPath(),
+                                    projectMilestonesPageInfo.getEndCursor()));
+                        }
+
+                        Group group = projectNode.getGroup();
+                        if (group != null) {
+                            Milestones groupMilestones = group.getMilestones();
+                            groupMilestones.getNodes()
                                     .forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
+
+                            PageInfo groupMilestonesPageInfo = groupMilestones.getPageInfo();
+                            if (groupMilestonesPageInfo.isHasNextPage()) {
+                                milestoneTitles.addAll(getSingleGroupMilestoneTitles(token, projectNode.getFullPath(),
+                                        groupMilestonesPageInfo.getEndCursor()));
+                            }
                         }
                     });
 
             PageInfo pageInfo = currentProjects.getPageInfo();
-            endCursor = pageInfo.getEndCursor();
+            currentEndCursor = pageInfo.getEndCursor();
             hasNextPage = pageInfo.isHasNextPage();
         } while (hasNextPage);
 
         log.info("Get milestone titles");
+        return milestoneTitles;
+    }
+
+    private Set<String> getSingleProjectMilestoneTitles(String token, String projectFullPath, String endCursor) {
+        Set<String> milestoneTitles = new HashSet<>();
+        String currentEndCursor = endCursor;
+        boolean hasNextPage;
+        do {
+            Milestones currentMilestones = gitLabGraphQLCaller
+                    .getSingleProjectMilestonesResponse(token, projectFullPath, currentEndCursor)
+                    .getData().getProject().getMilestones();
+            currentMilestones.getNodes().forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
+
+            PageInfo pageInfo = currentMilestones.getPageInfo();
+            hasNextPage = pageInfo.isHasNextPage();
+            currentEndCursor = pageInfo.getEndCursor();
+        } while (hasNextPage);
+
+        log.info("Get single project milestone titles: " + projectFullPath);
+        return milestoneTitles;
+    }
+
+    private Set<String> getSingleGroupMilestoneTitles(String token, String groupFullPath, String endCursor) {
+        Set<String> milestoneTitles = new HashSet<>();
+        String currentEndCursor = endCursor;
+        boolean hasNextPage;
+        do {
+            Milestones currentMilestones = gitLabGraphQLCaller
+                    .getSingleGroupMilestonesResponse(token, groupFullPath, currentEndCursor)
+                    .getData().getGroup().getMilestones();
+            currentMilestones.getNodes().forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
+
+            PageInfo pageInfo = currentMilestones.getPageInfo();
+            hasNextPage = pageInfo.isHasNextPage();
+            currentEndCursor = pageInfo.getEndCursor();
+        } while (hasNextPage);
+
+        log.info("Get single group milestone titles: " + groupFullPath);
         return milestoneTitles;
     }
 
@@ -306,10 +358,11 @@ public class DataManager {
                     .getProjectsStoriesResponse(token, filter.getProjectIds(), currentEndCursor).getData().getProjects();
             currentProjects.getNodes()
                     .forEach(projectNode -> {
-                        projectNode.getLabels().getNodes()
+                        Labels labels = projectNode.getLabels();
+                        labels.getNodes()
                                 .forEach(label -> storyTitles.add(label.getTitle().substring(storyPrefix.length())));
 
-                        PageInfo labelsPageInfo = projectNode.getLabels().getPageInfo();
+                        PageInfo labelsPageInfo = labels.getPageInfo();
                         if (labelsPageInfo.isHasNextPage()) {
                             storyTitles.addAll(getSingleProjectStoryTitles(token, projectNode.getFullPath(),
                                     labelsPageInfo.getEndCursor()));
@@ -334,9 +387,9 @@ public class DataManager {
                     .getData().getProject().getLabels();
             currentLabels.getNodes().forEach(label -> storyTitles.add(label.getTitle().substring(storyPrefix.length())));
 
-            PageInfo labelsPageInfo = currentLabels.getPageInfo();
-            hasNextPage = labelsPageInfo.isHasNextPage();
-            currentEndCursor = labelsPageInfo.getEndCursor();
+            PageInfo pageInfo = currentLabels.getPageInfo();
+            hasNextPage = pageInfo.isHasNextPage();
+            currentEndCursor = pageInfo.getEndCursor();
         } while (hasNextPage);
 
         log.info("Get single project story titles: " + projectFullPath);
