@@ -279,7 +279,11 @@ public class DataManager {
             currentProjects.getNodes()
                     .forEach(projectNode -> {
                         addProjectMilestones(token, milestoneTitles, projectNode);
-                        addGroupMileStones(token, milestoneTitles, projectNode);
+
+                        Group group = projectNode.getGroup();
+                        if (group != null) {
+                            addGroupMileStones(token, milestoneTitles, group);
+                        }
                     });
 
             PageInfo pageInfo = currentProjects.getPageInfo();
@@ -303,18 +307,15 @@ public class DataManager {
         }
     }
 
-    private void addGroupMileStones(String token, Set<String> milestoneTitles, ProjectNode projectNode) {
-        Group group = projectNode.getGroup();
-        if (group != null) {
-            Milestones groupMilestones = group.getMilestones();
-            groupMilestones.getNodes()
-                    .forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
+    private void addGroupMileStones(String token, Set<String> milestoneTitles, Group group) {
+        Milestones groupMilestones = group.getMilestones();
+        groupMilestones.getNodes()
+                .forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
 
-            PageInfo groupMilestonesPageInfo = groupMilestones.getPageInfo();
-            if (groupMilestonesPageInfo.isHasNextPage()) {
-                milestoneTitles.addAll(getSingleGroupMilestoneTitles(token, projectNode.getFullPath(),
-                        groupMilestonesPageInfo.getEndCursor()));
-            }
+        PageInfo groupMilestonesPageInfo = groupMilestones.getPageInfo();
+        if (groupMilestonesPageInfo.isHasNextPage()) {
+            milestoneTitles.addAll(getSingleGroupMilestoneTitles(token, group.getFullPath(),
+                    groupMilestonesPageInfo.getEndCursor()));
         }
     }
 
