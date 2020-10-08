@@ -9,6 +9,9 @@ public class Group {
     @JsonProperty("id")
     private String id;
 
+    @JsonProperty("fullPath")
+    private String fullPath;
+
     @JsonProperty("name")
     private String name;
 

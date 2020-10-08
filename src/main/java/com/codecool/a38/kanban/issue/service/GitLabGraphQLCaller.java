@@ -159,19 +159,27 @@ public class GitLabGraphQLCaller {
         String query = "{\"query\":\"{\\n" +
                 "  projects(ids:" + getFormattedString(projectIds) + getPagination(endCursor) + ") {\\n" +
                 "    nodes {\\n" +
-                "      id\\n" +
-                "      name\\n" +
+                "      fullPath\\n" +
                 "      milestones {\\n" +
                 "        nodes {\\n" +
                 "          id\\n" +
                 "          title\\n" +
                 "        }\\n" +
+                "        pageInfo {\\n" +
+                "          hasNextPage\\n" +
+                "          endCursor\\n" +
+                "        }\\n" +
                 "      }\\n" +
                 "      group {\\n" +
+                "        fullPath\\n" +
                 "        milestones {\\n" +
                 "          nodes {\\n" +
                 "            id\\n" +
                 "            title\\n" +
+                "          }\\n" +
+                "          pageInfo {\\n" +
+                "            hasNextPage\\n" +
+                "            endCursor\\n" +
                 "          }\\n" +
                 "        }\\n" +
                 "      }\\n" +
@@ -187,6 +195,56 @@ public class GitLabGraphQLCaller {
         ResponseEntity<ProjectsDataResponse> responseEntity = restTemplate.postForEntity(
                 URL, new HttpEntity<>(query, getHeaders(token)), ProjectsDataResponse.class);
         log.info("Get milestones response");
+        return responseEntity.getBody();
+    }
+
+    public SingleProjectDataResponse getSingleProjectMilestonesResponse(String token, String projectFullPath,
+                                                                  String endCursor) {
+        String pagination = !endCursor.equals(startPagination) ? "(after: \\\"" + endCursor + "\\\")" : "";
+        String query = "{\"query\":\"{\\n" +
+                "  project(fullPath: \\\"" + projectFullPath + "\\\") {\\n" +
+                "    milestones" + pagination + " {\\n" +
+                "      nodes {\\n" +
+                "        id\\n" +
+                "        title\\n" +
+                "      }\\n" +
+                "      pageInfo {\\n" +
+                "        hasNextPage\\n" +
+                "        endCursor\\n" +
+                "      }\\n" +
+                "    }\\n" +
+                "  }\\n" +
+                "}\\n" +
+                "\",\"variables\":{}}";
+
+        ResponseEntity<SingleProjectDataResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), SingleProjectDataResponse.class);
+        log.info("Get single project milestones response: " + projectFullPath);
+        return responseEntity.getBody();
+    }
+
+    public SingleProjectDataResponse getSingleProjectMilestonesResponse(String token, String projectFullPath,
+                                                                        String endCursor) {
+        String pagination = !endCursor.equals(startPagination) ? "(after: \\\"" + endCursor + "\\\")" : "";
+        String query = "{\"query\":\"{\\n" +
+                "  project(fullPath: \\\"" + projectFullPath + "\\\") {\\n" +
+                "    milestones" + pagination + " {\\n" +
+                "      nodes {\\n" +
+                "        id\\n" +
+                "        title\\n" +
+                "      }\\n" +
+                "      pageInfo {\\n" +
+                "        hasNextPage\\n" +
+                "        endCursor\\n" +
+                "      }\\n" +
+                "    }\\n" +
+                "  }\\n" +
+                "}\\n" +
+                "\",\"variables\":{}}";
+
+        ResponseEntity<SingleProjectDataResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), SingleProjectDataResponse.class);
+        log.info("Get single project milestones response: " + projectFullPath);
         return responseEntity.getBody();
     }
 
