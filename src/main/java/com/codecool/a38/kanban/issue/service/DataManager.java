@@ -278,28 +278,8 @@ public class DataManager {
                     .getMilestonesResponse(token, filter.getProjectIds(), currentEndCursor).getData().getProjects();
             currentProjects.getNodes()
                     .forEach(projectNode -> {
-                        Milestones projectMilestones = projectNode.getMilestones();
-                        projectMilestones.getNodes()
-                                .forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
-
-                        PageInfo projectMilestonesPageInfo = projectMilestones.getPageInfo();
-                        if (projectMilestonesPageInfo.isHasNextPage()) {
-                            milestoneTitles.addAll(getSingleProjectMilestoneTitles(token, projectNode.getFullPath(),
-                                    projectMilestonesPageInfo.getEndCursor()));
-                        }
-
-                        Group group = projectNode.getGroup();
-                        if (group != null) {
-                            Milestones groupMilestones = group.getMilestones();
-                            groupMilestones.getNodes()
-                                    .forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
-
-                            PageInfo groupMilestonesPageInfo = groupMilestones.getPageInfo();
-                            if (groupMilestonesPageInfo.isHasNextPage()) {
-                                milestoneTitles.addAll(getSingleGroupMilestoneTitles(token, projectNode.getFullPath(),
-                                        groupMilestonesPageInfo.getEndCursor()));
-                            }
-                        }
+                        addProjectMilestones(token, milestoneTitles, projectNode);
+                        addGroupMileStones(token, milestoneTitles, projectNode);
                     });
 
             PageInfo pageInfo = currentProjects.getPageInfo();
@@ -309,6 +289,33 @@ public class DataManager {
 
         log.info("Get milestone titles");
         return milestoneTitles;
+    }
+
+    private void addProjectMilestones(String token, Set<String> milestoneTitles, ProjectNode projectNode) {
+        Milestones projectMilestones = projectNode.getMilestones();
+        projectMilestones.getNodes()
+                .forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
+
+        PageInfo projectMilestonesPageInfo = projectMilestones.getPageInfo();
+        if (projectMilestonesPageInfo.isHasNextPage()) {
+            milestoneTitles.addAll(getSingleProjectMilestoneTitles(token, projectNode.getFullPath(),
+                    projectMilestonesPageInfo.getEndCursor()));
+        }
+    }
+
+    private void addGroupMileStones(String token, Set<String> milestoneTitles, ProjectNode projectNode) {
+        Group group = projectNode.getGroup();
+        if (group != null) {
+            Milestones groupMilestones = group.getMilestones();
+            groupMilestones.getNodes()
+                    .forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
+
+            PageInfo groupMilestonesPageInfo = groupMilestones.getPageInfo();
+            if (groupMilestonesPageInfo.isHasNextPage()) {
+                milestoneTitles.addAll(getSingleGroupMilestoneTitles(token, projectNode.getFullPath(),
+                        groupMilestonesPageInfo.getEndCursor()));
+            }
+        }
     }
 
     private Set<String> getSingleProjectMilestoneTitles(String token, String projectFullPath, String endCursor) {
