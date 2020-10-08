@@ -231,11 +231,19 @@ public class DataManager {
         String endCursor = GitLabGraphQLCaller.getStartPagination();
         boolean hasNextPage;
         do {
-            Projects currentProjects = gitLabGraphQLCaller.getStoriesResponse(token, filter.getProjectIds(), endCursor)
-                    .getData().getProjects();
+            Projects currentProjects = gitLabGraphQLCaller
+                    .getProjectsStoriesResponse(token, filter.getProjectIds(), endCursor).getData().getProjects();
             currentProjects.getNodes()
-                    .forEach(projectNode -> projectNode.getLabels().getNodes()
-                            .forEach(label -> storyTitles.add(label.getTitle().substring(storyPrefix.length()))));
+                    .forEach(projectNode -> {
+                        projectNode.getLabels().getNodes()
+                                .forEach(label -> storyTitles.add(label.getTitle().substring(storyPrefix.length())));
+
+                        PageInfo labelsPageInfo = projectNode.getLabels().getPageInfo();
+                        if (labelsPageInfo.isHasNextPage()) {
+                            storyTitles.addAll(getSingleProjectStoryTitles(token, projectNode.getFullPath(),
+                                    labelsPageInfo.getEndCursor()));
+                        }
+                    });
 
             PageInfo pageInfo = currentProjects.getPageInfo();
             endCursor = pageInfo.getEndCursor();
@@ -246,8 +254,26 @@ public class DataManager {
         return storyTitles;
     }
 
+    private Set<String> getSingleProjectStoryTitles(String token, String projectFullPath, String endCursor) {
+        Set<String> storyTitles = new HashSet<>();
+        String currentEndCursor = endCursor;
+        boolean hasNextPage;
+        do {
+            Labels currentLabels = gitLabGraphQLCaller.getSingleProjectStoriesResponse(token, projectFullPath, currentEndCursor)
+                    .getData().getProject().getLabels();
+            currentLabels.getNodes().forEach(label -> storyTitles.add(label.getTitle().substring(storyPrefix.length())));
 
-    //    public List<AssigneeIssues> getAssigneeIssuesListMax100IssuesPerProject(String token, Filter filter) {
+            PageInfo labelsPageInfo = currentLabels.getPageInfo();
+            hasNextPage = labelsPageInfo.isHasNextPage();
+            currentEndCursor = labelsPageInfo.getEndCursor();
+        } while (hasNextPage);
+
+        log.info("Get single project story titles: " + projectFullPath);
+        return storyTitles;
+    }
+
+
+//    public List<AssigneeIssues> getAssigneeIssuesListMax100IssuesPerProject(String token, Filter filter) {
 //        if (filter.getProjectIds() == null || filter.getMilestoneTitles() == null
 //                || filter.getStoryTitles() == null) return null;
 //
