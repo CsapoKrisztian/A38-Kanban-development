@@ -10,10 +10,6 @@ import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issueU
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issuesIID.IssuesIIDResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.projectPathResponse.ProjectPathResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.statusIDresponse.StatusIDResponse;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.milestones.MilestonesResponse;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.projects.ProjectsResponse;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.projectsIssues.ProjectsIssuesResponse;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.stories.StoriesResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
