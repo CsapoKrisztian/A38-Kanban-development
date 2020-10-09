@@ -1,7 +1,13 @@
 package com.codecool.a38.kanban.issue.service;
 
-import com.codecool.a38.kanban.issue.model.*;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.*;
+import com.codecool.a38.kanban.issue.model.Issue;
+import com.codecool.a38.kanban.issue.model.Project;
+import com.codecool.a38.kanban.issue.model.UpdateIssueRequestBody;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.IssueNode;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.Label;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.ProjectNode;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.User;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issueCurrentStatus.NodesItem;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
 import lombok.AllArgsConstructor;
@@ -366,6 +372,31 @@ public class DataManager {
 
         log.info("Get single project story label list: " + projectFullPath);
         return storyLabelList;
+    }
+
+    public void updateIssue(String token, UpdateIssueRequestBody data) {
+        List<NodesItem> issuesCurrentLabels = gitLabGraphQLCaller.getIssueCurrentStatus(token, data.getId());
+        String currentStatus = "";
+        String path = gitLabGraphQLCaller.getProjectPath(data.getId(), token);
+        int issueIID = gitLabGraphQLCaller.getIssuesIID(token, data.getId());
+        int newLabelID = Integer.parseInt(gitLabGraphQLCaller.getStatusID(path, data.getNewLabel(), token).replaceAll("([A-z /]).", ""));
+
+        for (NodesItem node : issuesCurrentLabels) {
+            if (statusTitles.contains(node.getTitle())) {
+                currentStatus = node.getId();
+            }
+        }
+
+        int removableLabelID = Integer.parseInt(currentStatus.replaceAll("([A-z /]).", ""));
+
+        gitLabGraphQLCaller.updateIssue(token, path, issueIID, removableLabelID, newLabelID);
+    }
+
+    public void changeAssignee(String token, String assignee, String issueID) {
+        String path = gitLabGraphQLCaller.getProjectPath(issueID, token);
+        int issueIID = gitLabGraphQLCaller.getIssuesIID(token, issueID);
+
+        gitLabGraphQLCaller.changeAssignee(token, assignee, path, issueIID);
     }
 
 }
