@@ -1,6 +1,8 @@
 package com.codecool.a38.kanban.issue.controller;
 
+import com.codecool.a38.kanban.issue.model.ChangeAssigneeRequest;
 import com.codecool.a38.kanban.issue.model.Project;
+import com.codecool.a38.kanban.issue.model.UpdateIssueRequestBody;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
 import com.codecool.a38.kanban.issue.model.transfer.Filter;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
@@ -50,6 +52,18 @@ public class IssueController {
     @GetMapping("/statuses")
     public List<String> getStatusTitles() {
         return DataManager.getStatusTitles();
+    }
+
+    @PostMapping("/update")
+    public void updateIssue(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                            @RequestBody UpdateIssueRequestBody data) {
+        dataManager.updateIssue(gitlabAccessToken, data);
+    }
+
+    @PostMapping("/newAssignee")
+    public void changeAssignee(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                               @RequestBody ChangeAssigneeRequest data) {
+        dataManager.changeAssignee(gitlabAccessToken, data.getAssignee(), data.getIssueID());
     }
 
 }
