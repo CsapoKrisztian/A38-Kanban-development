@@ -3,7 +3,6 @@ package com.codecool.a38.kanban.issue.service;
 import com.codecool.a38.kanban.issue.model.*;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.*;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
-import com.codecool.a38.kanban.issue.model.transfer.Filter;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,17 +43,16 @@ public class DataManager {
         Map<User, List<Issue>> assigneeIssuesMap = new HashMap<>();
         String currentEndCursor = GitLabGraphQLCaller.getStartPagination();
         boolean hasNextPage;
-
         do {
             Projects currentProjects = gitLabGraphQLCaller
                     .getProjectsIssuesResponse(token, projectIds, milestoneTitles, currentEndCursor)
                     .getData().getProjects();
 
             currentProjects.getNodes().forEach(projectNode -> {
-                Project currentProject = createProjectFromProjectNode(projectNode);
-                Issues issues = projectNode.getIssues();
+                List<IssueNode> issueNodeList = getAllProjectIssueNodes(token, milestoneTitles, projectNode);
 
-                issues.getNodes().forEach(issueNode -> {
+                Project currentProject = createProjectFromProjectNode(projectNode);
+                issueNodeList.forEach(issueNode -> {
                     Issue issue = createIssueFromIssueNode(issueNode);
                     issue.setProject(currentProject);
 
@@ -67,17 +65,11 @@ public class DataManager {
                         assigneeIssuesMap.get(assignee).add(issue);
                     }
                 });
-
-                PageInfo issuesPageInfo = issues.getPageInfo();
-                if (issuesPageInfo.isHasNextPage()) {
-                    addSingleProjectAssigneeIssuesList()
-
-                }
             });
 
-            PageInfo pageInfo = currentProjects.getPageInfo();
-            currentEndCursor = pageInfo.getEndCursor();
-            hasNextPage = pageInfo.isHasNextPage();
+            PageInfo projectsPageInfo = currentProjects.getPageInfo();
+            currentEndCursor = projectsPageInfo.getEndCursor();
+            hasNextPage = projectsPageInfo.isHasNextPage();
         } while (hasNextPage);
 
         log.info("Get assignee issues list");
@@ -89,108 +81,41 @@ public class DataManager {
                 .collect(Collectors.toList());
     }
 
-    public void addSingleProjectAssigneeIssuesList(Map<User, List<Issue>> assigneeIssuesMap,
-                                                   String token, String projectFullPath,
-                                                   Set<String> milestoneTitles,
-                                                   Set<String> storyTitles) {
-        String endCursor = GitLabGraphQLCaller.getStartPagination();
-        boolean hasNextPage;
-        do {
-            ProjectNode projectNode = gitLabGraphQLCaller.getSingleProjectIssuesResponse(token, projectFullPath,
-                    milestoneTitles, endCursor).getData().getProject();
-
-            Project thisProject = createProjectFromProjectNode(projectNode);
-
-            Issues currentIssues = projectNode.getIssues();
-            currentIssues.getNodes().forEach((issueNode) -> {
-                Issue issue = createIssueFromIssueNode(issueNode);
-                issue.setProject(thisProject);
-
-                if (issue.getStatus() != null && issue.getStory() != null
-                        && storyTitles.contains(issue.getStory().getTitle())) {
-                    User assignee = issue.getAssignee();
-                    if (!assigneeIssuesMap.containsKey(assignee)) {
-                        assigneeIssuesMap.put(assignee, new ArrayList<>());
-                    }
-                    assigneeIssuesMap.get(assignee).add(issue);
-                }
-            });
-
-            PageInfo pageInfo = currentIssues.getPageInfo();
-            endCursor = pageInfo.getEndCursor();
-            hasNextPage = pageInfo.isHasNextPage();
-        } while (hasNextPage);
-
-        log.info("Get single project assignee issues list: " + projectFullPath);
-    }
-
     public List<StoryIssues> getStoryIssuesList(String token, Set<String> projectIds,
                                                 Set<String> milestoneTitles, Set<String> storyTitles) {
         if (projectIds == null || milestoneTitles == null || storyTitles == null) return null;
 
         Map<Label, List<Issue>> storyIssuesMap = new HashMap<>();
-        gitLabGraphQLCaller.getProjectsIssuesResponse(token, projectIds, milestoneTitles)
-                .getData().getProjects().getNodes()
-                .forEach((projectNode) -> {
-                    Project thisProject = createProjectFromProjectNode(projectNode);
+        String currentEndCursor = GitLabGraphQLCaller.getStartPagination();
+        boolean hasNextPage;
+        do {
+            Projects currentProjects = gitLabGraphQLCaller
+                    .getProjectsIssuesResponse(token, projectIds, milestoneTitles, currentEndCursor)
+                    .getData().getProjects();
 
-                    projectNode.getIssues().getNodes().forEach((issueNode) -> {
-                        Issue issue = createIssueFromIssueNode(issueNode);
-                        issue.setProject(thisProject);
+            currentProjects.getNodes().forEach(projectNode -> {
+                List<IssueNode> issueNodeList = getAllProjectIssueNodes(token, milestoneTitles, projectNode);
 
-                        Label story = issue.getStory();
-                        if (issue.getStatus() != null && story != null
-                                && storyTitles.contains(story.getTitle())) {
-                            if (!storyIssuesMap.containsKey(story)) {
-                                storyIssuesMap.put(story, new ArrayList<>());
-                            }
-                            storyIssuesMap.get(story).add(issue);
-                        }
-                    });
-                });
-
-        log.info("Get story issues list");
-        return storyIssuesMap.entrySet().stream()
-                .map(e -> StoryIssues.builder()
-                        .story(e.getKey())
-                        .issues(e.getValue())
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    public List<StoryIssues> getSingleProjectStoryIssuesList(String token, Filter filter) {
-        Map<Label, List<Issue>> storyIssuesMap = new HashMap<>();
-
-        filter.getProjectFullPaths().forEach(projectFullPath -> {
-            String endCursor = GitLabGraphQLCaller.getStartPagination();
-            boolean hasNextPage;
-            do {
-                ProjectNode projectNode = gitLabGraphQLCaller.getSingleProjectIssuesResponse(token, projectFullPath,
-                        filter.getMilestoneTitles(), endCursor)
-                        .getData().getProject();
-
-                Project thisProject = createProjectFromProjectNode(projectNode);
-                Issues currentIssues = projectNode.getIssues();
-
-                currentIssues.getNodes().forEach((issueNode) -> {
+                Project currentProject = createProjectFromProjectNode(projectNode);
+                issueNodeList.forEach((issueNode) -> {
                     Issue issue = createIssueFromIssueNode(issueNode);
-                    issue.setProject(thisProject);
+                    issue.setProject(currentProject);
 
                     Label story = issue.getStory();
                     if (issue.getStatus() != null && story != null
-                            && filter.getStoryTitles().contains(story.getTitle())) {
+                            && storyTitles.contains(story.getTitle())) {
                         if (!storyIssuesMap.containsKey(story)) {
                             storyIssuesMap.put(story, new ArrayList<>());
                         }
                         storyIssuesMap.get(story).add(issue);
                     }
                 });
+            });
 
-                PageInfo pageInfo = currentIssues.getPageInfo();
-                endCursor = pageInfo.getEndCursor();
-                hasNextPage = pageInfo.isHasNextPage();
-            } while (hasNextPage);
-        });
+            PageInfo projectsPageInfo = currentProjects.getPageInfo();
+            currentEndCursor = projectsPageInfo.getEndCursor();
+            hasNextPage = projectsPageInfo.isHasNextPage();
+        } while (hasNextPage);
 
         log.info("Get story issues list");
         return storyIssuesMap.entrySet().stream()
@@ -199,6 +124,38 @@ public class DataManager {
                         .issues(e.getValue())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    private List<IssueNode> getAllProjectIssueNodes(String token, Set<String> milestoneTitles, ProjectNode projectNode) {
+        Issues issues = projectNode.getIssues();
+        List<IssueNode> issueNodeList = issues.getNodes();
+
+        PageInfo issuesPageInfo = issues.getPageInfo();
+        if (issuesPageInfo.isHasNextPage()) {
+            issueNodeList.addAll(getSingleProjectIssueNodeList(token, projectNode.getFullPath(),
+                    milestoneTitles, issuesPageInfo.getEndCursor()));
+        }
+        return issueNodeList;
+    }
+
+    public List<IssueNode> getSingleProjectIssueNodeList(String token, String projectFullPath,
+                                                         Set<String> milestoneTitles, String endCursor) {
+        List<IssueNode> issueNodeList = new ArrayList<>();
+        String currentEndCursor = endCursor;
+        boolean hasNextPage;
+        do {
+            Issues currentIssues = gitLabGraphQLCaller.getSingleProjectIssuesResponse(token, projectFullPath,
+                    milestoneTitles, currentEndCursor).getData().getProject().getIssues();
+
+            issueNodeList.addAll(currentIssues.getNodes());
+
+            PageInfo pageInfo = currentIssues.getPageInfo();
+            currentEndCursor = pageInfo.getEndCursor();
+            hasNextPage = pageInfo.isHasNextPage();
+        } while (hasNextPage);
+
+        log.info("Get single project assignee issue node list: " + projectFullPath);
+        return issueNodeList;
     }
 
     private Project createProjectFromProjectNode(ProjectNode projectNode) {
@@ -403,8 +360,8 @@ public class DataManager {
             storyLabelList.addAll(currentStoryLabels.getNodes());
 
             PageInfo pageInfo = currentStoryLabels.getPageInfo();
-            hasNextPage = pageInfo.isHasNextPage();
             currentEndCursor = pageInfo.getEndCursor();
+            hasNextPage = pageInfo.isHasNextPage();
         } while (hasNextPage);
 
         log.info("Get single project story label list: " + projectFullPath);
