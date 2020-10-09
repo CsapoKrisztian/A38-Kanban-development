@@ -69,7 +69,7 @@ public class IssueController {
         dataManager.changeAssignee(gitlabAccessToken, data.getAssignee(), data.getIssueID());
     }
 
-    @GetMapping("/issuesByProject")
+    @PostMapping("/issuesByProject")
     public List<com.codecool.a38.kanban.issue.model.graphQLResponse.projects.projectAllIssues.NodesItem> getAllIssuesByProject(@CookieValue(defaultValue = "default") String gitlabAccessToken,
                                                                                                                                @RequestBody GetAllIssuesRequestBody data) {
         //if (data.getProjectIDs().size() != 0){
