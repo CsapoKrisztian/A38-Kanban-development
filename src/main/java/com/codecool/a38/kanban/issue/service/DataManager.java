@@ -49,7 +49,7 @@ public class DataManager {
                     .getData().getProjects();
 
             currentProjects.getNodes().forEach(projectNode -> {
-                List<IssueNode> issueNodeList = getAllProjectIssueNodes(token, milestoneTitles, projectNode);
+                List<IssueNode> issueNodeList = getAllProjectsIssueNodes(token, milestoneTitles, projectNode);
 
                 Project currentProject = createProjectFromProjectNode(projectNode);
                 issueNodeList.forEach(issueNode -> {
@@ -94,7 +94,7 @@ public class DataManager {
                     .getData().getProjects();
 
             currentProjects.getNodes().forEach(projectNode -> {
-                List<IssueNode> issueNodeList = getAllProjectIssueNodes(token, milestoneTitles, projectNode);
+                List<IssueNode> issueNodeList = getAllProjectsIssueNodes(token, milestoneTitles, projectNode);
 
                 Project currentProject = createProjectFromProjectNode(projectNode);
                 issueNodeList.forEach((issueNode) -> {
@@ -126,7 +126,7 @@ public class DataManager {
                 .collect(Collectors.toList());
     }
 
-    private List<IssueNode> getAllProjectIssueNodes(String token, Set<String> milestoneTitles, ProjectNode projectNode) {
+    private List<IssueNode> getAllProjectsIssueNodes(String token, Set<String> milestoneTitles, ProjectNode projectNode) {
         Issues issues = projectNode.getIssues();
         List<IssueNode> issueNodeList = issues.getNodes();
 
