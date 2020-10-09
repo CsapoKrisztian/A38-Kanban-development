@@ -9,4 +9,8 @@ public class Issues {
 
     @JsonProperty("nodes")
     private List<IssueNode> nodes;
+
+    @JsonProperty("pageInfo")
+    private PageInfo pageInfo;
+
 }
