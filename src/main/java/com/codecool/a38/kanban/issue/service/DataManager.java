@@ -70,6 +70,7 @@ public class DataManager {
 
                 PageInfo issuesPageInfo = issues.getPageInfo();
                 if (issuesPageInfo.isHasNextPage()) {
+                    addSingleProjectAssigneeIssuesList()
 
                 }
             });
@@ -78,26 +79,6 @@ public class DataManager {
             currentEndCursor = pageInfo.getEndCursor();
             hasNextPage = pageInfo.isHasNextPage();
         } while (hasNextPage);
-
-        gitLabGraphQLCaller.getProjectsIssuesResponse(token, projectIds, milestoneTitles)
-                .getData().getProjects().getNodes()
-                .forEach((projectNode) -> {
-                    Project thisProject = createProjectFromProjectNode(projectNode);
-
-                    projectNode.getIssues().getNodes().forEach((issueNode) -> {
-                        Issue issue = createIssueFromIssueNode(issueNode);
-                        issue.setProject(thisProject);
-
-                        if (issue.getStatus() != null && issue.getStory() != null
-                                && storyTitles.contains(issue.getStory().getTitle())) {
-                            User assignee = issue.getAssignee();
-                            if (!assigneeIssuesMap.containsKey(assignee)) {
-                                assigneeIssuesMap.put(assignee, new ArrayList<>());
-                            }
-                            assigneeIssuesMap.get(assignee).add(issue);
-                        }
-                    });
-                });
 
         log.info("Get assignee issues list");
         return assigneeIssuesMap.entrySet().stream()
@@ -108,47 +89,39 @@ public class DataManager {
                 .collect(Collectors.toList());
     }
 
-    public List<AssigneeIssues> getSingleProjectAssigneeIssuesList(String token, Filter filter) {
-        Map<User, List<Issue>> assigneeIssuesMap = new HashMap<>();
+    public void addSingleProjectAssigneeIssuesList(Map<User, List<Issue>> assigneeIssuesMap,
+                                                   String token, String projectFullPath,
+                                                   Set<String> milestoneTitles,
+                                                   Set<String> storyTitles) {
+        String endCursor = GitLabGraphQLCaller.getStartPagination();
+        boolean hasNextPage;
+        do {
+            ProjectNode projectNode = gitLabGraphQLCaller.getSingleProjectIssuesResponse(token, projectFullPath,
+                    milestoneTitles, endCursor).getData().getProject();
 
-        filter.getProjectFullPaths().forEach(projectFullPath -> {
-            String endCursor = GitLabGraphQLCaller.getStartPagination();
-            boolean hasNextPage;
-            do {
-                ProjectNode projectNode = gitLabGraphQLCaller.getSingleProjectIssuesResponse(token, projectFullPath,
-                        filter.getMilestoneTitles(), endCursor)
-                        .getData().getProject();
+            Project thisProject = createProjectFromProjectNode(projectNode);
 
-                Project thisProject = createProjectFromProjectNode(projectNode);
+            Issues currentIssues = projectNode.getIssues();
+            currentIssues.getNodes().forEach((issueNode) -> {
+                Issue issue = createIssueFromIssueNode(issueNode);
+                issue.setProject(thisProject);
 
-                Issues currentIssues = projectNode.getIssues();
-                currentIssues.getNodes().forEach((issueNode) -> {
-                    Issue issue = createIssueFromIssueNode(issueNode);
-                    issue.setProject(thisProject);
-
-                    if (issue.getStatus() != null && issue.getStory() != null
-                            && filter.getStoryTitles().contains(issue.getStory().getTitle())) {
-                        User assignee = issue.getAssignee();
-                        if (!assigneeIssuesMap.containsKey(assignee)) {
-                            assigneeIssuesMap.put(assignee, new ArrayList<>());
-                        }
-                        assigneeIssuesMap.get(assignee).add(issue);
+                if (issue.getStatus() != null && issue.getStory() != null
+                        && storyTitles.contains(issue.getStory().getTitle())) {
+                    User assignee = issue.getAssignee();
+                    if (!assigneeIssuesMap.containsKey(assignee)) {
+                        assigneeIssuesMap.put(assignee, new ArrayList<>());
                     }
-                });
+                    assigneeIssuesMap.get(assignee).add(issue);
+                }
+            });
 
-                PageInfo pageInfo = currentIssues.getPageInfo();
-                endCursor = pageInfo.getEndCursor();
-                hasNextPage = pageInfo.isHasNextPage();
-            } while (hasNextPage);
-        });
+            PageInfo pageInfo = currentIssues.getPageInfo();
+            endCursor = pageInfo.getEndCursor();
+            hasNextPage = pageInfo.isHasNextPage();
+        } while (hasNextPage);
 
-        log.info("Get assignee issues list");
-        return assigneeIssuesMap.entrySet().stream()
-                .map(e -> AssigneeIssues.builder()
-                        .assignee(e.getKey())
-                        .issues(e.getValue())
-                        .build())
-                .collect(Collectors.toList());
+        log.info("Get single project assignee issues list: " + projectFullPath);
     }
 
     public List<StoryIssues> getStoryIssuesList(String token, Set<String> projectIds,
@@ -306,12 +279,30 @@ public class DataManager {
                     .getMilestonesResponse(token, projectIds, currentEndCursor).getData().getProjects();
 
             currentProjects.getNodes().forEach(projectNode -> {
-                addProjectMilestones(token, milestoneTitles, projectNode);
+                List<Milestone> milestoneList = new ArrayList<>();
+
+                Milestones projectMilestones = projectNode.getMilestones();
+                milestoneList.addAll(projectMilestones.getNodes());
+
+                PageInfo projectMilestonesPageInfo = projectMilestones.getPageInfo();
+                if (projectMilestonesPageInfo.isHasNextPage()) {
+                    milestoneList.addAll(getSingleProjectMilestoneList(token, projectNode.getFullPath(),
+                            projectMilestonesPageInfo.getEndCursor()));
+                }
 
                 Group group = projectNode.getGroup();
                 if (group != null) {
-                    addGroupMileStones(token, milestoneTitles, group);
+                    Milestones groupMilestones = group.getMilestones();
+                    milestoneList.addAll(groupMilestones.getNodes());
+
+                    PageInfo groupMilestonesPageInfo = groupMilestones.getPageInfo();
+                    if (groupMilestonesPageInfo.isHasNextPage()) {
+                        milestoneList.addAll(getSingleGroupMilestoneList(token, group.getFullPath(),
+                                groupMilestonesPageInfo.getEndCursor()));
+                    }
                 }
+
+                milestoneList.forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
             });
 
             PageInfo projectsPageInfo = currentProjects.getPageInfo();
@@ -323,29 +314,8 @@ public class DataManager {
         return milestoneTitles;
     }
 
-    private void addProjectMilestones(String token, Set<String> milestoneTitles, ProjectNode projectNode) {
-        Milestones projectMilestones = projectNode.getMilestones();
-        projectMilestones.getNodes().forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
-
-        PageInfo projectMilestonesPageInfo = projectMilestones.getPageInfo();
-        if (projectMilestonesPageInfo.isHasNextPage()) {
-            addSingleProjectMilestoneTitles(milestoneTitles, token, projectNode.getFullPath(),
-                    projectMilestonesPageInfo.getEndCursor());
-        }
-    }
-
-    private void addGroupMileStones(String token, Set<String> milestoneTitles, Group group) {
-        Milestones groupMilestones = group.getMilestones();
-        groupMilestones.getNodes().forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
-
-        PageInfo groupMilestonesPageInfo = groupMilestones.getPageInfo();
-        if (groupMilestonesPageInfo.isHasNextPage()) {
-            addSingleGroupMilestoneTitles(milestoneTitles, token, group.getFullPath(),
-                    groupMilestonesPageInfo.getEndCursor());
-        }
-    }
-
-    private void addSingleProjectMilestoneTitles(Set<String> milestoneTitles, String token, String projectFullPath, String endCursor) {
+    private List<Milestone> getSingleProjectMilestoneList(String token, String projectFullPath, String endCursor) {
+        List<Milestone> milestones = new ArrayList<>();
         String currentEndCursor = endCursor;
         boolean hasNextPage;
         do {
@@ -353,16 +323,19 @@ public class DataManager {
                     .getSingleProjectMilestonesResponse(token, projectFullPath, currentEndCursor)
                     .getData().getProject().getMilestones();
 
-            currentMilestones.getNodes().forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
+            milestones.addAll(currentMilestones.getNodes());
 
             PageInfo pageInfo = currentMilestones.getPageInfo();
             hasNextPage = pageInfo.isHasNextPage();
             currentEndCursor = pageInfo.getEndCursor();
         } while (hasNextPage);
-        log.info("Add single project milestone titles: " + projectFullPath);
+
+        log.info("Add single project milestone list: " + projectFullPath);
+        return milestones;
     }
 
-    private void addSingleGroupMilestoneTitles(Set<String> milestoneTitles, String token, String groupFullPath, String endCursor) {
+    private List<Milestone> getSingleGroupMilestoneList(String token, String groupFullPath, String endCursor) {
+        List<Milestone> milestones = new ArrayList<>();
         String currentEndCursor = endCursor;
         boolean hasNextPage;
         do {
@@ -370,13 +343,15 @@ public class DataManager {
                     .getSingleGroupMilestonesResponse(token, groupFullPath, currentEndCursor)
                     .getData().getGroup().getMilestones();
 
-            currentMilestones.getNodes().forEach(milestone -> milestoneTitles.add(milestone.getTitle()));
+            milestones.addAll(currentMilestones.getNodes());
 
             PageInfo pageInfo = currentMilestones.getPageInfo();
             hasNextPage = pageInfo.isHasNextPage();
             currentEndCursor = pageInfo.getEndCursor();
         } while (hasNextPage);
-        log.info("Add single group milestone titles: " + groupFullPath);
+
+        log.info("Add single group milestone list: " + groupFullPath);
+        return milestones;
     }
 
     public Set<String> getStoryTitles(String token, Set<String> projectIds) {
@@ -387,19 +362,20 @@ public class DataManager {
         boolean hasNextPage;
         do {
             Projects currentProjects = gitLabGraphQLCaller
-                    .getProjectsStoriesResponse(token, projectIds, currentEndCursor).getData().getProjects();
+                    .getProjectsStoryLabelsResponse(token, projectIds, currentEndCursor).getData().getProjects();
 
             currentProjects.getNodes().forEach(projectNode -> {
-                Labels labels = projectNode.getLabels();
+                Labels storyLabels = projectNode.getLabels();
+                List<Label> storyLabelList = storyLabels.getNodes();
 
-                labels.getNodes().forEach(label -> storyTitles.add(label.getTitle()
-                        .substring(storyPrefix.length())));
-
-                PageInfo labelsPageInfo = labels.getPageInfo();
+                PageInfo labelsPageInfo = storyLabels.getPageInfo();
                 if (labelsPageInfo.isHasNextPage()) {
-                    addSingleProjectStoryTitles(storyTitles, token, projectNode.getFullPath(),
-                            labelsPageInfo.getEndCursor());
+                    storyLabelList.addAll(getSingleProjectStoryLabelList(token, projectNode.getFullPath(),
+                            labelsPageInfo.getEndCursor()));
                 }
+
+                storyLabelList.forEach(label -> storyTitles.add(label.getTitle()
+                        .substring(storyPrefix.length())));
             });
 
             PageInfo projectsPageInfo = currentProjects.getPageInfo();
@@ -411,22 +387,23 @@ public class DataManager {
         return storyTitles;
     }
 
-    private void addSingleProjectStoryTitles(Set<String> storyTitles, String token, String projectFullPath, String endCursor) {
+    private List<Label> getSingleProjectStoryLabelList(String token, String projectFullPath, String endCursor) {
+        List<Label> storyLabelList = new ArrayList<>();
         String currentEndCursor = endCursor;
         boolean hasNextPage;
         do {
-            Labels currentLabels = gitLabGraphQLCaller
+            Labels currentStoryLabels = gitLabGraphQLCaller
                     .getSingleProjectStoriesResponse(token, projectFullPath, currentEndCursor)
                     .getData().getProject().getLabels();
+            storyLabelList.addAll(currentStoryLabels.getNodes());
 
-            currentLabels.getNodes().forEach(label -> storyTitles.add(label.getTitle()
-                    .substring(storyPrefix.length())));
-
-            PageInfo pageInfo = currentLabels.getPageInfo();
+            PageInfo pageInfo = currentStoryLabels.getPageInfo();
             hasNextPage = pageInfo.isHasNextPage();
             currentEndCursor = pageInfo.getEndCursor();
         } while (hasNextPage);
-        log.info("Get single project story titles: " + projectFullPath);
+
+        log.info("Get single project story label list: " + projectFullPath);
+        return storyLabelList;
     }
 
 }
