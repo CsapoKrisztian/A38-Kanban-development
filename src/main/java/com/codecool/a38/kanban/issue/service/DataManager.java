@@ -217,4 +217,12 @@ public class DataManager {
         gitLabGraphQLCaller.changeAssignee(token, assignee, path, issueIID);
     }
 
+    public List<com.codecool.a38.kanban.issue.model.graphQLResponse.projects.projectAllIssues.NodesItem> getAllIssuesFromProject(String token, List<String> projectIDs) {
+        List<com.codecool.a38.kanban.issue.model.graphQLResponse.projects.projectAllIssues.NodesItem> issues = new ArrayList<>();
+        for (String id : projectIDs) {
+            issues.addAll(gitLabGraphQLCaller.getAllIssuesFromProject(token, id));
+        }
+        return issues;
+    }
+
 }

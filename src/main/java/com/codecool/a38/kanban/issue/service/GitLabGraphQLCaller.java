@@ -9,6 +9,8 @@ import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.projec
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.statusIDresponse.StatusIDResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.milestones.MilestonesResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.projects.ProjectsResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.projects.projectAllIssues.AllIssuesByProjectResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.projects.projectsFullPath.FullPathResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.projectsIssues.ProjectsIssuesResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.stories.StoriesResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -249,5 +251,55 @@ public class GitLabGraphQLCaller {
         ResponseEntity<ChangeIssueAssigneeResponse> responseEntity = restTemplate.postForEntity(
                 URL, new HttpEntity<>(q, getHeaders(token)), ChangeIssueAssigneeResponse.class);
         log.info(responseEntity.getBody().getData().getIssueSetAssignees().getIssue().getTitle());
+    }
+
+    public String getProjectPathByProjectID(String token, String projectID) {
+        String query = "\"{\\\"query\\\":\\\"{\\\\n  projects (ids :\\\\\\\"" + projectID + "\\\\\\\"){\\\\n    nodes {\\\\n      fullPath\\\\n    }\\\\n  }\\\\n}\\\\n\\\",\\\"variables\\\":{}}\"";
+
+        ResponseEntity<FullPathResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), FullPathResponse.class);
+        return responseEntity.getBody().getData().getProjects().getNodes().get(0).getFullPath();
+    }
+
+    public List<com.codecool.a38.kanban.issue.model.graphQLResponse.projects.projectAllIssues.NodesItem> getAllIssuesFromProject(String token, String projectID) {
+        String path = getProjectPathByProjectID(token, projectID);
+        String query = "\"{\\\"query\\\":\\\"\\\\n" +
+                "{\\\\n" +
+                "  project(fullPath:\\\\\\\"" + path + "\\\\\\\"){\\\\n" +
+                "    issues(state: opened){\\\\n" +
+                "      nodes{\\\\n" +
+                "        id\\\\n" +
+                "        title\\\\n" +
+                "        description\\\\n" +
+                "        webUrl\\\\n" +
+                "        dueDate\\\\n" +
+                "        userNotesCount\\\\n" +
+                "        reference\\\\n" +
+                "        assignees(first: 1){\\\\n" +
+                "          nodes{\\\\n" +
+                "            id\\\\n" +
+                "            name\\\\n" +
+                "            avatarUrl\\\\n" +
+                "          }\\\\n" +
+                "        }\\\\n" +
+                "        milestone{\\\\n" +
+                "          id\\\\n" +
+                "          title\\\\n" +
+                "        }\\\\n" +
+                "        labels{\\\\n" +
+                "          nodes{\\\\n" +
+                "            id\\\\n" +
+                "            title\\\\n" +
+                "            color\\\\n" +
+                "         }\\\\n" +
+                "        }\\\\n" +
+                "      }\\\\n" +
+                "    }\\\\n" +
+                "  }\\\\n" +
+                "}\\\",\\\"variables\\\":{}}\"";
+
+        ResponseEntity<AllIssuesByProjectResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), AllIssuesByProjectResponse.class);
+        return responseEntity.getBody().getData().getProject().getIssues().getNodes();
     }
 }

@@ -3,6 +3,7 @@ package com.codecool.a38.kanban.issue.controller;
 import com.codecool.a38.kanban.issue.model.ChangeAssigneeRequest;
 import com.codecool.a38.kanban.issue.model.Project;
 import com.codecool.a38.kanban.issue.model.UpdateIssueRequestBody;
+import com.codecool.a38.kanban.issue.model.requestBodies.GetAllIssuesRequestBody;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
 import com.codecool.a38.kanban.issue.model.transfer.Filter;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
@@ -64,6 +65,14 @@ public class IssueController {
     public void changeAssignee(@CookieValue(defaultValue = "default") String gitlabAccessToken,
                                @RequestBody ChangeAssigneeRequest data) {
         dataManager.changeAssignee(gitlabAccessToken, data.getAssignee(), data.getIssueID());
+    }
+
+    @GetMapping("/issuesByProject")
+    public List<com.codecool.a38.kanban.issue.model.graphQLResponse.projects.projectAllIssues.NodesItem> getAllIssuesByProject(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                                                                                                                               @RequestBody GetAllIssuesRequestBody data) {
+        //if (data.getProjectIDs().size() != 0){
+        return dataManager.getAllIssuesFromProject(gitlabAccessToken, data.getProjectIDs());
+
     }
 
 }
