@@ -37,81 +37,43 @@ public class DataManager {
     private static final String storyPrefix = "Story: ";
 
 
-    //    public List<AssigneeIssues> getAssigneeIssuesListMax100IssuesPerProject(String token, Filter filter) {
-//        if (filter.getProjectIds() == null || filter.getMilestoneTitles() == null
-//                || filter.getStoryTitles() == null) return null;
-//
-//        Map<User, List<Issue>> assigneeIssuesMap = new HashMap<>();
-//
-//        gitLabGraphQLCaller.getProjectsIssuesResponse(token, filter.getProjectIds(), filter.getMilestoneTitles())
-//                .getData().getProjects().getNodes()
-//                .forEach((projectNode) -> {
-//                    Project thisProject = createProjectFromProjectNode(projectNode);
-//
-//                    projectNode.getIssues().getNodes()
-//                            .forEach((issueNode) -> {
-//                                Issue issue = createIssueFromIssueNode(issueNode);
-//                                issue.setProject(thisProject);
-//
-//                                if (issue.getStatus() != null && issue.getStory() != null
-//                                        && filter.getStoryTitles().contains(issue.getStory().getTitle())) {
-//                                    User assignee = issue.getAssignee();
-//                                    if (!assigneeIssuesMap.containsKey(assignee)) {
-//                                        assigneeIssuesMap.put(assignee, new ArrayList<>());
-//                                    }
-//                                    assigneeIssuesMap.get(assignee).add(issue);
-//                                }
-//                            });
-//                });
-//
-//        log.info("Get assignee issues list");
-//        return assigneeIssuesMap.entrySet().stream()
-//                .map(e -> AssigneeIssues.builder()
-//                        .assignee(e.getKey())
-//                        .issues(e.getValue())
-//                        .build())
-//                .collect(Collectors.toList());
-//    }
-//
-//    public List<StoryIssues> getStoryIssuesListMax100IssuesPerProject(String token, Filter filter) {
-//        if (filter.getProjectIds() == null || filter.getMilestoneTitles() == null
-//                || filter.getStoryTitles() == null) return null;
-//
-//        Map<Label, List<Issue>> storyIssuesMap = new HashMap<>();
-//        gitLabGraphQLCaller.getProjectsIssuesResponse(token, filter.getProjectIds(), filter.getMilestoneTitles())
-//                .getData().getProjects().getNodes()
-//                .forEach((projectNode) -> {
-//                    Project thisProject = createProjectFromProjectNode(projectNode);
-//
-//                    projectNode.getIssues().getNodes()
-//                            .forEach((issueNode) -> {
-//                                Issue issue = createIssueFromIssueNode(issueNode);
-//                                issue.setProject(thisProject);
-//
-//                                Label story = issue.getStory();
-//                                if (issue.getStatus() != null && story != null
-//                                        && filter.getStoryTitles().contains(story.getTitle())) {
-//                                    if (!storyIssuesMap.containsKey(story)) {
-//                                        storyIssuesMap.put(story, new ArrayList<>());
-//                                    }
-//                                    storyIssuesMap.get(story).add(issue);
-//                                }
-//                            });
-//                });
-//
-//        log.info("Get story issues list");
-//        return storyIssuesMap.entrySet().stream()
-//                .map(e -> StoryIssues.builder()
-//                        .story(e.getKey())
-//                        .issues(e.getValue())
-//                        .build())
-//                .collect(Collectors.toList());
-//    }
-
-    public List<AssigneeIssues> getAssigneeIssuesList(String token, Filter filter) {
-        if (filter.getProjectFullPaths() == null || filter.getMilestoneTitles() == null
+    public List<AssigneeIssues> getAssigneeIssuesListMax100IssuesPerProject(String token, Filter filter) {
+        if (filter.getProjectIds() == null || filter.getMilestoneTitles() == null
                 || filter.getStoryTitles() == null) return null;
 
+        Map<User, List<Issue>> assigneeIssuesMap = new HashMap<>();
+
+        gitLabGraphQLCaller.getProjectsIssuesResponse(token, filter.getProjectIds(), filter.getMilestoneTitles())
+                .getData().getProjects().getNodes()
+                .forEach((projectNode) -> {
+                    Project thisProject = createProjectFromProjectNode(projectNode);
+
+                    projectNode.getIssues().getNodes()
+                            .forEach((issueNode) -> {
+                                Issue issue = createIssueFromIssueNode(issueNode);
+                                issue.setProject(thisProject);
+
+                                if (issue.getStatus() != null && issue.getStory() != null
+                                        && filter.getStoryTitles().contains(issue.getStory().getTitle())) {
+                                    User assignee = issue.getAssignee();
+                                    if (!assigneeIssuesMap.containsKey(assignee)) {
+                                        assigneeIssuesMap.put(assignee, new ArrayList<>());
+                                    }
+                                    assigneeIssuesMap.get(assignee).add(issue);
+                                }
+                            });
+                });
+
+        log.info("Get assignee issues list");
+        return assigneeIssuesMap.entrySet().stream()
+                .map(e -> AssigneeIssues.builder()
+                        .assignee(e.getKey())
+                        .issues(e.getValue())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    public List<AssigneeIssues> getSingleProjectAssigneeIssuesList(String token, Filter filter) {
         Map<User, List<Issue>> assigneeIssuesMap = new HashMap<>();
 
         filter.getProjectFullPaths().forEach(projectFullPath -> {
@@ -155,10 +117,42 @@ public class DataManager {
                 .collect(Collectors.toList());
     }
 
-    public List<StoryIssues> getStoryIssuesList(String token, Filter filter) {
-        if (filter.getProjectFullPaths() == null || filter.getMilestoneTitles() == null
+    public List<StoryIssues> getStoryIssuesListMax100IssuesPerProject(String token, Filter filter) {
+        if (filter.getProjectIds() == null || filter.getMilestoneTitles() == null
                 || filter.getStoryTitles() == null) return null;
 
+        Map<Label, List<Issue>> storyIssuesMap = new HashMap<>();
+        gitLabGraphQLCaller.getProjectsIssuesResponse(token, filter.getProjectIds(), filter.getMilestoneTitles())
+                .getData().getProjects().getNodes()
+                .forEach((projectNode) -> {
+                    Project thisProject = createProjectFromProjectNode(projectNode);
+
+                    projectNode.getIssues().getNodes()
+                            .forEach((issueNode) -> {
+                                Issue issue = createIssueFromIssueNode(issueNode);
+                                issue.setProject(thisProject);
+
+                                Label story = issue.getStory();
+                                if (issue.getStatus() != null && story != null
+                                        && filter.getStoryTitles().contains(story.getTitle())) {
+                                    if (!storyIssuesMap.containsKey(story)) {
+                                        storyIssuesMap.put(story, new ArrayList<>());
+                                    }
+                                    storyIssuesMap.get(story).add(issue);
+                                }
+                            });
+                });
+
+        log.info("Get story issues list");
+        return storyIssuesMap.entrySet().stream()
+                .map(e -> StoryIssues.builder()
+                        .story(e.getKey())
+                        .issues(e.getValue())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    public List<StoryIssues> getSingleProjectStoryIssuesList(String token, Filter filter) {
         Map<Label, List<Issue>> storyIssuesMap = new HashMap<>();
 
         filter.getProjectFullPaths().forEach(projectFullPath -> {

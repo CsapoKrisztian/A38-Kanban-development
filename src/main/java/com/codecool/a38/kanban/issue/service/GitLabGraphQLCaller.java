@@ -31,10 +31,10 @@ public class GitLabGraphQLCaller {
     }
 
 
-    public ProjectsDataResponse getProjectsIssuesResponse(String token,
-                                                          Set<String> projectIds, Set<String> milestoneTitles) {
+    public ProjectsDataResponse getProjectsIssuesResponse(String token, Set<String> projectIds,
+                                                          Set<String> milestoneTitles, String endCursor) {
         String query = "{\"query\":\"{\\n" +
-                "projects(ids:" + getFormattedFilter(projectIds) + ") {\\n" +
+                "  projects(ids: " + getFormattedFilter(projectIds) + getFormattedPagination(endCursor) + ") {\\n" +
                 "    nodes {\\n" +
                 "      id\\n" +
                 "      fullPath\\n" +
@@ -43,42 +43,47 @@ public class GitLabGraphQLCaller {
                 "        id\\n" +
                 "        name\\n" +
                 "      }\\n" +
-                "      issues(state: opened, milestoneTitle:" + getFormattedFilter(milestoneTitles) + ") {\\n" +
-                "          nodes {\\n" +
+                "      issues(state: opened, milestoneTitle: " + getFormattedFilter(milestoneTitles) + ") {\\n" +
+                "        nodes {\\n" +
+                "          id\\n" +
+                "          title\\n" +
+                "          description\\n" +
+                "          webUrl\\n" +
+                "          dueDate\\n" +
+                "          userNotesCount\\n" +
+                "          reference\\n" +
+                "          assignees {\\n" +
+                "            nodes {\\n" +
+                "              id\\n" +
+                "              name\\n" +
+                "              avatarUrl\\n" +
+                "            }\\n" +
+                "          }\\n" +
+                "          milestone {\\n" +
+                "            id\\n" +
+                "            title\\n" +
+                "          }\\n" +
+                "          labels {\\n" +
+                "            nodes {\\n" +
                 "              id\\n" +
                 "              title\\n" +
-                "              description\\n" +
-                "              webUrl\\n" +
-                "              dueDate\\n" +
-                "              userNotesCount\\n" +
-                "              reference\\n" +
-                "              assignees(first: 1) {\\n" +
-                "                  nodes {\\n" +
-                "                      id\\n" +
-                "                      name\\n" +
-                "                      avatarUrl\\n" +
-                "                  }\\n" +
-                "              }\\n" +
-                "              milestone {\\n" +
-                "                  id\\n" +
-                "                  title\\n" +
-                "              }\\n" +
-                "              labels {\\n" +
-                "                  nodes {\\n" +
-                "                      id\\n" +
-                "                      title\\n" +
-                "                      color\\n" +
-                "                  }\\n" +
-                "              }\\n" +
+                "              color\\n" +
+                "            }\\n" +
                 "          }\\n" +
+                "        }\\n" +
+                "        pageInfo {\\n" +
+                "          hasNextPage\\n" +
+                "          endCursor\\n" +
+                "        }\\n" +
                 "      }\\n" +
                 "    }\\n" +
                 "    pageInfo {\\n" +
-                "    hasNextPage\\n" +
-                "    endCursor\\n" +
+                "      hasNextPage\\n" +
+                "      endCursor\\n" +
+                "    }\\n" +
                 "  }\\n" +
                 "}\\n" +
-                "}\",\"variables\":{}}";
+                "\",\"variables\":{}}";
 
         ResponseEntity<ProjectsDataResponse> responseEntity = restTemplate.postForEntity(
                 URL, new HttpEntity<>(query, getHeaders(token)), ProjectsDataResponse.class);
@@ -161,7 +166,7 @@ public class GitLabGraphQLCaller {
 
     public ProjectsDataResponse getMilestonesResponse(String token, Set<String> projectIds, String endCursor) {
         String query = "{\"query\":\"{\\n" +
-                "  projects(ids:" + getFormattedFilter(projectIds) + getFormattedPagination(endCursor) + ") {\\n" +
+                "  projects(ids: " + getFormattedFilter(projectIds) + getFormattedPagination(endCursor) + ") {\\n" +
                 "    nodes {\\n" +
                 "      fullPath\\n" +
                 "      milestones {\\n" +
@@ -203,7 +208,7 @@ public class GitLabGraphQLCaller {
     }
 
     public SingleProjectDataResponse getSingleProjectMilestonesResponse(String token, String projectFullPath,
-                                                                  String endCursor) {
+                                                                        String endCursor) {
         String query = "{\"query\":\"{\\n" +
                 "  project(fullPath: \\\"" + projectFullPath + "\\\") {\\n" +
                 "    milestones" + getFormattedPaginationWithBrackets(endCursor) + " {\\n" +
@@ -227,7 +232,7 @@ public class GitLabGraphQLCaller {
     }
 
     public SingleGroupDataResponse getSingleGroupMilestonesResponse(String token, String groupFullPath,
-                                                                      String endCursor) {
+                                                                    String endCursor) {
         String query = "{\"query\":\"{\\n" +
                 "  group(fullPath: \\\"" + groupFullPath + "\\\") {\\n" +
                 "    milestones" + getFormattedPaginationWithBrackets(endCursor) + " {\\n" +
@@ -252,7 +257,7 @@ public class GitLabGraphQLCaller {
 
     public ProjectsDataResponse getProjectsStoriesResponse(String token, Set<String> projectIds, String endCursor) {
         String query = "{\"query\":\"{\\n" +
-                "  projects(ids:" + getFormattedFilter(projectIds) + getFormattedPagination(endCursor) + ") {\\n" +
+                "  projects(ids: " + getFormattedFilter(projectIds) + getFormattedPagination(endCursor) + ") {\\n" +
                 "    nodes {\\n" +
                 "      fullPath\\n" +
                 "      labels(searchTerm: \\\"Story: \\\") {\\n" +
