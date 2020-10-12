@@ -24,10 +24,6 @@ public class DataManager {
 
     private ConfigDataProvider configDataProvider;
 
-    private static final String storyPrefix = "Story: ";
-
-    private static final String priorityPrefix = "Priority: ";
-
 
     public List<String> getStatusTitles() {
         log.info("get status titles");
@@ -181,14 +177,20 @@ public class DataManager {
 
     private void setStoryPriorityStatusOfIssueFromIssueNode(Issue thisIssue, IssueNode issueNode) {
         issueNode.getLabels().getNodes().forEach(label -> {
-            if (label.getTitle().startsWith(storyPrefix)) {
-                label.setTitle(label.getTitle().substring(storyPrefix.length()));
+            if (label.getTitle().startsWith(configDataProvider.getStoryPrefix())) {
+                label.setTitle(label.getTitle().substring(configDataProvider.getStoryPrefix().length()));
                 thisIssue.setStory(label);
-            } else if (label.getTitle().startsWith(priorityPrefix)) {
-                label.setTitle(label.getTitle().substring(priorityPrefix.length()));
+                return;
+            }
+            String priorityDisplayTitle = configDataProvider.getPriorityTitleDisplayMap().get(label.getTitle());
+            if (priorityDisplayTitle != null) {
+                label.setTitle(priorityDisplayTitle);
                 thisIssue.setPriority(label);
-            } else if (configDataProvider.getStatusTitles().stream()
-                    .anyMatch(existingStatus -> existingStatus.equals(label.getTitle()))) {
+                return;
+            }
+            String statusDisplayTitle = configDataProvider.getStatusTitleDisplayMap().get(label.getTitle());
+            if (statusDisplayTitle != null) {
+                label.setTitle(statusDisplayTitle);
                 thisIssue.setStatus(label);
             }
         });
@@ -334,7 +336,7 @@ public class DataManager {
                 }
 
                 storyLabelList.forEach(label -> storyTitles.add(label.getTitle()
-                        .substring(storyPrefix.length())));
+                        .substring(configDataProvider.getStoryPrefix().length())));
             });
 
             PageInfo projectsPageInfo = currentProjects.getPageInfo();
@@ -367,18 +369,18 @@ public class DataManager {
 
     public void updateIssue(String token, UpdateIssueRequestBody data) {
         List<NodesItem> issuesCurrentLabels = gitLabGraphQLCaller.getIssueCurrentStatus(token, data.getId());
-        String currentStatus = "";
+        String currentStatusId = "";
         String path = gitLabGraphQLCaller.getProjectPath(data.getId(), token);
         int issueIID = gitLabGraphQLCaller.getIssuesIID(token, data.getId());
         int newLabelID = Integer.parseInt(gitLabGraphQLCaller.getStatusID(path, data.getNewLabel(), token).replaceAll("([A-z /]).", ""));
 
-        for (NodesItem node : issuesCurrentLabels) {
-            if (configDataProvider.getStatusTitles().contains(node.getTitle())) {
-                currentStatus = node.getId();
+        for (NodesItem labelNode : issuesCurrentLabels) {
+            if (configDataProvider.getStatusTitles().contains(labelNode.getTitle())) {
+                currentStatusId = labelNode.getId();
             }
         }
 
-        int removableLabelID = Integer.parseInt(currentStatus.replaceAll("([A-z /]).", ""));
+        int removableLabelID = Integer.parseInt(currentStatusId.replaceAll("([A-z /]).", ""));
 
         gitLabGraphQLCaller.updateIssue(token, path, issueIID, removableLabelID, newLabelID);
     }

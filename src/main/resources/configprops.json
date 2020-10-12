@@ -3,42 +3,42 @@
 
   "priorities": [
     {
-      "title": "KB[priority][99][P0]",
+      "title": "Priority: P0",
       "display": "PO"
     },
     {
-      "title": "KB[priority][99][P1]",
+      "title": "Priority: P1",
       "display": "P1"
     },
     {
-      "title": "KB[priority][99][P2]",
+      "title": "Priority: P2",
       "display": "P2"
     }
   ],
 
   "statuses": [
     {
-      "title": "[KB[stage][10][Backlog]",
+      "title": "Backlog",
       "display": "Backlog"
     },
     {
-      "title": "[KB[stage][10][Todo]",
+      "title": "Todo",
       "display": "Todo"
     },
     {
-      "title": "[KB[stage][10][Development]",
+      "title": "Development",
       "display": "Development"
     },
     {
-      "title": "[KB[stage][10][Dev review]",
+      "title": "Dev review",
       "display": "Dev review"
     },
     {
-      "title": "[KB[stage][10][Final review]",
+      "title": "Final review",
       "display": "Final review"
     },
     {
-      "title": "[KB[stage][10][Documentation]",
+      "title": "Documentation",
       "display": "Documentation"
     }
   ]
