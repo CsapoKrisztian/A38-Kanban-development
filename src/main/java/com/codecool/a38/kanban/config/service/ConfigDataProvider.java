@@ -37,25 +37,30 @@ public class ConfigDataProvider {
         InputStream inputStream = TypeReference.class.getResourceAsStream("/configprops.json");
         try {
             JsonProperties jsonProperties = mapper.readValue(inputStream, typeReference);
-            setDataFromJsonProperties(jsonProperties);
-            log.info("config properties loaded from ");
+//            setDataFromJsonProperties(jsonProperties);
+//            log.info("Config properties loaded from configprops.json");
+//            log.info("Status titles: " + statusTitles.toString());
+//            log.info("Story prefix: " + storyPrefix);
+//            log.info("statusTitleDisplayMap: " + statusTitleDisplayMap.toString());
+//            log.info("priorityTitleDisplayMap: " + priorityTitleDisplayMap.toString());
+
         } catch (IOException e) {
             log.info("unable to read configprops.json");
             e.printStackTrace();
         }
     }
 
-    private void setDataFromJsonProperties(JsonProperties jsonProperties) {
-        storyPrefix = jsonProperties.getStoryPrefix();
-        statusTitles = jsonProperties.getStatusProperties().stream()
-                .map(LabelProperty::getDisplay)
-                .collect(Collectors.toList());
-
-        statusTitleDisplayMap = jsonProperties.getStatusProperties().stream()
-                .collect(Collectors.toMap(LabelProperty::getTitle, LabelProperty::getDisplay));
-
-        priorityTitleDisplayMap = jsonProperties.getPriorityProperties().stream()
-                .collect(Collectors.toMap(LabelProperty::getTitle, LabelProperty::getDisplay));
-    }
+//    private void setDataFromJsonProperties(JsonProperties jsonProperties) {
+//        storyPrefix = jsonProperties.getStoryPrefix();
+//        statusTitles = jsonProperties.getStatusProperties().stream()
+//                .map(LabelProperty::getDisplay)
+//                .collect(Collectors.toList());
+//
+//        statusTitleDisplayMap = jsonProperties.getStatusProperties().stream()
+//                .collect(Collectors.toMap(LabelProperty::getTitle, LabelProperty::getDisplay));
+//
+//        priorityTitleDisplayMap = jsonProperties.getPriorityProperties().stream()
+//                .collect(Collectors.toMap(LabelProperty::getTitle, LabelProperty::getDisplay));
+//    }
 
 }
