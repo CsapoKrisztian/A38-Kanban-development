@@ -70,11 +70,8 @@ public class IssueController {
     }
 
     @PostMapping("/issuesByProject")
-    public List<com.codecool.a38.kanban.issue.model.graphQLResponse.projects.projectAllIssues.NodesItem> getAllIssuesByProject(@CookieValue(defaultValue = "default") String gitlabAccessToken,
-                                                                                                                               @RequestBody GetAllIssuesRequestBody data) {
-        //if (data.getProjectIDs().size() != 0){
-        return dataManager.getAllIssuesFromProject(gitlabAccessToken, data.getProjectIDs());
-
+    public List<com.codecool.a38.kanban.issue.model.graphQLResponse.projects.projectAllIssues.NodesItem> getAllIssuesByProject(@CookieValue(defaultValue = "default") String gitlabAccessToken, @RequestBody GetAllIssuesRequestBody data) {
+        return dataManager.getAllIssuesFromProject(gitlabAccessToken, data);
     }
 
 }

@@ -459,10 +459,54 @@ public class GitLabGraphQLCaller {
 
     public List<com.codecool.a38.kanban.issue.model.graphQLResponse.projects.projectAllIssues.NodesItem> getAllIssuesFromProject(String token, String projectID) {
         String path = getProjectPathByProjectID(token, projectID);
-        String query = "{\"query\":\"{\\n  project(fullPath:\\\"" + path + "\\\"){\\n    issues(state: opened){\\n      nodes{\\n        id\\n        title\\n        description\\n        webUrl\\n        dueDate\\n        userNotesCount\\n        reference\\n        assignees(first: 1){\\n          nodes{\\n            id\\n            name\\n            avatarUrl\\n          }\\n        }\\n        milestone{\\n          id\\n          title\\n        }\\n        labels{\\n          nodes{\\n            id\\n            title\\n            color\\n          }\\n        }\\n      }\\n    }\\n  }\\n}\",\"variables\":{}}";
+        String query = "{\"query\":\"{\\n" +
+                "  project(fullPath:\\\"" + path + "\\\"){\\n" +
+                "    issues(state: opened){\\n" +
+                "      nodes{\\n" +
+                "        id\\n" +
+                "        title\\n" +
+                "        description\\n" +
+                "        webUrl\\n" +
+                "        dueDate\\n" +
+                "        userNotesCount\\n" +
+                "        reference\\n" +
+                "        assignees(first: 1){\\n" +
+                "          nodes{\\n" +
+                "            id\\n" +
+                "            name\\n" +
+                "            avatarUrl\\n" +
+                "          }\\n" +
+                "        }\\n" +
+                "        milestone{\\n" +
+                "          id\\n" +
+                "          title\\n" +
+                "        }\\n" +
+                "        labels{\\n" +
+                "          nodes{\\n" +
+                "            id\\n" +
+                "            title\\n" +
+                "            color\\n" +
+                "          }\\n" +
+                "        }\\n" +
+                "      }\\n  " +
+                "  }\\n" +
+                "  }\\n" +
+                "}\",\"variables\":{}}";
 
         ResponseEntity<AllIssuesByProjectResponse> responseEntity = restTemplate.postForEntity(
                 URL, new HttpEntity<>(query, getHeaders(token)), AllIssuesByProjectResponse.class);
         return responseEntity.getBody().getData().getProject().getIssues().getNodes();
     }
+
+    public List<com.codecool.a38.kanban.issue.model.graphQLResponse.projects.projectAllIssues.NodesItem> getIssuesByProjectAndMilestoneTitle(String token, String projectID, String milestoneTitle) {
+        String path = getProjectPathByProjectID(token, projectID);
+        String query = "{\"query\":\"{\\n  project(fullPath: \\\"" + path + "\\\") {\\n    issues(state: opened, milestoneTitle: \\\"" + milestoneTitle + "\\\"){\\n      nodes{\\n        id\\n        title\\n        description\\n        webUrl\\n        dueDate\\n        userNotesCount\\n        reference\\n        assignees(first: 1){\\n          nodes{\\n            id\\n            name\\n            avatarUrl\\n          }\\n        }\\n        milestone{\\n          id\\n          title\\n        }\\n        labels{\\n          nodes{\\n            id\\n            title\\n            color\\n          }\\n        }\\n      }\\n    }\\n  }\\n}\\n\",\"variables\":{}}";
+        ResponseEntity<AllIssuesByProjectResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), AllIssuesByProjectResponse.class);
+        return responseEntity.getBody().getData().getProject().getIssues().getNodes();
+    }
+
+   /* public Collection<? extends com.codecool.a38.kanban.issue.model.graphQLResponse.projects.projectAllIssues.NodesItem> getIssuesByProjectAndStoryTitle(String token, String id, String storyTitle) {
+
+    }*/
 }

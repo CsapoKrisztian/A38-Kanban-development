@@ -5,6 +5,7 @@ import com.codecool.a38.kanban.issue.model.Project;
 import com.codecool.a38.kanban.issue.model.UpdateIssueRequestBody;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.*;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issueCurrentStatus.NodesItem;
+import com.codecool.a38.kanban.issue.model.requestBodies.GetAllIssuesRequestBody;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
 import lombok.AllArgsConstructor;
@@ -396,11 +397,30 @@ public class DataManager {
         gitLabGraphQLCaller.changeAssignee(token, assignee, path, issueIID);
     }
 
-    public List<com.codecool.a38.kanban.issue.model.graphQLResponse.projects.projectAllIssues.NodesItem> getAllIssuesFromProject(String token, List<String> projectIDs) {
+    public List<com.codecool.a38.kanban.issue.model.graphQLResponse.projects.projectAllIssues.NodesItem> getAllIssuesFromProject(String token, GetAllIssuesRequestBody data) {
         List<com.codecool.a38.kanban.issue.model.graphQLResponse.projects.projectAllIssues.NodesItem> issues = new ArrayList<>();
-        for (String id : projectIDs) {
-            issues.addAll(gitLabGraphQLCaller.getAllIssuesFromProject(token, id));
+
+        if (!data.getProjectIDs().isEmpty()) {
+            for (String id : data.getProjectIDs()) {
+                if (!data.getMilestoneTitles().isEmpty()) {
+                    for (String milestoneTitle : data.getMilestoneTitles()) {
+                        if (getMilestoneTitles(token, Set.of(id)).contains(milestoneTitle)) {
+                            issues.addAll(gitLabGraphQLCaller.getIssuesByProjectAndMilestoneTitle(token, id, milestoneTitle));
+                        }
+                    }
+                } else if (!data.getStoryTitles().isEmpty()) {
+                    for (String storyTitle : data.getStoryTitles()) {
+                        //issues.addAll(gitLabGraphQLCaller.getIssuesByProjectAndStoryTitle(token, id, storyTitle));
+                    }
+
+                } else {
+                    issues.addAll(gitLabGraphQLCaller.getAllIssuesFromProject(token, id));
+
+                }
+            }
+
         }
+
         return issues;
     }
 
