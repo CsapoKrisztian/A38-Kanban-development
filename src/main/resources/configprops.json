@@ -1,0 +1,54 @@
+{
+  "storyPrefix": "story:",
+
+  "priorities": [
+    {
+      "title": "KB[priority][99][P0]",
+      "display": "PO",
+      "color": "#FFFFFF"
+    },
+    {
+      "title": "KB[priority][99][P1]",
+      "display": "P1",
+      "color": "#FFFFFF"
+    },
+    {
+      "title": "KB[priority][99][P2]",
+      "display": "P2",
+      "color": "#FFFFFF"
+    }
+  ],
+
+  "statuses": [
+    {
+      "title": "[KB[stage][10][Backlog]",
+      "display": "Backlog",
+      "color": "#FFFFFF"
+    },
+    {
+      "title": "[KB[stage][10][Todo]",
+      "display": "Todo",
+      "color": "#FFFFFF"
+    },
+    {
+      "title": "[KB[stage][10][Development]",
+      "display": "Development",
+      "color": "#FFFFFF"
+    },
+    {
+      "title": "[KB[stage][10][Dev review]",
+      "display": "Dev review",
+      "color": "#FFFFFF"
+    },
+    {
+      "title": "[KB[stage][10][Final review]",
+      "display": "Final review",
+      "color": "#FFFFFF"
+    },
+    {
+      "title": "[KB[stage][10][Documentation]",
+      "display": "Documentation",
+      "color": "#FFFFFF"
+    }
+  ]
+}
