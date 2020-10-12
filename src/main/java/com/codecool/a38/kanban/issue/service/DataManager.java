@@ -410,7 +410,7 @@ public class DataManager {
                     }
                 } else if (!data.getStoryTitles().isEmpty()) {
                     for (String storyTitle : data.getStoryTitles()) {
-                        //issues.addAll(gitLabGraphQLCaller.getIssuesByProjectAndStoryTitle(token, id, storyTitle));
+                        issues.addAll(gitLabGraphQLCaller.getIssuesByProjectAndStoryTitle(token, id, storyTitle));
                     }
 
                 } else {

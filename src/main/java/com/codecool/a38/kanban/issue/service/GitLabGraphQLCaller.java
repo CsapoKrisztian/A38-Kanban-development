@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -506,7 +507,15 @@ public class GitLabGraphQLCaller {
         return responseEntity.getBody().getData().getProject().getIssues().getNodes();
     }
 
-   /* public Collection<? extends com.codecool.a38.kanban.issue.model.graphQLResponse.projects.projectAllIssues.NodesItem> getIssuesByProjectAndStoryTitle(String token, String id, String storyTitle) {
+    public Collection<? extends com.codecool.a38.kanban.issue.model.graphQLResponse.projects.projectAllIssues.NodesItem> getIssuesByProjectAndStoryTitle(String token, String projectID, String storyTitle) {
+        String path = getProjectPathByProjectID(token, projectID);
+        String query = "{\"query\":\"{\\n" +
+                "  project(fullPath: \\\"" + path + "\\\") {\\n" +
+                "    issues(state: opened, labelName: \\\"" + storyTitle + "\\\") {\\n" +
+                "      nodes {\\n        id\\n        title\\n        description\\n        webUrl\\n        dueDate\\n        userNotesCount\\n        reference\\n        assignees(first: 1) {\\n          nodes {\\n            id\\n            name\\n            avatarUrl\\n          }\\n        }\\n        milestone {\\n          id\\n          title\\n        }\\n        labels {\\n          nodes {\\n            id\\n            title\\n            color\\n          }\\n        }\\n      }\\n    }\\n  }\\n}\\n\",\"variables\":{}}";
 
-    }*/
+        ResponseEntity<AllIssuesByProjectResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), AllIssuesByProjectResponse.class);
+        return responseEntity.getBody().getData().getProject().getIssues().getNodes();
+    }
 }
