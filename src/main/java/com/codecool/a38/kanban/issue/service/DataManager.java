@@ -52,9 +52,8 @@ public class DataManager {
                     .getData().getProjects();
 
             currentProjects.getNodes().forEach(projectNode -> {
-                List<IssueNode> issueNodeList = getAllProjectsIssueNodes(token, milestoneTitles, projectNode);
-
                 Project currentProject = createProjectFromProjectNode(projectNode);
+                List<IssueNode> issueNodeList = getAllProjectsIssueNodes(token, milestoneTitles, projectNode);
                 issueNodeList.forEach(issueNode -> {
                     Issue issue = createIssueFromIssueNode(issueNode);
                     issue.setProject(currentProject);
@@ -97,9 +96,8 @@ public class DataManager {
                     .getData().getProjects();
 
             currentProjects.getNodes().forEach(projectNode -> {
-                List<IssueNode> issueNodeList = getAllProjectsIssueNodes(token, milestoneTitles, projectNode);
-
                 Project currentProject = createProjectFromProjectNode(projectNode);
+                List<IssueNode> issueNodeList = getAllProjectsIssueNodes(token, milestoneTitles, projectNode);
                 issueNodeList.forEach((issueNode) -> {
                     Issue issue = createIssueFromIssueNode(issueNode);
                     issue.setProject(currentProject);
@@ -241,6 +239,7 @@ public class DataManager {
             currentProjects.getNodes().forEach(projectNode -> {
                 List<Milestone> milestoneList = new ArrayList<>();
                 addProjectMilestones(token, projectNode, milestoneList);
+
                 Group group = projectNode.getGroup();
                 if (group != null) {
                     addGroupMilestones(token, milestoneList, group);
