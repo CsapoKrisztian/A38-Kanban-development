@@ -1,7 +1,6 @@
 package com.codecool.a38.kanban.issue.service;
 
 import com.codecool.a38.kanban.config.model.JsonProperties;
-import com.codecool.a38.kanban.config.model.StatusProperty;
 import com.codecool.a38.kanban.issue.model.Issue;
 import com.codecool.a38.kanban.issue.model.Project;
 import com.codecool.a38.kanban.issue.model.UpdateIssueRequestBody;
@@ -23,8 +22,6 @@ public class DataManager {
 
     private GitLabGraphQLCaller gitLabGraphQLCaller;
 
-    private JsonProperties jsonProperties;
-
     private static final String storyPrefix = "Story: ";
 
     private static final String priorityPrefix = "Priority: ";
@@ -35,9 +32,7 @@ public class DataManager {
 
     public List<String> getStatusTitles() {
         log.info("get status titles");
-        return jsonProperties.getStatuses().stream()
-                .map(StatusProperty::getDisplay)
-                .collect(Collectors.toList());
+        return statusTitles;
     }
 
     public List<AssigneeIssues> getAssigneeIssuesList(String token, Set<String> projectIds,
