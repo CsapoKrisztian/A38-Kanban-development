@@ -8,7 +8,7 @@ import java.util.List;
 public class GetAllIssuesRequestBody {
 
     List<String> projectIDs;
-    List<String> milestoneIDs;
-    List<String> storyIDs;
+    List<String> milestoneTitles;
+    List<String> storyTitles;
 
 }
