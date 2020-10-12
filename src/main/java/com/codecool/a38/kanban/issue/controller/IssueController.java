@@ -53,7 +53,7 @@ public class IssueController {
 
     @GetMapping("/statuses")
     public List<String> getStatusTitles() {
-        return DataManager.getStatusTitles();
+        return dataManager.getStatusDisplayTitles();
     }
 
     @PostMapping("/update")

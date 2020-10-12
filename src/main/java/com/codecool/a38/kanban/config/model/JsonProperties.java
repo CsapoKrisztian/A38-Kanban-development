@@ -18,8 +18,8 @@ public class JsonProperties {
 
     private String storyPrefix;
 
-    private List<PriorityProperty> priorities;
+    private List<LabelProperty> priorities;
 
-    private List<StatusProperty> statuses;
+    private List<LabelProperty> statuses;
 
 }

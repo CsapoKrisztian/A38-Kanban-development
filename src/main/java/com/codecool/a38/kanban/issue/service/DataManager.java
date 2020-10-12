@@ -1,7 +1,7 @@
 package com.codecool.a38.kanban.issue.service;
 
 import com.codecool.a38.kanban.config.model.JsonProperties;
-import com.codecool.a38.kanban.config.model.StatusProperty;
+import com.codecool.a38.kanban.config.model.LabelProperty;
 import com.codecool.a38.kanban.issue.model.Issue;
 import com.codecool.a38.kanban.issue.model.Project;
 import com.codecool.a38.kanban.issue.model.UpdateIssueRequestBody;
@@ -9,7 +9,6 @@ import com.codecool.a38.kanban.issue.model.graphQLResponse.*;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issueCurrentStatus.NodesItem;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +16,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 @Slf4j
 public class DataManager {
 
@@ -25,12 +23,23 @@ public class DataManager {
 
     private JsonProperties jsonProperties;
 
+    private final String storyPrefix;
 
-    public List<String> getStatusTitles() {
-        log.info("get status titles");
-        return jsonProperties.getStatuses().stream()
-                .map(StatusProperty::getDisplay)
+    private final List<String> statusDisplayTitles;
+
+    public DataManager(GitLabGraphQLCaller gitLabGraphQLCaller, JsonProperties jsonProperties) {
+        this.gitLabGraphQLCaller = gitLabGraphQLCaller;
+        this.jsonProperties = jsonProperties;
+
+        this.storyPrefix = jsonProperties.getStoryPrefix();
+        this.statusDisplayTitles = jsonProperties.getStatuses().stream()
+                .map(LabelProperty::getDisplay)
                 .collect(Collectors.toList());
+    }
+
+    public List<String> getStatusDisplayTitles() {
+        log.info("get status titles");
+        return statusDisplayTitles;
     }
 
     public List<AssigneeIssues> getAssigneeIssuesList(String token, Set<String> projectIds,
@@ -183,12 +192,21 @@ public class DataManager {
             if (label.getTitle().startsWith(storyPrefix)) {
                 label.setTitle(label.getTitle().substring(storyPrefix.length()));
                 thisIssue.setStory(label);
-            } else if (label.getTitle().startsWith(priorityPrefix)) {
-                label.setTitle(label.getTitle().substring(priorityPrefix.length()));
-                thisIssue.setPriority(label);
-            } else if (statusTitles.stream()
-                    .anyMatch(existingStatus -> existingStatus.equals(label.getTitle()))) {
-                thisIssue.setStatus(label);
+                return;
+            }
+            for (LabelProperty priorityProperty : jsonProperties.getPriorities()) {
+                if (label.getTitle().equals(priorityProperty.getTitle())) {
+                    label.setTitle(priorityProperty.getDisplay());
+                    thisIssue.setPriority(label);
+                    return;
+                }
+            }
+            for (LabelProperty statusProperty : jsonProperties.getStatuses()) {
+                if (label.getTitle().equals(statusProperty.getTitle())) {
+                    label.setTitle(statusProperty.getDisplay());
+                    thisIssue.setPriority(label);
+                    return;
+                }
             }
         });
     }
@@ -372,7 +390,7 @@ public class DataManager {
         int newLabelID = Integer.parseInt(gitLabGraphQLCaller.getStatusID(path, data.getNewLabel(), token).replaceAll("([A-z /]).", ""));
 
         for (NodesItem node : issuesCurrentLabels) {
-            if (statusTitles.contains(node.getTitle())) {
+            if (jsonProperties.getStatuses().stream().map(LabelProperty::getDisplay).collect(Collectors.toSet()).contains(node.getTitle())) {
                 currentStatus = node.getId();
             }
         }
