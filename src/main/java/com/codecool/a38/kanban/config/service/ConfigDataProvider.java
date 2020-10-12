@@ -45,7 +45,7 @@ public class ConfigDataProvider {
             log.info("priorityTitleDisplayMap: " + priorityTitleDisplayMap.toString());
 
         } catch (IOException e) {
-            log.info("unable to read configprops.json");
+            log.info("Unable to read configprops.json");
             e.printStackTrace();
         }
     }

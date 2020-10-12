@@ -1,6 +1,6 @@
 package com.codecool.a38.kanban.issue.service;
 
-import com.codecool.a38.kanban.config.model.JsonProperties;
+import com.codecool.a38.kanban.config.service.ConfigDataProvider;
 import com.codecool.a38.kanban.issue.model.Issue;
 import com.codecool.a38.kanban.issue.model.Project;
 import com.codecool.a38.kanban.issue.model.UpdateIssueRequestBody;
@@ -22,17 +22,16 @@ public class DataManager {
 
     private GitLabGraphQLCaller gitLabGraphQLCaller;
 
+    private ConfigDataProvider configDataProvider;
+
     private static final String storyPrefix = "Story: ";
 
     private static final String priorityPrefix = "Priority: ";
 
-    private static final List<String> statusTitles = Arrays.asList("Backlog", "Todo", "Development",
-            "Dev review", "Final review", "Documentation");
-
 
     public List<String> getStatusTitles() {
         log.info("get status titles");
-        return statusTitles;
+        return configDataProvider.getStatusTitles();
     }
 
     public List<AssigneeIssues> getAssigneeIssuesList(String token, Set<String> projectIds,
@@ -188,7 +187,7 @@ public class DataManager {
             } else if (label.getTitle().startsWith(priorityPrefix)) {
                 label.setTitle(label.getTitle().substring(priorityPrefix.length()));
                 thisIssue.setPriority(label);
-            } else if (statusTitles.stream()
+            } else if (configDataProvider.getStatusTitles().stream()
                     .anyMatch(existingStatus -> existingStatus.equals(label.getTitle()))) {
                 thisIssue.setStatus(label);
             }
@@ -374,7 +373,7 @@ public class DataManager {
         int newLabelID = Integer.parseInt(gitLabGraphQLCaller.getStatusID(path, data.getNewLabel(), token).replaceAll("([A-z /]).", ""));
 
         for (NodesItem node : issuesCurrentLabels) {
-            if (statusTitles.contains(node.getTitle())) {
+            if (configDataProvider.getStatusTitles().contains(node.getTitle())) {
                 currentStatus = node.getId();
             }
         }
