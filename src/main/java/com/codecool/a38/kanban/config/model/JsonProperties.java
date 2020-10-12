@@ -11,8 +11,8 @@ public class JsonProperties {
 
     private String storyPrefix;
 
-    private List<LabelProperty> priorityProperties;
+    private List<LabelProperty> priorities;
 
-    private List<LabelProperty> statusProperties;
+    private List<LabelProperty> statuses;
 
 }

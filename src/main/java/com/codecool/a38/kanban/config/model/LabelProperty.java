@@ -9,6 +9,4 @@ public class LabelProperty {
 
     private String display;
 
-    private String color;
-
 }

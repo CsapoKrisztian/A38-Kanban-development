@@ -4,18 +4,15 @@
   "priorities": [
     {
       "title": "KB[priority][99][P0]",
-      "display": "PO",
-      "color": "#FFFFFF"
+      "display": "PO"
     },
     {
       "title": "KB[priority][99][P1]",
-      "display": "P1",
-      "color": "#FFFFFF"
+      "display": "P1"
     },
     {
       "title": "KB[priority][99][P2]",
-      "display": "P2",
-      "color": "#FFFFFF"
+      "display": "P2"
     }
   ],
 
