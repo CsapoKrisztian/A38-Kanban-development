@@ -25,6 +25,13 @@ public class DataManager {
 
     private JsonProperties jsonProperties;
 
+    private static final String storyPrefix = "Story: ";
+
+    private static final String priorityPrefix = "Priority: ";
+
+    private static final List<String> statusTitles = Arrays.asList("Backlog", "Todo", "Development",
+            "Dev review", "Final review", "Documentation");
+
 
     public List<String> getStatusTitles() {
         log.info("get status titles");
