@@ -1,5 +1,7 @@
 package com.codecool.a38.kanban.issue.service;
 
+import com.codecool.a38.kanban.config.model.JsonProperties;
+import com.codecool.a38.kanban.config.model.StatusProperty;
 import com.codecool.a38.kanban.issue.model.Issue;
 import com.codecool.a38.kanban.issue.model.Project;
 import com.codecool.a38.kanban.issue.model.UpdateIssueRequestBody;
@@ -21,23 +23,15 @@ public class DataManager {
 
     private GitLabGraphQLCaller gitLabGraphQLCaller;
 
-    private static final List<String> statusTitles = Arrays.asList(
-            "Backlog",
-            "Todo",
-            "Development",
-            "Dev review",
-            "Final review",
-            "Documentation");
+    private JsonProperties jsonProperties;
 
-    public static List<String> getStatusTitles() {
+
+    public List<String> getStatusTitles() {
         log.info("get status titles");
-        return statusTitles;
+        return jsonProperties.getStatuses().stream()
+                .map(StatusProperty::getDisplay)
+                .collect(Collectors.toList());
     }
-
-    private static final String priorityPrefix = "Priority: ";
-
-    private static final String storyPrefix = "Story: ";
-
 
     public List<AssigneeIssues> getAssigneeIssuesList(String token, Set<String> projectIds,
                                                       Set<String> milestoneTitles, Set<String> storyTitles) {

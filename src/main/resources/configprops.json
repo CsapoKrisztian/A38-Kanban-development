@@ -1,5 +1,5 @@
 {
-  "storyPrefix": "story:",
+  "storyPrefix": "Story: ",
 
   "priorities": [
     {
@@ -22,33 +22,28 @@
   "statuses": [
     {
       "title": "[KB[stage][10][Backlog]",
-      "display": "Backlog",
-      "color": "#FFFFFF"
+      "display": "Backlog"
     },
     {
       "title": "[KB[stage][10][Todo]",
-      "display": "Todo",
-      "color": "#FFFFFF"
+      "display": "Todo"
     },
     {
       "title": "[KB[stage][10][Development]",
-      "display": "Development",
-      "color": "#FFFFFF"
+      "display": "Development"
     },
     {
       "title": "[KB[stage][10][Dev review]",
-      "display": "Dev review",
-      "color": "#FFFFFF"
+      "display": "Dev review"
     },
     {
       "title": "[KB[stage][10][Final review]",
-      "display": "Final review",
-      "color": "#FFFFFF"
+      "display": "Final review"
     },
     {
       "title": "[KB[stage][10][Documentation]",
-      "display": "Documentation",
-      "color": "#FFFFFF"
+      "display": "Documentation"
     }
   ]
+
 }
