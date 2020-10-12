@@ -9,8 +9,6 @@ public class Filter {
 
     private Set<String> projectIds;
 
-    private Set<String> projectFullPaths;
-
     private Set<String> milestoneTitles;
 
     private Set<String> storyTitles;
