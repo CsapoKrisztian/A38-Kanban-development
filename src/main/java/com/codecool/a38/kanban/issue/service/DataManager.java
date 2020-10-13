@@ -6,8 +6,8 @@ import com.codecool.a38.kanban.issue.model.Project;
 import com.codecool.a38.kanban.issue.model.UpdateIssueRequestBody;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.*;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issueCurrentStatus.NodesItem;
-import com.codecool.a38.kanban.issue.model.requestBodies.GetAllIssuesRequestBody;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
+import com.codecool.a38.kanban.issue.model.transfer.Filter;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -395,31 +395,79 @@ public class DataManager {
         gitLabGraphQLCaller.changeAssignee(token, userID, path, issueIID);
     }
 
-    public List<com.codecool.a38.kanban.issue.model.graphQLResponse.projects.projectAllIssues.NodesItem> getAllIssuesFromProject(String token, GetAllIssuesRequestBody data) {
-        List<com.codecool.a38.kanban.issue.model.graphQLResponse.projects.projectAllIssues.NodesItem> issues = new ArrayList<>();
+    private Map<User, List<Issue>> organizeIssuesByAssignee(List<IssueNode> issueNodeList, Projects currentProjects, Map<User, List<Issue>> assigneeIssuesMap) {
+        currentProjects.getNodes().forEach(projectNode -> {
+            Project currentProject = createProjectFromProjectNode(projectNode);
+            issueNodeList.forEach(issueNode -> {
+                Issue issue = createIssueFromIssueNode(issueNode);
+                issue.setProject(currentProject);
 
-        if (!data.getProjectIDs().isEmpty()) {
-            for (String id : data.getProjectIDs()) {
-                if (!data.getMilestoneTitles().isEmpty()) {
-                    for (String milestoneTitle : data.getMilestoneTitles()) {
-                        if (getMilestoneTitles(token, Set.of(id)).contains(milestoneTitle)) {
-                            issues.addAll(gitLabGraphQLCaller.getIssuesByProjectAndMilestoneTitle(token, id, milestoneTitle));
-                        }
+                if (issue.getStatus() != null
+                    // && issue.getStory() != null && storyTitles.contains(issue.getStory().getTitle())
+                ) {
+                    User assignee = issue.getAssignee();
+                    if (!assigneeIssuesMap.containsKey(assignee)) {
+                        assigneeIssuesMap.put(assignee, new ArrayList<>());
                     }
-                } else if (!data.getStoryTitles().isEmpty()) {
-                    for (String storyTitle : data.getStoryTitles()) {
-                        issues.addAll(gitLabGraphQLCaller.getIssuesByProjectAndStoryTitle(token, id, storyTitle));
-                    }
-
-                } else {
-                    issues.addAll(gitLabGraphQLCaller.getAllIssuesFromProject(token, id));
-
+                    assigneeIssuesMap.get(assignee).add(issue);
                 }
-            }
-
-        }
-
-        return issues;
+            });
+        });
+        return assigneeIssuesMap;
     }
 
+    public List<AssigneeIssues> getAllIssuesFromProject(String token, Filter data) {
+        Map<User, List<Issue>> assigneeIssuesMap = new HashMap<>();
+
+        List<IssueNode> issues = new ArrayList<>();
+        boolean hasNextPage;
+        List<AssigneeIssues> organizedIssuesList = new ArrayList<>();
+        String currentEndCursor = GitLabGraphQLCaller.getStartPagination();
+        Projects currentProjects = new Projects(); /*= gitLabGraphQLCaller
+                .getProjectsIssuesResponse(token, projectIds, milestoneTitles, currentEndCursor)
+                .getData().getProjects();*/
+
+        do {
+            if (!data.getProjectIds().isEmpty()) {
+                for (String id : data.getProjectIds()) {
+                    if (!data.getMilestoneTitles().isEmpty()) {
+                        for (String milestoneTitle : data.getMilestoneTitles()) {
+                            if (getMilestoneTitles(token, Set.of(id)).contains(milestoneTitle)) {
+                                //issues.addAll(gitLabGraphQLCaller.getIssuesByProjectAndMilestoneTitle(token, id, milestoneTitle));
+                            }
+                        }
+                    } else if (!data.getStoryTitles().isEmpty()) {
+                        for (String storyTitle : data.getStoryTitles()) {
+                            // issues.addAll(gitLabGraphQLCaller.getIssuesByProjectAndStoryTitle(token, id, storyTitle));
+                        }
+
+                    } else {
+                        currentProjects = gitLabGraphQLCaller
+                                .getAllIssuesFromProject(token, id, currentEndCursor)
+                                .getData().getProjects();
+
+                        currentProjects.getNodes()
+                                .forEach(projectNode -> {
+                                    issues.addAll(projectNode.getIssues().getNodes());
+                                });
+                    }
+                    organizeIssuesByAssignee(issues, currentProjects, assigneeIssuesMap);
+                    issues.clear();
+                }
+            }
+            PageInfo projectsPageInfo = currentProjects.getPageInfo();
+            currentEndCursor = projectsPageInfo.getEndCursor();
+            hasNextPage = projectsPageInfo.isHasNextPage();
+
+        } while (hasNextPage);
+
+        log.info("Returned organized issues list");
+
+        return assigneeIssuesMap.entrySet().stream()
+                .map(e -> AssigneeIssues.builder()
+                        .assignee(e.getKey())
+                        .issues(e.getValue())
+                        .build())
+                .collect(Collectors.toList());
+    }
 }
