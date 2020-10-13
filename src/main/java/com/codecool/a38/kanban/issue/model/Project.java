@@ -10,6 +10,8 @@ public class Project {
 
     private String id;
 
+    private String fullPath;
+
     private String name;
 
     private Group group;

@@ -1,6 +1,8 @@
 package com.codecool.a38.kanban.issue.controller;
 
+import com.codecool.a38.kanban.issue.model.ChangeAssigneeRequest;
 import com.codecool.a38.kanban.issue.model.Project;
+import com.codecool.a38.kanban.issue.model.UpdateIssueRequestBody;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
 import com.codecool.a38.kanban.issue.model.transfer.Filter;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
@@ -21,13 +23,15 @@ public class IssueController {
     @PostMapping("/issues/orderByAssignee")
     public List<AssigneeIssues> getAssigneeIssuesList(@CookieValue(defaultValue = "default") String gitlabAccessToken,
                                                       @RequestBody Filter filter) {
-        return dataManager.getAssigneeIssuesList(gitlabAccessToken, filter);
+        return dataManager.getAssigneeIssuesList(gitlabAccessToken, filter.getProjectIds(),
+                filter.getMilestoneTitles(), filter.getStoryTitles());
     }
 
     @PostMapping("/issues/orderByStory")
     public List<StoryIssues> getStoryIssuesList(@CookieValue(defaultValue = "default") String gitlabAccessToken,
                                                 @RequestBody Filter filter) {
-        return dataManager.getStoryIssuesList(gitlabAccessToken, filter);
+        return dataManager.getStoryIssuesList(gitlabAccessToken, filter.getProjectIds(),
+                filter.getMilestoneTitles(), filter.getStoryTitles());
     }
 
     @GetMapping("/projects")
@@ -38,18 +42,30 @@ public class IssueController {
     @PostMapping("/milestones")
     public Set<String> getMilestoneTitles(@CookieValue(defaultValue = "default") String gitlabAccessToken,
                                           @RequestBody Filter filter) {
-        return dataManager.getMilestoneTitles(gitlabAccessToken, filter);
+        return dataManager.getMilestoneTitles(gitlabAccessToken, filter.getProjectIds());
     }
 
     @PostMapping("/stories")
     public Set<String> getStoryTitles(@CookieValue(defaultValue = "default") String gitlabAccessToken,
                                       @RequestBody Filter filter) {
-        return dataManager.getStoryTitles(gitlabAccessToken, filter);
+        return dataManager.getStoryTitles(gitlabAccessToken, filter.getProjectIds());
     }
 
     @GetMapping("/statuses")
     public List<String> getStatusTitles() {
-        return DataManager.getStatusTitles();
+        return dataManager.getStatusTitles();
+    }
+
+    @PostMapping("/update")
+    public void updateIssue(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                            @RequestBody UpdateIssueRequestBody data) {
+        dataManager.updateIssue(gitlabAccessToken, data);
+    }
+
+    @PostMapping("/newAssignee")
+    public void changeAssignee(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                               @RequestBody ChangeAssigneeRequest data) {
+        dataManager.changeAssignee(gitlabAccessToken, data.getAssignee(), data.getIssueID());
     }
 
 }

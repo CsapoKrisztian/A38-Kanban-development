@@ -10,4 +10,7 @@ public class Labels {
     @JsonProperty("nodes")
     private List<Label> nodes;
 
+    @JsonProperty("pageInfo")
+    private PageInfo pageInfo;
+
 }

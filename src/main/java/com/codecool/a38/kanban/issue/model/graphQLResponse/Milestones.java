@@ -11,4 +11,7 @@ public class Milestones{
 	@JsonProperty("nodes")
 	private List<Milestone> nodes;
 
+	@JsonProperty("pageInfo")
+	private PageInfo pageInfo;
+
 }
