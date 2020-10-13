@@ -433,7 +433,14 @@ public class DataManager {
                     if (!data.getMilestoneTitles().isEmpty()) {
                         for (String milestoneTitle : data.getMilestoneTitles()) {
                             if (getMilestoneTitles(token, Set.of(id)).contains(milestoneTitle)) {
-                                //issues.addAll(gitLabGraphQLCaller.getIssuesByProjectAndMilestoneTitle(token, id, milestoneTitle));
+                                currentProjects = gitLabGraphQLCaller
+                                        .getIssuesByProjectAndMilestoneTitle(token, id, milestoneTitle, currentEndCursor)
+                                        .getData().getProjects();
+
+                                currentProjects.getNodes()
+                                        .forEach(projectNode -> {
+                                            issues.addAll(projectNode.getIssues().getNodes());
+                                        });
                             }
                         }
                     } else if (!data.getStoryTitles().isEmpty()) {
