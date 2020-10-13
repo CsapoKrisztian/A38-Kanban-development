@@ -442,7 +442,13 @@ public class GitLabGraphQLCaller {
     }
 
     public void changeAssignee(String token, String userID, String path, int issueIID) {
-        String username = getUsernameByUserID(token, userID);
+        String username;
+        if (userID == "unassigned" || userID == null || userID == "") {
+            username = "";
+        } else {
+            username = getUsernameByUserID(token, userID);
+        }
+
         String q = "{\"query\":\"mutation {\\n" +
                 "  issueSetAssignees(input: {assigneeUsernames: \\\"" + username + "\\\", projectPath: \\\"" + path + "\\\", iid: \\\"" + issueIID + "\\\"}) {\\n" +
                 "    issue {\\n" +

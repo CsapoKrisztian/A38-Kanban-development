@@ -379,10 +379,12 @@ public class DataManager {
                 currentStatusId = labelNode.getId();
             }
         }
-
-        int removableLabelID = Integer.parseInt(currentStatusId.replaceAll("([A-z /]).", ""));
-
-        gitLabGraphQLCaller.updateIssue(token, path, issueIID, removableLabelID, newLabelID);
+        if (!currentStatusId.equals("")) {
+            int removableLabelID = Integer.parseInt(currentStatusId.replaceAll("([A-z /]).", ""));
+            if (removableLabelID != newLabelID) {
+                gitLabGraphQLCaller.updateIssue(token, path, issueIID, removableLabelID, newLabelID);
+            }
+        }
     }
 
     public void changeAssignee(String token, String userID, String issueID) {
