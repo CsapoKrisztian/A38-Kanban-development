@@ -1,5 +1,6 @@
 package com.codecool.a38.kanban.issue.service;
 
+import com.codecool.a38.kanban.config.service.ConfigDataProvider;
 import com.codecool.a38.kanban.issue.model.Issue;
 import com.codecool.a38.kanban.issue.model.Project;
 import com.codecool.a38.kanban.issue.model.UpdateIssueRequestBody;
@@ -22,23 +23,13 @@ public class DataManager {
 
     private GitLabGraphQLCaller gitLabGraphQLCaller;
 
-    private static final List<String> statusTitles = Arrays.asList(
-            "Backlog",
-            "Todo",
-            "Development",
-            "Dev review",
-            "Final review",
-            "Documentation");
+    private ConfigDataProvider configDataProvider;
 
-    public static List<String> getStatusTitles() {
+
+    public List<String> getStatusTitles() {
         log.info("get status titles");
-        return statusTitles;
+        return configDataProvider.getStatusTitles();
     }
-
-    private static final String priorityPrefix = "Priority: ";
-
-    private static final String storyPrefix = "Story: ";
-
 
     public List<AssigneeIssues> getAssigneeIssuesList(String token, Set<String> projectIds,
                                                       Set<String> milestoneTitles, Set<String> storyTitles) {
@@ -53,9 +44,8 @@ public class DataManager {
                     .getData().getProjects();
 
             currentProjects.getNodes().forEach(projectNode -> {
-                List<IssueNode> issueNodeList = getAllProjectsIssueNodes(token, milestoneTitles, projectNode);
-
                 Project currentProject = createProjectFromProjectNode(projectNode);
+                List<IssueNode> issueNodeList = getAllProjectsIssueNodes(token, milestoneTitles, projectNode);
                 issueNodeList.forEach(issueNode -> {
                     Issue issue = createIssueFromIssueNode(issueNode);
                     issue.setProject(currentProject);
@@ -98,9 +88,8 @@ public class DataManager {
                     .getData().getProjects();
 
             currentProjects.getNodes().forEach(projectNode -> {
-                List<IssueNode> issueNodeList = getAllProjectsIssueNodes(token, milestoneTitles, projectNode);
-
                 Project currentProject = createProjectFromProjectNode(projectNode);
+                List<IssueNode> issueNodeList = getAllProjectsIssueNodes(token, milestoneTitles, projectNode);
                 issueNodeList.forEach((issueNode) -> {
                     Issue issue = createIssueFromIssueNode(issueNode);
                     issue.setProject(currentProject);
@@ -189,14 +178,20 @@ public class DataManager {
 
     private void setStoryPriorityStatusOfIssueFromIssueNode(Issue thisIssue, IssueNode issueNode) {
         issueNode.getLabels().getNodes().forEach(label -> {
-            if (label.getTitle().startsWith(storyPrefix)) {
-                label.setTitle(label.getTitle().substring(storyPrefix.length()));
+            if (label.getTitle().startsWith(configDataProvider.getStoryPrefix())) {
+                label.setTitle(label.getTitle().substring(configDataProvider.getStoryPrefix().length()));
                 thisIssue.setStory(label);
-            } else if (label.getTitle().startsWith(priorityPrefix)) {
-                label.setTitle(label.getTitle().substring(priorityPrefix.length()));
+                return;
+            }
+            String priorityDisplayTitle = configDataProvider.getPriorityTitleDisplayMap().get(label.getTitle());
+            if (priorityDisplayTitle != null) {
+                label.setTitle(priorityDisplayTitle);
                 thisIssue.setPriority(label);
-            } else if (statusTitles.stream()
-                    .anyMatch(existingStatus -> existingStatus.equals(label.getTitle()))) {
+                return;
+            }
+            String statusDisplayTitle = configDataProvider.getStatusTitleDisplayMap().get(label.getTitle());
+            if (statusDisplayTitle != null) {
+                label.setTitle(statusDisplayTitle);
                 thisIssue.setStatus(label);
             }
         });
@@ -242,6 +237,7 @@ public class DataManager {
             currentProjects.getNodes().forEach(projectNode -> {
                 List<Milestone> milestoneList = new ArrayList<>();
                 addProjectMilestones(token, projectNode, milestoneList);
+
                 Group group = projectNode.getGroup();
                 if (group != null) {
                     addGroupMilestones(token, milestoneList, group);
@@ -341,7 +337,7 @@ public class DataManager {
                 }
 
                 storyLabelList.forEach(label -> storyTitles.add(label.getTitle()
-                        .substring(storyPrefix.length())));
+                        .substring(configDataProvider.getStoryPrefix().length())));
             });
 
             PageInfo projectsPageInfo = currentProjects.getPageInfo();
@@ -374,27 +370,29 @@ public class DataManager {
 
     public void updateIssue(String token, UpdateIssueRequestBody data) {
         List<NodesItem> issuesCurrentLabels = gitLabGraphQLCaller.getIssueCurrentStatus(token, data.getId());
-        String currentStatus = "";
+        String currentStatusId = "";
         String path = gitLabGraphQLCaller.getProjectPath(data.getId(), token);
         int issueIID = gitLabGraphQLCaller.getIssuesIID(token, data.getId());
         int newLabelID = Integer.parseInt(gitLabGraphQLCaller.getStatusID(path, data.getNewLabel(), token).replaceAll("([A-z /]).", ""));
 
-        for (NodesItem node : issuesCurrentLabels) {
-            if (statusTitles.contains(node.getTitle())) {
-                currentStatus = node.getId();
+        for (NodesItem labelNode : issuesCurrentLabels) {
+            if (configDataProvider.getStatusTitles().contains(labelNode.getTitle())) {
+                currentStatusId = labelNode.getId();
             }
         }
-
-        int removableLabelID = Integer.parseInt(currentStatus.replaceAll("([A-z /]).", ""));
-
-        gitLabGraphQLCaller.updateIssue(token, path, issueIID, removableLabelID, newLabelID);
+        if (!currentStatusId.equals("")) {
+            int removableLabelID = Integer.parseInt(currentStatusId.replaceAll("([A-z /]).", ""));
+            if (removableLabelID != newLabelID) {
+                gitLabGraphQLCaller.updateIssue(token, path, issueIID, removableLabelID, newLabelID);
+            }
+        }
     }
 
-    public void changeAssignee(String token, String assignee, String issueID) {
+    public void changeAssignee(String token, String userID, String issueID) {
         String path = gitLabGraphQLCaller.getProjectPath(issueID, token);
         int issueIID = gitLabGraphQLCaller.getIssuesIID(token, issueID);
 
-        gitLabGraphQLCaller.changeAssignee(token, assignee, path, issueIID);
+        gitLabGraphQLCaller.changeAssignee(token, userID, path, issueIID);
     }
 
     public List<com.codecool.a38.kanban.issue.model.graphQLResponse.projects.projectAllIssues.NodesItem> getAllIssuesFromProject(String token, GetAllIssuesRequestBody data) {
