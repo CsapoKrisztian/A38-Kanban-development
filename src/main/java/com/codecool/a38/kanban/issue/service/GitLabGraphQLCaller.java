@@ -1,8 +1,5 @@
 package com.codecool.a38.kanban.issue.service;
 
-import com.codecool.a38.kanban.issue.model.graphQLResponse.projectsData.ProjectsDataResponse;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.singleGroupData.SingleGroupDataResponse;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.singleProjectData.SingleProjectDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.changeAssigneeResponse.ChangeIssueAssigneeResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issueCurrentStatus.IssueCurrentLabelsResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issueCurrentStatus.NodesItem;
@@ -10,6 +7,10 @@ import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issueU
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issuesIID.IssuesIIDResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.projectPathResponse.ProjectPathResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.statusIDresponse.StatusIDResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.projectsData.ProjectsDataResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.singleGroupData.SingleGroupDataResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.singleProjectData.SingleProjectDataResponse;
+import com.codecool.a38.kanban.issue.model.usernameByUserID.UsernameResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -426,9 +427,22 @@ public class GitLabGraphQLCaller {
         log.info(responseEntity.getBody().getData().getUpdateIssue().getIssue().getLabels().getNodes().toString());
     }
 
-    public void changeAssignee(String token, String assignee, String path, int issueIID) {
+    private String getUsernameByUserID(String token, String userID) {
+        String query = "{\"query\":\"{\\n" +
+                "  user(id:\\\"" + userID + "\\\"){\\n" +
+                "    username\\n" +
+                "  }\\n}\\n\",\"variables\":{}}";
+
+        ResponseEntity<UsernameResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), UsernameResponse.class);
+        return responseEntity.getBody().getData().getUser().getUsername();
+
+    }
+
+    public void changeAssignee(String token, String userID, String path, int issueIID) {
+        String username = getUsernameByUserID(token, userID);
         String q = "{\"query\":\"mutation {\\n" +
-                "  issueSetAssignees(input: {assigneeUsernames: \\\"" + assignee + "\\\", projectPath: \\\"" + path + "\\\", iid: \\\"" + issueIID + "\\\"}) {\\n" +
+                "  issueSetAssignees(input: {assigneeUsernames: \\\"" + username + "\\\", projectPath: \\\"" + path + "\\\", iid: \\\"" + issueIID + "\\\"}) {\\n" +
                 "    issue {\\n" +
                 "      title\\n" +
                 "    }\\n" +

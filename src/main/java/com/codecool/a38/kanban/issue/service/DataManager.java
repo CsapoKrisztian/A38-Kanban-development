@@ -389,11 +389,11 @@ public class DataManager {
         gitLabGraphQLCaller.updateIssue(token, path, issueIID, removableLabelID, newLabelID);
     }
 
-    public void changeAssignee(String token, String assignee, String issueID) {
+    public void changeAssignee(String token, String userID, String issueID) {
         String path = gitLabGraphQLCaller.getProjectPath(issueID, token);
         int issueIID = gitLabGraphQLCaller.getIssuesIID(token, issueID);
 
-        gitLabGraphQLCaller.changeAssignee(token, assignee, path, issueIID);
+        gitLabGraphQLCaller.changeAssignee(token, userID, path, issueIID);
     }
 
 }

@@ -63,9 +63,8 @@ public class IssueController {
     }
 
     @PostMapping("/newAssignee")
-    public void changeAssignee(@CookieValue(defaultValue = "default") String gitlabAccessToken,
-                               @RequestBody ChangeAssigneeRequest data) {
+    public void changeAassigneeIDssignee(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                                         @RequestBody ChangeAssigneeRequest data) {
         dataManager.changeAssignee(gitlabAccessToken, data.getAssignee(), data.getIssueID());
     }
-
 }
