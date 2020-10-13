@@ -75,6 +75,7 @@ public class GitLabGraphQLCaller {
                 "            nodes {\\n" +
                 "              id\\n" +
                 "              title\\n" +
+                "              description\\n" +
                 "              color\\n" +
                 "            }\\n" +
                 "          }\\n" +
@@ -127,6 +128,7 @@ public class GitLabGraphQLCaller {
                 "          nodes {\\n" +
                 "            id\\n" +
                 "            title\\n" +
+                "            description\\n" +
                 "            color\\n" +
                 "          }\\n" +
                 "        }\\n" +
