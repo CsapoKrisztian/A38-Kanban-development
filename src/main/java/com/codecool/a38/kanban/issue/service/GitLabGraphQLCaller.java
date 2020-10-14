@@ -442,25 +442,49 @@ public class GitLabGraphQLCaller {
 
     }
 
-    public void updateAssignee(String token, String userId, String path, String issueIID) {
-        String username;
+    public void updateAssignee(String token, String userId, String projectPath, String issueIid) {
+        String assigneeUsername;
         if (userId.equals("unassigned") || userId.equals("")) {
-            username = "";
+            assigneeUsername = "";
         } else {
-            username = getUsernameByUserID(token, userId);
+            assigneeUsername = getUsernameByUserID(token, userId);
         }
 
-        String q = "{\"query\":\"mutation {\\n" +
-                "  issueSetAssignees(input: {assigneeUsernames: \\\"" + username + "\\\", projectPath: \\\"" + path + "\\\", iid: \\\"" + issueIID + "\\\"}) {\\n" +
+        String query = "{\"query\":\"mutation {\\n" +
+                "  issueSetAssignees(input: {projectPath: \\\"" + projectPath + "\\\", iid: \\\"" + issueIid + "\\\", assigneeUsernames: \\\"" + assigneeUsername + "\\\"}) {\\n" +
                 "    issue {\\n" +
+                "      id\\n" +
                 "      title\\n" +
+                "      description\\n" +
+                "      webUrl\\n" +
+                "      dueDate\\n" +
+                "      userNotesCount\\n" +
+                "      reference\\n" +
+                "      assignees {\\n" +
+                "        nodes {\\n" +
+                "          id\\n" +
+                "          name\\n" +
+                "          avatarUrl\\n" +
+                "        }\\n" +
+                "      }\\n" +
+                "      milestone {\\n" +
+                "        id\\n" +
+                "        title\\n" +
+                "      }\\n" +
+                "      labels {\\n" +
+                "        nodes {\\n" +
+                "          id\\n" +
+                "          title\\n" +
+                "          color\\n" +
+                "        }\\n" +
+                "      }\\n" +
                 "    }\\n" +
                 "  }\\n" +
                 "}\\n" +
                 "\",\"variables\":{}}";
 
         ResponseEntity<ChangeIssueAssigneeResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(q, getHeaders(token)), ChangeIssueAssigneeResponse.class);
+                URL, new HttpEntity<>(query, getHeaders(token)), ChangeIssueAssigneeResponse.class);
         log.info(responseEntity.getBody().getData().getIssueSetAssignees().getIssue().getTitle());
     }
 }
