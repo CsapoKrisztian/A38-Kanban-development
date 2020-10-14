@@ -1,5 +1,6 @@
 package com.codecool.a38.kanban.issue.service;
 
+import com.codecool.a38.kanban.issue.model.graphQLResponse.issueData.IssueDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.changeAssigneeResponse.ChangeIssueAssigneeResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issueCurrentStatus.IssueCurrentLabelsResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issueCurrentStatus.NodesItem;
@@ -350,6 +351,31 @@ public class GitLabGraphQLCaller {
         }};
     }
 
+
+    public IssueDataResponse getIssueDataResponse(String token, String issueId) {
+        String query = "{\"query\":\"{\\n" +
+                "  project(fullPath: \\\"" + projectFullPath + "\\\") {\\n" +
+                "    labels(searchTerm: \\\"Story: \\\"" + getFormattedPagination(endCursor) + ") {\\n" +
+                "      nodes {\\n" +
+                "        id\\n" +
+                "        title\\n" +
+                "        color\\n" +
+                "      }\\n" +
+                "      pageInfo {\\n" +
+                "        hasNextPage\\n" +
+                "        endCursor\\n" +
+                "      }\\n" +
+                "    }\\n" +
+                "  }\\n" +
+                "}\\n" +
+                "\",\"variables\":{}}";
+
+        ResponseEntity<SingleProjectDataResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), SingleProjectDataResponse.class);
+        log.info("Get single project stories response: " + projectFullPath);
+        return responseEntity.getBody();
+    }
+
     public String getProjectPath(String issueId, String token) {
         String query = "{\"query\":\"{\\n" +
                 "  issue(id: \\\"" + issueId + "\\\") {\\n" +
@@ -410,7 +436,7 @@ public class GitLabGraphQLCaller {
         return Integer.parseInt(responseEntity.getBody().getData().getIssue().getIid());
     }
 
-    public void updateIssue(String token, String projectPath, int issueIid, int removableLabelId, int addLabelId) {
+    public void changeStatusLabel(String token, String projectPath, int issueIid, int removableLabelId, int addLabelId) {
         String query = "{\"query\":\"mutation {\\n" +
                 "  updateIssue(input: {projectPath: \\\"" + projectPath + "\\\", iid: \\\"" + issueIid + "\\\", removeLabelIds: \\\"" + removableLabelId + "\\\", addLabelIds: \\\"" + addLabelId + "\\\"}) {\\n" +
                 "    issue {\\n" +

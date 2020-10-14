@@ -3,7 +3,6 @@ package com.codecool.a38.kanban.issue.service;
 import com.codecool.a38.kanban.config.service.ConfigDataProvider;
 import com.codecool.a38.kanban.issue.model.Issue;
 import com.codecool.a38.kanban.issue.model.Project;
-import com.codecool.a38.kanban.issue.model.UpdateIssueRequestBody;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.*;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issueCurrentStatus.NodesItem;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
@@ -367,12 +366,19 @@ public class DataManager {
         return storyLabelList;
     }
 
-    public void changeStatus(String token, UpdateIssueRequestBody data) {
-        List<NodesItem> issuesCurrentLabels = gitLabGraphQLCaller.getIssueCurrentStatus(token, data.getIssueId());
+    public void changeStatus(String token, String issueId, String newStatusTitle) {
+        String removeStatusLabelId;
+        String addStatusLabelId;
+
+
+
+
+
+        List<NodesItem> issuesCurrentLabels = gitLabGraphQLCaller.getIssueCurrentStatus(token, issueId);
         String currentStatusId = "";
-        String path = gitLabGraphQLCaller.getProjectPath(data.getIssueId(), token);
-        int issueIID = gitLabGraphQLCaller.getIssuesIID(token, data.getIssueId());
-        int newLabelID = Integer.parseInt(gitLabGraphQLCaller.getStatusID(path, data.getNewStatusTitle(), token).replaceAll("([A-z /]).", ""));
+        String projectPath = gitLabGraphQLCaller.getProjectPath(issueId, token);
+        int issueIID = gitLabGraphQLCaller.getIssuesIID(token, issueId);
+        int newLabelID = Integer.parseInt(gitLabGraphQLCaller.getStatusID(projectPath, newStatusTitle, token).replaceAll("([A-z /]).", ""));
 
         for (NodesItem labelNode : issuesCurrentLabels) {
             if (configDataProvider.getStatusTitles().contains(labelNode.getTitle())) {
@@ -382,7 +388,7 @@ public class DataManager {
         if (!currentStatusId.equals("")) {
             int removableLabelID = Integer.parseInt(currentStatusId.replaceAll("([A-z /]).", ""));
             if (removableLabelID != newLabelID) {
-                gitLabGraphQLCaller.updateIssue(token, path, issueIID, removableLabelID, newLabelID);
+                gitLabGraphQLCaller.changeStatusLabel(token, projectPath, issueIID, removableLabelID, newLabelID);
             }
         }
     }

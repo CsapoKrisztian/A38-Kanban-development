@@ -13,6 +13,9 @@ public class IssueNode {
     @JsonProperty("id")
     private String id;
 
+    @JsonProperty("iid")
+    private String iid;
+
     @JsonProperty("title")
     private String title;
 
@@ -39,5 +42,8 @@ public class IssueNode {
 
     @JsonProperty("labels")
     private Labels labels;
+
+    @JsonProperty("designCollection")
+    private DesignCollection designCollection;
 
 }
