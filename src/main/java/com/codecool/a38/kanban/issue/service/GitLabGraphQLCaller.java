@@ -397,7 +397,7 @@ public class GitLabGraphQLCaller {
 
         ResponseEntity<UpdateIssueDataResponse> responseEntity = restTemplate.postForEntity(
                 URL, new HttpEntity<>(query, getHeaders(token)), UpdateIssueDataResponse.class);
-        log.info("Change status of issue: " + issueIid);
+        log.info("Update issue, return update issue data response: " + issueIid);
         return responseEntity.getBody();
     }
 

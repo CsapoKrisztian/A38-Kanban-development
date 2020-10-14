@@ -383,9 +383,12 @@ public class DataManager {
 
             UpdateIssueDataResponse updateIssueDataResponse = gitLabGraphQLCaller.
                     updateStatusLabel(token, projectFullPath, issueIid, currentStatusLabelIdNum, newStatusLabelIdNum);
+
+            log.info("Updated status: " + newStatusDisplayTitle + " of issue: " + issueId);
             return createIssueFromIssueNode(updateIssueDataResponse.getData().getUpdateIssue().getIssue());
         }
 
+        log.info("Failed to update status of issue: " + issueId);
         return createIssueFromIssueNode(issueNode);
     }
 
