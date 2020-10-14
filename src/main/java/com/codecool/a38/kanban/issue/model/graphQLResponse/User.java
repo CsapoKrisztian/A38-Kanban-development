@@ -18,6 +18,9 @@ public class User {
     @JsonProperty("name")
     private String name;
 
+    @JsonProperty("username")
+    private String username;
+
     @JsonProperty("avatarUrl")
     private String avatarUrl;
 

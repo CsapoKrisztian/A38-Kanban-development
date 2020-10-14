@@ -31,4 +31,7 @@ public class ProjectNode {
     @JsonProperty("labels")
     private Labels labels;
 
+    @JsonProperty("label")
+    private Label label;
+
 }

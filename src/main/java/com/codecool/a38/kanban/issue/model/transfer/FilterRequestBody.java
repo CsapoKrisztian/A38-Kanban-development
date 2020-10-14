@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Set;
 
 @Data
-public class Filter {
+public class FilterRequestBody {
 
     private Set<String> projectIds;
 
