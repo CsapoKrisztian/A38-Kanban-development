@@ -409,18 +409,16 @@ public class DataManager {
         String issueIid = issueNode.getIid();
         String projectFullPath = issueNode.getDesignCollection().getProject().getFullPath();
 
-        String assigneeUsername;
+        String assigneeUsername = "";
         if (!newAssigneeId.equals("unassigned") && !newAssigneeId.equals("")) {
             assigneeUsername = gitLabGraphQLCaller.getUsernameByUserID(token, newAssigneeId)
                     .getData().getUser().getUsername();
-
-            IssueSetAssigneesDataResponse issueSetAssigneesDataResponse = gitLabGraphQLCaller.
-                    updateAssignee(token, assigneeUsername, projectFullPath, issueIid);
-            log.info("Set assignee: " + assigneeUsername + " to issue: " + issueId);
-            return createIssueFromIssueNode(issueSetAssigneesDataResponse.getData().getIssueSetAssignees().getIssue());
         }
-        log.info("Failed to set assignee to issue: " + issueId);
-        return createIssueFromIssueNode(issueNode);
+
+        IssueSetAssigneesDataResponse issueSetAssigneesDataResponse = gitLabGraphQLCaller.
+                updateAssignee(token, projectFullPath, issueIid, assigneeUsername);
+        log.info("Set assignee: " + assigneeUsername + " to issue: " + issueId);
+        return createIssueFromIssueNode(issueSetAssigneesDataResponse.getData().getIssueSetAssignees().getIssue());
     }
 
 }

@@ -1,12 +1,12 @@
 package com.codecool.a38.kanban.issue.model.graphQLResponse.issueSetAsignee;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
 public class IssueSetAssigneesData {
 
-    @SerializedName("issueSetAssignees")
+    @JsonProperty("issueSetAssignees")
     private IssueSetAssignees issueSetAssignees;
 
 }
