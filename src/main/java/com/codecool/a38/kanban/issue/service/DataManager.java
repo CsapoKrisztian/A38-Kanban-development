@@ -4,6 +4,7 @@ import com.codecool.a38.kanban.config.service.ConfigDataProvider;
 import com.codecool.a38.kanban.issue.model.Issue;
 import com.codecool.a38.kanban.issue.model.Project;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.*;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.issueSetAsignee.IssueSetAssigneesDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.updateIssueData.UpdateIssueDataResponse;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
@@ -404,13 +405,22 @@ public class DataManager {
         return statusLabel != null ? statusLabel.getId() : "";
     }
 
-    public void updateAssignee(String token, String issueId, String newAssigneeId) {
+    public Issue updateAssignee(String token, String issueId, String newAssigneeId) {
         IssueNode issueNode = gitLabGraphQLCaller.getIssueDataResponse(token, issueId).getData().getIssue();
 
         String issueIid = issueNode.getIid();
         String projectFullPath = issueNode.getDesignCollection().getProject().getFullPath();
 
-        gitLabGraphQLCaller.updateAssignee(token, newAssigneeId, projectFullPath, issueIid);
+        String assigneeUsername;
+        if (newAssigneeId.equals("unassigned") || newAssigneeId.equals("")) {
+            assigneeUsername = "";
+        } else {
+            assigneeUsername = gitLabGraphQLCaller.getUsernameByUserID(token, newAssigneeId);
+        }
+
+        IssueSetAssigneesDataResponse issueSetAssigneesDataResponse = gitLabGraphQLCaller.
+                updateAssignee(token, assigneeUsername, projectFullPath, issueIid);
+        return createIssueFromIssueNode(issueSetAssigneesDataResponse.getData().getIssueSetAssignees().getIssue());
     }
 
 }

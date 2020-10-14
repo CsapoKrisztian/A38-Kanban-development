@@ -1,4 +1,4 @@
-package com.codecool.a38.kanban.issue.model.usernameByUserID;
+package com.codecool.a38.kanban.issue.model.graphQLResponse.userData;
 
 import com.google.gson.annotations.SerializedName;
 

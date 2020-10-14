@@ -1,12 +1,12 @@
 package com.codecool.a38.kanban.issue.service;
 
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueData.IssueDataResponse;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.changeAssigneeResponse.ChangeIssueAssigneeResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.issueSetAsignee.IssueSetAssigneesDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.updateIssueData.UpdateIssueDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.projectsData.ProjectsDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.singleGroupData.SingleGroupDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.singleProjectData.SingleProjectDataResponse;
-import com.codecool.a38.kanban.issue.model.usernameByUserID.UsernameResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.userData.UsernameResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -359,7 +359,7 @@ public class GitLabGraphQLCaller {
     }
 
     public UpdateIssueDataResponse updateStatusLabel(String token, String projectPath, String issueIid,
-                                  String removableLabelId, String addLabelId) {
+                                                     String removableLabelId, String addLabelId) {
         String query = "{\"query\":\"mutation {\\n" +
                 "  updateIssue(input: {projectPath: \\\"" + projectPath + "\\\", iid: \\\"" + issueIid + "\\\", removeLabelIds: \\\"" + removableLabelId + "\\\", addLabelIds: \\\"" + addLabelId + "\\\"}) {\\n" +
                 "    issue {\\n" +
@@ -402,54 +402,22 @@ public class GitLabGraphQLCaller {
     }
 
 
-    private String getFormattedPagination(String cursor) {
-        return !cursor.equals(startPagination) ? getFormattedAfter(cursor) : "";
-    }
+    public String getUsernameByUserID(String token, String userId) {
 
-    private String getFormattedPaginationWithBrackets(String cursor) {
-        return !cursor.equals(startPagination) ? "(" + getFormattedAfter(cursor) + ")" : "";
-    }
-
-    private String getFormattedAfter(String cursor) {
-        String before = "after: \\\"";
-        String after = "\\\"";
-        return before + cursor + after;
-    }
-
-    private String getFormattedFilter(Set<String> strings) {
-        String before = "[\\\"";
-        String delimiter = "\\\", \\\"";
-        String after = "\\\"]";
-        return before + String.join(delimiter, strings) + after;
-    }
-
-    private HttpHeaders getHeaders(String token) {
-        return new HttpHeaders() {{
-            add("Authorization", "Bearer " + token);
-            add("Content-Type", "application/json");
-        }};
-    }
-
-    private String getUsernameByUserID(String token, String userID) {
         String query = "{\"query\":\"{\\n" +
-                "  user(id:\\\"" + userID + "\\\"){\\n" +
+                "  user(id: \\\"" + userId + "\\\") {\\n" +
                 "    username\\n" +
-                "  }\\n}\\n\",\"variables\":{}}";
+                "  }\\n" +
+                "}\\n" +
+                "\",\"variables\":{}}";
 
         ResponseEntity<UsernameResponse> responseEntity = restTemplate.postForEntity(
                 URL, new HttpEntity<>(query, getHeaders(token)), UsernameResponse.class);
         return responseEntity.getBody().getData().getUser().getUsername();
-
     }
 
-    public void updateAssignee(String token, String userId, String projectPath, String issueIid) {
-        String assigneeUsername;
-        if (userId.equals("unassigned") || userId.equals("")) {
-            assigneeUsername = "";
-        } else {
-            assigneeUsername = getUsernameByUserID(token, userId);
-        }
-
+    public IssueSetAssigneesDataResponse updateAssignee(String token, String projectPath,
+                                                        String issueIid, String assigneeUsername) {
         String query = "{\"query\":\"mutation {\\n" +
                 "  issueSetAssignees(input: {projectPath: \\\"" + projectPath + "\\\", iid: \\\"" + issueIid + "\\\", assigneeUsernames: \\\"" + assigneeUsername + "\\\"}) {\\n" +
                 "    issue {\\n" +
@@ -483,8 +451,39 @@ public class GitLabGraphQLCaller {
                 "}\\n" +
                 "\",\"variables\":{}}";
 
-        ResponseEntity<ChangeIssueAssigneeResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, getHeaders(token)), ChangeIssueAssigneeResponse.class);
-        log.info(responseEntity.getBody().getData().getIssueSetAssignees().getIssue().getTitle());
+        ResponseEntity<IssueSetAssigneesDataResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), IssueSetAssigneesDataResponse.class);
+        log.info("Set assignee to issue, return issue set assignee data response: " + projectPath);
+        return responseEntity.getBody();
     }
+
+
+    private String getFormattedPagination(String cursor) {
+        return !cursor.equals(startPagination) ? getFormattedAfter(cursor) : "";
+    }
+
+    private String getFormattedPaginationWithBrackets(String cursor) {
+        return !cursor.equals(startPagination) ? "(" + getFormattedAfter(cursor) + ")" : "";
+    }
+
+    private String getFormattedAfter(String cursor) {
+        String before = "after: \\\"";
+        String after = "\\\"";
+        return before + cursor + after;
+    }
+
+    private String getFormattedFilter(Set<String> strings) {
+        String before = "[\\\"";
+        String delimiter = "\\\", \\\"";
+        String after = "\\\"]";
+        return before + String.join(delimiter, strings) + after;
+    }
+
+    private HttpHeaders getHeaders(String token) {
+        return new HttpHeaders() {{
+            add("Authorization", "Bearer " + token);
+            add("Content-Type", "application/json");
+        }};
+    }
+
 }
