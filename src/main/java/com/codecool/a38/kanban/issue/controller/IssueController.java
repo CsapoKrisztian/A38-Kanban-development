@@ -1,5 +1,6 @@
 package com.codecool.a38.kanban.issue.controller;
 
+import com.codecool.a38.kanban.issue.model.Issue;
 import com.codecool.a38.kanban.issue.model.transfer.UpdateAssigneeRequestBody;
 import com.codecool.a38.kanban.issue.model.Project;
 import com.codecool.a38.kanban.issue.model.transfer.UpdateStatusRequestBody;
@@ -56,9 +57,9 @@ public class IssueController {
     }
 
     @PostMapping("/updateStatus")
-    public void updateStatus(@CookieValue(defaultValue = "default") String gitlabAccessToken,
-                             @RequestBody UpdateStatusRequestBody updateStatusRequestBody) {
-        dataManager.updateStatus(gitlabAccessToken, updateStatusRequestBody.getIssueId(),
+    public Issue updateStatus(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                              @RequestBody UpdateStatusRequestBody updateStatusRequestBody) {
+        return dataManager.updateStatus(gitlabAccessToken, updateStatusRequestBody.getIssueId(),
                 updateStatusRequestBody.getNewStatusTitle());
     }
 

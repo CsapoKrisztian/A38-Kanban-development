@@ -4,6 +4,7 @@ import com.codecool.a38.kanban.config.service.ConfigDataProvider;
 import com.codecool.a38.kanban.issue.model.Issue;
 import com.codecool.a38.kanban.issue.model.Project;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.*;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.updateIssueData.UpdateIssueDataResponse;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
 import lombok.AllArgsConstructor;
@@ -365,7 +366,7 @@ public class DataManager {
         return storyLabelList;
     }
 
-    public void updateStatus(String token, String issueId, String newStatusDisplayTitle) {
+    public Issue updateStatus(String token, String issueId, String newStatusDisplayTitle) {
         IssueNode issueNode = gitLabGraphQLCaller.getIssueDataResponse(token, issueId).getData().getIssue();
         String issueIid = issueNode.getIid();
         String projectFullPath = issueNode.getDesignCollection().getProject().getFullPath();
@@ -379,9 +380,13 @@ public class DataManager {
         if (!currentStatusLabelId.equals(newStatusLabelId)) {
             String currentStatusLabelIdNum = getIdNumValue(currentStatusLabelId);
             String newStatusLabelIdNum = getIdNumValue(newStatusLabelId);
-            gitLabGraphQLCaller.updateStatusLabel(token, projectFullPath, issueIid,
-                    currentStatusLabelIdNum, newStatusLabelIdNum);
+
+            UpdateIssueDataResponse updateIssueDataResponse = gitLabGraphQLCaller.
+                    updateStatusLabel(token, projectFullPath, issueIid, currentStatusLabelIdNum, newStatusLabelIdNum);
+            return createIssueFromIssueNode(updateIssueDataResponse.getData().getUpdateIssue().getIssue());
         }
+
+        return createIssueFromIssueNode(issueNode);
     }
 
     private String getIdNumValue(String currentStatusLabelId) {

@@ -2,7 +2,7 @@ package com.codecool.a38.kanban.issue.service;
 
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueData.IssueDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.changeAssigneeResponse.ChangeIssueAssigneeResponse;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.issueUpdateResponse.UpdateIssueResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.updateIssueData.UpdateIssueDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.projectsData.ProjectsDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.singleGroupData.SingleGroupDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.singleProjectData.SingleProjectDataResponse;
@@ -382,10 +382,11 @@ public class GitLabGraphQLCaller {
 
         ResponseEntity<SingleProjectDataResponse> responseEntity = restTemplate.postForEntity(
                 URL, new HttpEntity<>(query, getHeaders(token)), SingleProjectDataResponse.class);
+        log.info("Get label data response: " + labelTitle + " in project: " + projectPath);
         return responseEntity.getBody();
     }
 
-    public void updateStatusLabel(String token, String projectPath, String issueIid,
+    public UpdateIssueDataResponse updateStatusLabel(String token, String projectPath, String issueIid,
                                   String removableLabelId, String addLabelId) {
         String query = "{\"query\":\"mutation {\\n" +
                 "  updateIssue(input: {projectPath: \\\"" + projectPath + "\\\", iid: \\\"" + issueIid + "\\\", removeLabelIds: \\\"" + removableLabelId + "\\\", addLabelIds: \\\"" + addLabelId + "\\\"}) {\\n" +
@@ -404,10 +405,11 @@ public class GitLabGraphQLCaller {
                 "  }\\n" +
                 "}\\n" +
                 "\",\"variables\":{}}";
-//TODO
-        ResponseEntity<UpdateIssueResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, getHeaders(token)), UpdateIssueResponse.class);
+
+        ResponseEntity<UpdateIssueDataResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), UpdateIssueDataResponse.class);
         log.info("Change status of issue: " + issueIid);
+        return responseEntity.getBody();
     }
 
     private String getUsernameByUserID(String token, String userID) {
