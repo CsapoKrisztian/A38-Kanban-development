@@ -27,6 +27,8 @@ public class ConfigDataProvider {
 
     private Map<String, String> statusTitleDisplayMap = new HashMap<>();
 
+    private Map<String, String> statusDisplayTitleMap = new HashMap<>();
+
     private Map<String, String> priorityTitleDisplayMap = new HashMap<>();
 
     @PostConstruct
@@ -58,6 +60,9 @@ public class ConfigDataProvider {
 
         statusTitleDisplayMap = jsonProperties.getStatuses().stream()
                 .collect(Collectors.toMap(LabelProperty::getTitle, LabelProperty::getDisplay));
+
+        statusDisplayTitleMap = jsonProperties.getStatuses().stream()
+                .collect(Collectors.toMap(LabelProperty::getDisplay, LabelProperty::getTitle));
 
         priorityTitleDisplayMap = jsonProperties.getPriorities().stream()
                 .collect(Collectors.toMap(LabelProperty::getTitle, LabelProperty::getDisplay));

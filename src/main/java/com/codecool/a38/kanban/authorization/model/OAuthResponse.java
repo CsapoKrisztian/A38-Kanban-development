@@ -7,4 +7,6 @@ public class OAuthResponse {
 
     private String access_token;
 
+    private Integer expires_in;
+
 }

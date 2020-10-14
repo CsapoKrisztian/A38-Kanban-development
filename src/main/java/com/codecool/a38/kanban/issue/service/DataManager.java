@@ -3,9 +3,9 @@ package com.codecool.a38.kanban.issue.service;
 import com.codecool.a38.kanban.config.service.ConfigDataProvider;
 import com.codecool.a38.kanban.issue.model.Issue;
 import com.codecool.a38.kanban.issue.model.Project;
-import com.codecool.a38.kanban.issue.model.UpdateIssueRequestBody;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.*;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issueCurrentStatus.NodesItem;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.issueSetAsignee.IssueSetAssigneesDataResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.updateIssueData.UpdateIssueDataResponse;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
 import lombok.AllArgsConstructor;
@@ -199,7 +199,7 @@ public class DataManager {
     private User getAssigneeFromIssueNode(IssueNode issueNode) {
         try {
             return issueNode.getAssignees().getNodes().get(0);
-        } catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException | NullPointerException e) {
             return null;
         }
     }
@@ -367,29 +367,58 @@ public class DataManager {
         return storyLabelList;
     }
 
-    public void updateIssue(String token, UpdateIssueRequestBody data) {
-        List<NodesItem> issuesCurrentLabels = gitLabGraphQLCaller.getIssueCurrentStatus(token, data.getId());
-        String currentStatusId = "";
-        String path = gitLabGraphQLCaller.getProjectPath(data.getId(), token);
-        int issueIID = gitLabGraphQLCaller.getIssuesIID(token, data.getId());
-        int newLabelID = Integer.parseInt(gitLabGraphQLCaller.getStatusID(path, data.getNewLabel(), token).replaceAll("([A-z /]).", ""));
+    public Issue updateStatus(String token, String issueId, String newStatusDisplayTitle) {
+        IssueNode issueNode = gitLabGraphQLCaller.getIssueDataResponse(token, issueId).getData().getIssue();
+        String issueIid = issueNode.getIid();
+        String projectFullPath = issueNode.getDesignCollection().getProject().getFullPath();
+        String currentStatusLabelId = getStatusLabelId(issueNode);
 
-        for (NodesItem labelNode : issuesCurrentLabels) {
-            if (configDataProvider.getStatusTitles().contains(labelNode.getTitle())) {
-                currentStatusId = labelNode.getId();
-            }
+        String newStatusLabelTitle = configDataProvider.getStatusDisplayTitleMap().get(newStatusDisplayTitle);
+        String newStatusLabelId = gitLabGraphQLCaller.
+                getProjectLabelDataResponse(token, projectFullPath, newStatusLabelTitle)
+                .getData().getProject().getLabel().getId();
+
+        if (!currentStatusLabelId.equals(newStatusLabelId)) {
+            String currentStatusLabelIdNum = getIdNumValue(currentStatusLabelId);
+            String newStatusLabelIdNum = getIdNumValue(newStatusLabelId);
+
+            UpdateIssueDataResponse updateIssueDataResponse = gitLabGraphQLCaller.
+                    updateStatusLabel(token, projectFullPath, issueIid, currentStatusLabelIdNum, newStatusLabelIdNum);
+
+            log.info("Updated status: " + newStatusDisplayTitle + " of issue: " + issueId);
+            return createIssueFromIssueNode(updateIssueDataResponse.getData().getUpdateIssue().getIssue());
         }
-
-        int removableLabelID = Integer.parseInt(currentStatusId.replaceAll("([A-z /]).", ""));
-
-        gitLabGraphQLCaller.updateIssue(token, path, issueIID, removableLabelID, newLabelID);
+        log.info("Failed to update status of issue: " + issueId);
+        return createIssueFromIssueNode(issueNode);
     }
 
-    public void changeAssignee(String token, String assignee, String issueID) {
-        String path = gitLabGraphQLCaller.getProjectPath(issueID, token);
-        int issueIID = gitLabGraphQLCaller.getIssuesIID(token, issueID);
+    private String getIdNumValue(String currentStatusLabelId) {
+        return currentStatusLabelId.substring(currentStatusLabelId.lastIndexOf("/") + 1);
+    }
 
-        gitLabGraphQLCaller.changeAssignee(token, assignee, path, issueIID);
+
+    private String getStatusLabelId(IssueNode issueNode) {
+        Label statusLabel = issueNode.getLabels().getNodes().stream()
+                .filter(label -> configDataProvider.getStatusTitleDisplayMap().containsKey(label.getTitle()))
+                .findFirst().orElse(null);
+        return statusLabel != null ? statusLabel.getId() : "";
+    }
+
+    public Issue updateAssignee(String token, String issueId, String newAssigneeId) {
+        IssueNode issueNode = gitLabGraphQLCaller.getIssueDataResponse(token, issueId).getData().getIssue();
+        String issueIid = issueNode.getIid();
+        String projectFullPath = issueNode.getDesignCollection().getProject().getFullPath();
+
+        String assigneeUsername = "";
+        if (!newAssigneeId.equals("unassigned") && !newAssigneeId.equals("")) {
+            assigneeUsername = gitLabGraphQLCaller.getUsernameByUserID(token, newAssigneeId)
+                    .getData().getUser().getUsername();
+        }
+
+        IssueSetAssigneesDataResponse issueSetAssigneesDataResponse = gitLabGraphQLCaller.
+                updateAssignee(token, projectFullPath, issueIid, assigneeUsername);
+        log.info("Set assignee: " + assigneeUsername + " to issue: " + issueId);
+        return createIssueFromIssueNode(issueSetAssigneesDataResponse.getData().getIssueSetAssignees().getIssue());
     }
 
 }
