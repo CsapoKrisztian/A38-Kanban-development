@@ -365,10 +365,27 @@ public class GitLabGraphQLCaller {
                 "    issue {\\n" +
                 "      id\\n" +
                 "      title\\n" +
+                "      description\\n" +
+                "      webUrl\\n" +
+                "      dueDate\\n" +
+                "      userNotesCount\\n" +
+                "      reference\\n" +
+                "      assignees {\\n" +
+                "        nodes {\\n" +
+                "          id\\n" +
+                "          name\\n" +
+                "          avatarUrl\\n" +
+                "        }\\n" +
+                "      }\\n" +
+                "      milestone {\\n" +
+                "        id\\n" +
+                "        title\\n" +
+                "      }\\n" +
                 "      labels {\\n" +
                 "        nodes {\\n" +
                 "          id\\n" +
                 "          title\\n" +
+                "          description\\n" +
                 "          color\\n" +
                 "        }\\n" +
                 "      }\\n" +
