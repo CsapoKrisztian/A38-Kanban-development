@@ -486,7 +486,7 @@ public class DataManager {
                     log.info("Returned organized issues list" + id);
                 }
             }
-            PageInfo projectsPageInfo = currentProjects.getNodes().get(0).getIssues().getPageInfo();
+            PageInfo projectsPageInfo = currentProjects.getPageInfo();
             currentEndCursor = projectsPageInfo.getEndCursor();
             hasNextPage = projectsPageInfo.isHasNextPage();
             log.info(String.valueOf(hasNextPage));

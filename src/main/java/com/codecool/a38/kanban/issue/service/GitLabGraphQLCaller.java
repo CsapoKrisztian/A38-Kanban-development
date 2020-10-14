@@ -479,8 +479,11 @@ public class GitLabGraphQLCaller {
     }
 
     public ProjectsDataResponse getAllIssuesFromProject(String token, String projectID, String currentEndCursor) {
-        String query = "{\"query\":\"{\\n  projects(ids: [\\\"gid://gitlab/Project/7\\\"]) {\\n    nodes {\\n      id\\n      fullPath\\n      name\\n      group {\\n        id\\n        name\\n      }\\n      issues(state: opened) {\\n        nodes {\\n          id\\n          title\\n          description\\n          webUrl\\n          dueDate\\n          userNotesCount\\n          reference\\n          assignees {\\n            nodes {\\n              id\\n              name\\n              avatarUrl\\n            }\\n          }\\n          milestone {\\n            id\\n            title\\n          }\\n          labels {\\n            nodes {\\n              id\\n              title\\n              description\\n              color\\n            }\\n          }\\n        }\\n        pageInfo {\\n          hasNextPage\\n          endCursor\\n        }\\n      }\\n    }\\n  }\\n}\\n\",\"variables\":{}}";
-
+        String query = "{\"query\":\"{\\n" +
+                "  projects(ids: [\\\"" + projectID + getFormattedPagination(currentEndCursor) + "\\\"]) {\\n" +
+                "    nodes {\\n      id\\n      fullPath\\n      name\\n      group {\\n        id\\n        name\\n      }\\n" +
+                "      issues(state: opened ) {\\n" +
+                "        nodes {\\n          id\\n          title\\n          description\\n          webUrl\\n          dueDate\\n          userNotesCount\\n          reference\\n          assignees {\\n            nodes {\\n              id\\n              name\\n              avatarUrl\\n            }\\n          }\\n          milestone {\\n            id\\n            title\\n          }\\n          labels {\\n            nodes {\\n              id\\n              title\\n              description\\n              color\\n            }\\n          }\\n        }\\n        pageInfo {\\n          hasNextPage\\n          endCursor\\n        }\\n      }\\n    }\\n    pageInfo {\\n      hasNextPage\\n      endCursor\\n    }\\n  }\\n}\\n\",\"variables\":{}}";
         ResponseEntity<ProjectsDataResponse> responseEntity = restTemplate.postForEntity(
                 URL, new HttpEntity<>(query, getHeaders(token)), ProjectsDataResponse.class);
         return responseEntity.getBody();
@@ -488,7 +491,7 @@ public class GitLabGraphQLCaller {
 
     public ProjectsDataResponse getIssuesByProjectAndMilestoneTitle(String token, String projectID, String milestoneTitle, String currentEndCursor) {
         String query = "{\"query\":\"{\\n" +
-                "  projects(ids: [\\\"" + projectID + getFormattedPagination(currentEndCursor) + "\\\"]) {\\n" +
+                "  projects(ids: [\\\"" + projectID + "\\\"]" + getFormattedPagination(currentEndCursor) + ") {\\n" +
                 "    nodes {\\n" +
                 "      id\\n" +
                 "      fullPath\\n" +
