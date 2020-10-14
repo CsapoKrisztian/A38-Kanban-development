@@ -448,7 +448,7 @@ public class GitLabGraphQLCaller {
 
     public void changeAssignee(String token, String userID, String path, int issueIID) {
         String username;
-        if (userID == "unassigned" || userID == null || userID == "") {
+        if (userID.equals("unassigned") || userID == null || userID.equals("")) {
             username = "";
         } else {
             username = getUsernameByUserID(token, userID);

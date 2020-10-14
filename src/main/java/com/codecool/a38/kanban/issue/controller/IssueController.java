@@ -55,15 +55,15 @@ public class IssueController {
         return dataManager.getStatusTitles();
     }
 
-    @PostMapping("/update")
-    public void updateIssue(@CookieValue(defaultValue = "default") String gitlabAccessToken,
-                            @RequestBody UpdateIssueRequestBody data) {
-        dataManager.updateIssue(gitlabAccessToken, data);
+    @PostMapping("/changeStatus")
+    public void changeStatus(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                             @RequestBody UpdateIssueRequestBody data) {
+        dataManager.changeStatus(gitlabAccessToken, data);
     }
 
-    @PostMapping("/newAssignee")
-    public void changeAassigneeIDssignee(@CookieValue(defaultValue = "default") String gitlabAccessToken,
-                                         @RequestBody ChangeAssigneeRequest data) {
+    @PostMapping("/changeAssignee")
+    public void changeAssignee(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                               @RequestBody ChangeAssigneeRequest data) {
         dataManager.changeAssignee(gitlabAccessToken, data.getAssignee(), data.getIssueID());
     }
 }

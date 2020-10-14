@@ -367,7 +367,7 @@ public class DataManager {
         return storyLabelList;
     }
 
-    public void updateIssue(String token, UpdateIssueRequestBody data) {
+    public void changeStatus(String token, UpdateIssueRequestBody data) {
         List<NodesItem> issuesCurrentLabels = gitLabGraphQLCaller.getIssueCurrentStatus(token, data.getIssueId());
         String currentStatusId = "";
         String path = gitLabGraphQLCaller.getProjectPath(data.getIssueId(), token);
