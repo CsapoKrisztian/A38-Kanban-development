@@ -317,34 +317,6 @@ public class GitLabGraphQLCaller {
         return responseEntity.getBody();
     }
 
-    private String getFormattedPagination(String cursor) {
-        return !cursor.equals(startPagination) ? getFormattedAfter(cursor) : "";
-    }
-
-    private String getFormattedPaginationWithBrackets(String cursor) {
-        return !cursor.equals(startPagination) ? "(" + getFormattedAfter(cursor) + ")" : "";
-    }
-
-    private String getFormattedAfter(String cursor) {
-        String before = "after: \\\"";
-        String after = "\\\"";
-        return before + cursor + after;
-    }
-
-    private String getFormattedFilter(Set<String> strings) {
-        String before = "[\\\"";
-        String delimiter = "\\\", \\\"";
-        String after = "\\\"]";
-        return before + String.join(delimiter, strings) + after;
-    }
-
-    private HttpHeaders getHeaders(String token) {
-        return new HttpHeaders() {{
-            add("Authorization", "Bearer " + token);
-            add("Content-Type", "application/json");
-        }};
-    }
-
 
     public IssueDataResponse getIssueDataResponse(String token, String issueId) {
         String query = "{\"query\":\"{\\n" +
@@ -410,6 +382,35 @@ public class GitLabGraphQLCaller {
                 URL, new HttpEntity<>(query, getHeaders(token)), UpdateIssueDataResponse.class);
         log.info("Change status of issue: " + issueIid);
         return responseEntity.getBody();
+    }
+
+
+    private String getFormattedPagination(String cursor) {
+        return !cursor.equals(startPagination) ? getFormattedAfter(cursor) : "";
+    }
+
+    private String getFormattedPaginationWithBrackets(String cursor) {
+        return !cursor.equals(startPagination) ? "(" + getFormattedAfter(cursor) + ")" : "";
+    }
+
+    private String getFormattedAfter(String cursor) {
+        String before = "after: \\\"";
+        String after = "\\\"";
+        return before + cursor + after;
+    }
+
+    private String getFormattedFilter(Set<String> strings) {
+        String before = "[\\\"";
+        String delimiter = "\\\", \\\"";
+        String after = "\\\"]";
+        return before + String.join(delimiter, strings) + after;
+    }
+
+    private HttpHeaders getHeaders(String token) {
+        return new HttpHeaders() {{
+            add("Authorization", "Bearer " + token);
+            add("Content-Type", "application/json");
+        }};
     }
 
     private String getUsernameByUserID(String token, String userID) {
