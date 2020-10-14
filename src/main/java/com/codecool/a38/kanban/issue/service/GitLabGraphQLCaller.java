@@ -479,17 +479,21 @@ public class GitLabGraphQLCaller {
     }
 
     public ProjectsDataResponse getAllIssuesFromProject(String token, String projectID, String currentEndCursor) {
+        String query = "{\"query\":\"{\\n  projects(ids: [\\\"gid://gitlab/Project/7\\\"]) {\\n    nodes {\\n      id\\n      fullPath\\n      name\\n      group {\\n        id\\n        name\\n      }\\n      issues(state: opened) {\\n        nodes {\\n          id\\n          title\\n          description\\n          webUrl\\n          dueDate\\n          userNotesCount\\n          reference\\n          assignees {\\n            nodes {\\n              id\\n              name\\n              avatarUrl\\n            }\\n          }\\n          milestone {\\n            id\\n            title\\n          }\\n          labels {\\n            nodes {\\n              id\\n              title\\n              description\\n              color\\n            }\\n          }\\n        }\\n        pageInfo {\\n          hasNextPage\\n          endCursor\\n        }\\n      }\\n    }\\n  }\\n}\\n\",\"variables\":{}}";
+
+        ResponseEntity<ProjectsDataResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), ProjectsDataResponse.class);
+        return responseEntity.getBody();
+    }
+
+    public ProjectsDataResponse getIssuesByProjectAndMilestoneTitle(String token, String projectID, String milestoneTitle, String currentEndCursor) {
         String query = "{\"query\":\"{\\n" +
                 "  projects(ids: [\\\"" + projectID + getFormattedPagination(currentEndCursor) + "\\\"]) {\\n" +
                 "    nodes {\\n" +
                 "      id\\n" +
                 "      fullPath\\n" +
-                "      name\\n" +
-                "      group {\\n " +
-                "       id\\n" +
-                "        name\\n" +
-                "      }\\n" +
-                "      issues(state: opened) {\\n" +
+                "      name\\n      group {\\n        id\\n        name\\n      }\\n" +
+                "      issues(state: opened, milestoneTitle: [\\\"" + milestoneTitle + "\\\"]) {\\n" +
                 "        nodes {\\n" +
                 "          id\\n" +
                 "          title\\n" +
@@ -506,8 +510,63 @@ public class GitLabGraphQLCaller {
                 "            }\\n" +
                 "          }\\n" +
                 "          milestone {\\n" +
-                "            id\\n " +
-                "           title\\n" +
+                "            id\\n" +
+                "            title\\n" +
+                "          }\\n" +
+                "          labels {\\n" +
+                "            nodes {\\n" +
+                "              id\\n" +
+                "              title\\n" +
+                "              description\\n" +
+                "              color\\n" +
+                "            }\\n " +
+                "         }\\n" +
+                "        }\\n" +
+                "        pageInfo {\\n" +
+                "          hasNextPage\\n" +
+                "          endCursor\\n" +
+                "        }\\n" +
+                "      }\\n" +
+                "    }\\n" +
+                "    pageInfo {\\n" +
+                "      hasNextPage\\n" +
+                "      endCursor\\n" +
+                "    }\\n  }\\n}\\n\",\"variables\":{}}";
+        ResponseEntity<ProjectsDataResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), ProjectsDataResponse.class);
+        return responseEntity.getBody();
+    }
+
+    public ProjectsDataResponse getIssuesByProjectAndStoryTitle(String token, String projectID, String storyTitle, String currentEndCursor) {
+        String query = "{\"query\":\"{\\n" +
+                "  projects(ids: [\\\"" + projectID + getFormattedPagination(currentEndCursor) + "\\\"]) {\\n" +
+                "    nodes {\\n" +
+                "      id\\n" +
+                "      fullPath\\n" +
+                "      name\\n" +
+                "      group {\\n" +
+                "        id\\n" +
+                "        name\\n" +
+                "      }\\n" +
+                "      issues(state: opened, labelName: [\\\"Story: " + storyTitle + "\\\"]) {\\n" +
+                "        nodes {\\n" +
+                "          id\\n" +
+                "          title\\n" +
+                "          description\\n" +
+                "          webUrl\\n" +
+                "          dueDate\\n" +
+                "          userNotesCount\\n" +
+                "          reference\\n" +
+                "          assignees {\\n" +
+                "            nodes {\\n" +
+                "              id\\n" +
+                "              name\\n" +
+                "              avatarUrl\\n" +
+                "            }\\n" +
+                "          }\\n" +
+                "          milestone {\\n" +
+                "            id\\n" +
+                "            title\\n" +
                 "          }\\n" +
                 "          labels {\\n" +
                 "            nodes {\\n" +
@@ -527,64 +586,63 @@ public class GitLabGraphQLCaller {
                 "    pageInfo {\\n" +
                 "      hasNextPage\\n" +
                 "      endCursor\\n" +
-                "    }\\n" +
-                "  }\\n" +
-                "}\\n\",\"variables\":{}}";
+                "    }\\n  }\\n}\\n\",\"variables\":{}}";
 
         ResponseEntity<ProjectsDataResponse> responseEntity = restTemplate.postForEntity(
                 URL, new HttpEntity<>(query, getHeaders(token)), ProjectsDataResponse.class);
         return responseEntity.getBody();
     }
 
-    public ProjectsDataResponse getIssuesByProjectAndMilestoneTitle(String token, String projectID, String milestoneTitle, String currentEndCursor) {
+    public ProjectsDataResponse getIssuesByProjectMilestoneAndStroryTitle(String token, String projectID, String storyTitle, String milestoneTitle, String currentEndCursor) {
         String query = "{\"query\":\"{\\n" +
                 "  projects(ids: [\\\"" + projectID + getFormattedPagination(currentEndCursor) + "\\\"]) {\\n" +
                 "    nodes {\\n" +
                 "      id\\n" +
                 "      fullPath\\n" +
-                "      name\\n      group {\\n        id\\n        name\\n      }\\n" +
-                "      issues(state: opened, milestoneTitle: [\\\"" + milestoneTitle + "\\\"]) {\\n" +
-                "        nodes {\\n          id\\n          title\\n          description\\n          webUrl\\n          dueDate\\n          userNotesCount\\n          reference\\n          assignees {\\n            nodes {\\n              id\\n              name\\n              avatarUrl\\n            }\\n          }\\n          milestone {\\n            id\\n            title\\n          }\\n          labels {\\n            nodes {\\n              id\\n              title\\n              description\\n              color\\n            }\\n          }\\n        }\\n        pageInfo {\\n          hasNextPage\\n          endCursor\\n        }\\n      }\\n    }\\n    pageInfo {\\n      hasNextPage\\n      endCursor\\n    }\\n  }\\n}\\n\",\"variables\":{}}";
-        ResponseEntity<ProjectsDataResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, getHeaders(token)), ProjectsDataResponse.class);
-        return responseEntity.getBody();
-    }
-
-    public ProjectsDataResponse getIssuesByProjectAndStoryTitle(String token, String projectID, String storyTitle) {
-        String path = getProjectPathByProjectID(token, projectID);
-        String query = "{\"query\":\"{\\n" +
-                "  project(fullPath: \\\"" + path + "\\\") {\\n" +
-                "    issues(state: opened, labelName: \\\"" + storyTitle + "\\\") {\\n" +
-                "      nodes {\\n" +
+                "      name\\n" +
+                "      group {\\n" +
                 "        id\\n" +
-                "        title\\n" +
-                "        description\\n" +
-                "        webUrl\\n" +
-                "        dueDate\\n" +
-                "        userNotesCount\\n" +
-                "        reference\\n" +
-                "        assignees(first: 1) {\\n" +
-                "          nodes {\\n" +
-                "            id\\n" +
-                "            name\\n" +
-                "            avatarUrl\\n " +
-                "         }\\n" +
-                "        }\\n" +
-                "        milestone {\\n" +
+                "        name\\n" +
+                "      }\\n" +
+                "      issues(state: opened, labelName: [\\\"Story: " + storyTitle + "\\\"], milestoneTitle: [\\\"" + milestoneTitle + "\\\"]) {\\n" +
+                "        nodes {\\n" +
                 "          id\\n" +
                 "          title\\n" +
-                "        }\\n" +
-                "        labels {\\n" +
-                "          nodes {\\n" +
+                "          description\\n" +
+                "          webUrl\\n" +
+                "          dueDate\\n " +
+                "         userNotesCount\\n" +
+                "          reference\\n" +
+                "          assignees {\\n" +
+                "            nodes {\\n" +
+                "              id\\n" +
+                "              name\\n" +
+                "              avatarUrl\\n " +
+                "           }\\n" +
+                "          }\\n" +
+                "          milestone {\\n" +
                 "            id\\n" +
                 "            title\\n" +
-                "            color\\n" +
                 "          }\\n" +
+                "          labels {\\n" +
+                "            nodes {\\n" +
+                "              id\\n" +
+                "              title\\n" +
+                "              description\\n " +
+                "             color\\n" +
+                "            }\\n " +
+                "         }\\n" +
+                "        }\\n" +
+                "        pageInfo {\\n" +
+                "          hasNextPage\\n" +
+                "          endCursor\\n" +
                 "        }\\n" +
                 "      }\\n" +
                 "    }\\n" +
-                "  }\\n" +
-                "}\\n\",\"variables\":{}}";
+                "    pageInfo {\\n" +
+                "      hasNextPage\\n" +
+                "      endCursor\\n" +
+                "    }\\n  }\\n}\\n\",\"variables\":{}}";
 
         ResponseEntity<ProjectsDataResponse> responseEntity = restTemplate.postForEntity(
                 URL, new HttpEntity<>(query, getHeaders(token)), ProjectsDataResponse.class);

@@ -402,9 +402,7 @@ public class DataManager {
                 Issue issue = createIssueFromIssueNode(issueNode);
                 issue.setProject(currentProject);
 
-                if (issue.getStatus() != null
-                    // && issue.getStory() != null && storyTitles.contains(issue.getStory().getTitle())
-                ) {
+                if (issue.getStatus() != null) {
                     User assignee = issue.getAssignee();
                     if (!assigneeIssuesMap.containsKey(assignee)) {
                         assigneeIssuesMap.put(assignee, new ArrayList<>());
@@ -418,19 +416,18 @@ public class DataManager {
 
     public List<AssigneeIssues> getAllIssuesFromProject(String token, Filter data) {
         Map<User, List<Issue>> assigneeIssuesMap = new HashMap<>();
-
+        if (data.getMilestoneTitles().contains("Select milestone")) {
+            data.getMilestoneTitles().remove("Select milestone");
+        }
         List<IssueNode> issues = new ArrayList<>();
         boolean hasNextPage;
-        List<AssigneeIssues> organizedIssuesList = new ArrayList<>();
         String currentEndCursor = GitLabGraphQLCaller.getStartPagination();
-        Projects currentProjects = new Projects(); /*= gitLabGraphQLCaller
-                .getProjectsIssuesResponse(token, projectIds, milestoneTitles, currentEndCursor)
-                .getData().getProjects();*/
+        Projects currentProjects = new Projects();
 
         do {
             if (!data.getProjectIds().isEmpty()) {
                 for (String id : data.getProjectIds()) {
-                    if (!data.getMilestoneTitles().isEmpty()) {
+                    if (!data.getMilestoneTitles().isEmpty() && data.getStoryTitles().isEmpty()) {
                         for (String milestoneTitle : data.getMilestoneTitles()) {
                             if (getMilestoneTitles(token, Set.of(id)).contains(milestoneTitle)) {
                                 currentProjects = gitLabGraphQLCaller
@@ -443,12 +440,38 @@ public class DataManager {
                                         });
                             }
                         }
-                    } else if (!data.getStoryTitles().isEmpty()) {
+                    }
+                    if (!data.getStoryTitles().isEmpty() && data.getMilestoneTitles().isEmpty()) {
+                        Set<String> stories = getStoryTitles(token, Set.of(id));
                         for (String storyTitle : data.getStoryTitles()) {
-                            // issues.addAll(gitLabGraphQLCaller.getIssuesByProjectAndStoryTitle(token, id, storyTitle));
+                            if (stories.contains(storyTitle) && !(storyTitle == null)) {
+                                currentProjects = gitLabGraphQLCaller
+                                        .getIssuesByProjectAndStoryTitle(token, id, storyTitle, currentEndCursor)
+                                        .getData().getProjects();
+
+                                currentProjects.getNodes()
+                                        .forEach(projectNode -> {
+                                            issues.addAll(projectNode.getIssues().getNodes());
+                                        });
+                            }
                         }
 
-                    } else {
+                    }
+                    if (!data.getStoryTitles().isEmpty() && !data.getMilestoneTitles().isEmpty()) {
+
+                        for (String storyTitle : data.getStoryTitles()) {
+                            currentProjects = gitLabGraphQLCaller
+                                    .getIssuesByProjectMilestoneAndStroryTitle(token, id, storyTitle, data.getMilestoneTitles().toArray()[0].toString(), currentEndCursor)
+                                    .getData().getProjects();
+
+                            currentProjects.getNodes()
+                                    .forEach(projectNode -> {
+                                        issues.addAll(projectNode.getIssues().getNodes());
+                                    });
+                        }
+                        //itt most pontosan mit akarunk kapni? ha story 2 vagy story 3 akkor is adja vissza a milestone szerint az issuekat?
+                    }
+                    if (data.getMilestoneTitles().isEmpty() && data.getStoryTitles().isEmpty()) {
                         currentProjects = gitLabGraphQLCaller
                                 .getAllIssuesFromProject(token, id, currentEndCursor)
                                 .getData().getProjects();
@@ -460,15 +483,16 @@ public class DataManager {
                     }
                     organizeIssuesByAssignee(issues, currentProjects, assigneeIssuesMap);
                     issues.clear();
+                    log.info("Returned organized issues list" + id);
                 }
             }
-            PageInfo projectsPageInfo = currentProjects.getPageInfo();
+            PageInfo projectsPageInfo = currentProjects.getNodes().get(0).getIssues().getPageInfo();
             currentEndCursor = projectsPageInfo.getEndCursor();
             hasNextPage = projectsPageInfo.isHasNextPage();
+            log.info(String.valueOf(hasNextPage));
 
         } while (hasNextPage);
 
-        log.info("Returned organized issues list");
 
         return assigneeIssuesMap.entrySet().stream()
                 .map(e -> AssigneeIssues.builder()
