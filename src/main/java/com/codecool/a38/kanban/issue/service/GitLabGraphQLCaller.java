@@ -3,7 +3,6 @@ package com.codecool.a38.kanban.issue.service;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueData.IssueDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.changeAssigneeResponse.ChangeIssueAssigneeResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issueUpdateResponse.UpdateIssueResponse;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.statusIDresponse.StatusIDResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.projectsData.ProjectsDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.singleGroupData.SingleGroupDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.singleProjectData.SingleProjectDataResponse;
@@ -372,20 +371,22 @@ public class GitLabGraphQLCaller {
         return responseEntity.getBody();
     }
 
-    public String getStatusID(String path, String labelTitle, String token) {
+    public SingleProjectDataResponse getProjectLabelDataResponse(String token, String projectPath, String labelTitle) {
         String query = "{\"query\":\"{\\n" +
-                "  project(fullPath: \\\"" + path + "\\\") {\\n" +
+                "  project(fullPath: \\\"" + projectPath + "\\\") {\\n" +
                 "    label(title: \\\"" + labelTitle + "\\\") {\\n" +
                 "      id\\n" +
                 "    }\\n" +
                 "  }\\n" +
-                "}\",\"variables\":{}}";
-        ResponseEntity<StatusIDResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, getHeaders(token)), StatusIDResponse.class);
-        return responseEntity.getBody().getData().getProject().getLabel().getId();
+                "}\\n\",\"variables\":{}}";
+
+        ResponseEntity<SingleProjectDataResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), SingleProjectDataResponse.class);
+        return responseEntity.getBody();
     }
 
-    public void changeStatusLabel(String token, String projectPath, String issueIid, int removableLabelId, int addLabelId) {
+    public void changeStatusLabel(String token, String projectPath, String issueIid,
+                                  String removableLabelId, String addLabelId) {
         String query = "{\"query\":\"mutation {\\n" +
                 "  updateIssue(input: {projectPath: \\\"" + projectPath + "\\\", iid: \\\"" + issueIid + "\\\", removeLabelIds: \\\"" + removableLabelId + "\\\", addLabelIds: \\\"" + addLabelId + "\\\"}) {\\n" +
                 "    issue {\\n" +
@@ -403,10 +404,10 @@ public class GitLabGraphQLCaller {
                 "  }\\n" +
                 "}\\n" +
                 "\",\"variables\":{}}";
-
+//TODO
         ResponseEntity<UpdateIssueResponse> responseEntity = restTemplate.postForEntity(
                 URL, new HttpEntity<>(query, getHeaders(token)), UpdateIssueResponse.class);
-        log.info(responseEntity.getBody().getData().getUpdateIssue().getIssue().getLabels().getNodes().toString());
+        log.info("Change status of issue: " + issueIid);
     }
 
     private String getUsernameByUserID(String token, String userID) {

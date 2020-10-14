@@ -365,23 +365,31 @@ public class DataManager {
         return storyLabelList;
     }
 
-    public void changeStatus(String token, String issueId, String newStatusTitle) {
+    public void changeStatus(String token, String issueId, String newStatusDisplayTitle) {
         IssueNode issueNode = gitLabGraphQLCaller.getIssueDataResponse(token, issueId).getData().getIssue();
 
         String issueIid = issueNode.getIid();
         String projectFullPath = issueNode.getDesignCollection().getProject().getFullPath();
         String currentStatusLabelId = getStatusLabelId(issueNode);
 
-        int newStatusLabelId = Integer.parseInt(gitLabGraphQLCaller.getStatusID(projectFullPath, newStatusTitle, token).replaceAll("([A-z /]).", ""));
+        String newStatusLabelTitle = configDataProvider.getStatusDisplayTitleMap().get(newStatusDisplayTitle);
+        String newStatusLabelId = gitLabGraphQLCaller.
+                getProjectLabelDataResponse(token, projectFullPath, newStatusLabelTitle)
+                .getData().getProject().getLabel().getId();
 
-        if (!currentStatusLabelId.equals("")) {
-            int removableLabelID = Integer.parseInt(currentStatusLabelId.replaceAll("([A-z /]).", ""));
-            if (removableLabelID != newStatusLabelId) {
-                gitLabGraphQLCaller.changeStatusLabel(token, projectFullPath, issueIid, removableLabelID, newStatusLabelId);
-            }
+        if (!currentStatusLabelId.equals(newStatusLabelId)) {
+            String currentStatusLabelIdNum = getIdNumValue(currentStatusLabelId);
+            String newStatusLabelIdNum = getIdNumValue(newStatusLabelId);
+
+            gitLabGraphQLCaller.changeStatusLabel(token, projectFullPath, issueIid,
+                    currentStatusLabelIdNum, newStatusLabelIdNum);
         }
-
     }
+
+    private String getIdNumValue(String currentStatusLabelId) {
+        return currentStatusLabelId.substring(currentStatusLabelId.lastIndexOf("/") + 1);
+    }
+
 
     private String getStatusLabelId(IssueNode issueNode) {
         Label statusLabel = issueNode.getLabels().getNodes().stream()
