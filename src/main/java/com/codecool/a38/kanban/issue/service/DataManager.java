@@ -367,7 +367,6 @@ public class DataManager {
 
     public void changeStatus(String token, String issueId, String newStatusDisplayTitle) {
         IssueNode issueNode = gitLabGraphQLCaller.getIssueDataResponse(token, issueId).getData().getIssue();
-
         String issueIid = issueNode.getIid();
         String projectFullPath = issueNode.getDesignCollection().getProject().getFullPath();
         String currentStatusLabelId = getStatusLabelId(issueNode);
@@ -380,7 +379,6 @@ public class DataManager {
         if (!currentStatusLabelId.equals(newStatusLabelId)) {
             String currentStatusLabelIdNum = getIdNumValue(currentStatusLabelId);
             String newStatusLabelIdNum = getIdNumValue(newStatusLabelId);
-
             gitLabGraphQLCaller.changeStatusLabel(token, projectFullPath, issueIid,
                     currentStatusLabelIdNum, newStatusLabelIdNum);
         }
