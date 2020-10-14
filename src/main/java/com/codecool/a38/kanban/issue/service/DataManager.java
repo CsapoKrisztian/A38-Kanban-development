@@ -366,7 +366,7 @@ public class DataManager {
     }
 
     public void changeStatus(String token, String issueId, String newStatusTitle) {
-        IssueNode issueNode = gitLabGraphQLCaller.getIssueDataResponse(token, issueId).getData();
+        IssueNode issueNode = gitLabGraphQLCaller.getIssueDataResponse(token, issueId).getData().getIssue();
 
         String issueIid = issueNode.getIid();
         String projectFullPath = issueNode.getDesignCollection().getProject().getFullPath();
@@ -391,7 +391,7 @@ public class DataManager {
     }
 
     public void changeAssignee(String token, String issueId, String newAssigneeId) {
-        IssueNode issueNode = gitLabGraphQLCaller.getIssueDataResponse(token, issueId).getData();
+        IssueNode issueNode = gitLabGraphQLCaller.getIssueDataResponse(token, issueId).getData().getIssue();
 
         String issueIid = issueNode.getIid();
         String projectFullPath = issueNode.getDesignCollection().getProject().getFullPath();

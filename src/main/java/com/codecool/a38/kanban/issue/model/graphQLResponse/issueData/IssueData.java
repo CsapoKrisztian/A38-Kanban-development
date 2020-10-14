@@ -1,12 +1,13 @@
 package com.codecool.a38.kanban.issue.model.graphQLResponse.issueData;
 
+import com.codecool.a38.kanban.issue.model.graphQLResponse.IssueNode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class IssueDataResponse {
+public class IssueData {
 
-    @JsonProperty("data")
-    private IssueData data;
+	@JsonProperty("issue")
+	private IssueNode issue;
 
 }
