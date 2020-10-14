@@ -37,7 +37,11 @@ public class AuthController {
             log.info("gitlab access token received from gitlab: " + gitlabAccessToken);
 
             Cookie cookie = new Cookie("gitlabAccessToken", gitlabAccessToken);
-            cookie.setMaxAge(60 * 60 * 24);
+
+            int weekInSeconds = 60 * 60 * 24 * 7;
+            int maxAge = oAuthResponse.getExpires_in() != null ? oAuthResponse.getExpires_in() : weekInSeconds;
+            cookie.setMaxAge(maxAge);
+
             cookie.setHttpOnly(true);
             cookie.setPath("/");
             response.addCookie(cookie);
