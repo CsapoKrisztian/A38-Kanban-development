@@ -388,7 +388,6 @@ public class DataManager {
             log.info("Updated status: " + newStatusDisplayTitle + " of issue: " + issueId);
             return createIssueFromIssueNode(updateIssueDataResponse.getData().getUpdateIssue().getIssue());
         }
-
         log.info("Failed to update status of issue: " + issueId);
         return createIssueFromIssueNode(issueNode);
     }
@@ -407,20 +406,21 @@ public class DataManager {
 
     public Issue updateAssignee(String token, String issueId, String newAssigneeId) {
         IssueNode issueNode = gitLabGraphQLCaller.getIssueDataResponse(token, issueId).getData().getIssue();
-
         String issueIid = issueNode.getIid();
         String projectFullPath = issueNode.getDesignCollection().getProject().getFullPath();
 
         String assigneeUsername;
-        if (newAssigneeId.equals("unassigned") || newAssigneeId.equals("")) {
-            assigneeUsername = "";
-        } else {
-            assigneeUsername = gitLabGraphQLCaller.getUsernameByUserID(token, newAssigneeId);
-        }
+        if (!newAssigneeId.equals("unassigned") && !newAssigneeId.equals("")) {
+            assigneeUsername = gitLabGraphQLCaller.getUsernameByUserID(token, newAssigneeId)
+                    .getData().getUser().getUsername();
 
-        IssueSetAssigneesDataResponse issueSetAssigneesDataResponse = gitLabGraphQLCaller.
-                updateAssignee(token, assigneeUsername, projectFullPath, issueIid);
-        return createIssueFromIssueNode(issueSetAssigneesDataResponse.getData().getIssueSetAssignees().getIssue());
+            IssueSetAssigneesDataResponse issueSetAssigneesDataResponse = gitLabGraphQLCaller.
+                    updateAssignee(token, assigneeUsername, projectFullPath, issueIid);
+            log.info("Set assignee: " + assigneeUsername + " to issue: " + issueId);
+            return createIssueFromIssueNode(issueSetAssigneesDataResponse.getData().getIssueSetAssignees().getIssue());
+        }
+        log.info("Failed to set assignee to issue: " + issueId);
+        return createIssueFromIssueNode(issueNode);
     }
 
 }

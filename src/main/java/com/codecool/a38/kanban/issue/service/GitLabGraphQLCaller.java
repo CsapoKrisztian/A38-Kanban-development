@@ -6,7 +6,7 @@ import com.codecool.a38.kanban.issue.model.graphQLResponse.updateIssueData.Updat
 import com.codecool.a38.kanban.issue.model.graphQLResponse.projectsData.ProjectsDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.singleGroupData.SingleGroupDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.singleProjectData.SingleProjectDataResponse;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.userData.UsernameResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.userData.UserDataResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -402,8 +402,7 @@ public class GitLabGraphQLCaller {
     }
 
 
-    public String getUsernameByUserID(String token, String userId) {
-
+    public UserDataResponse getUsernameByUserID(String token, String userId) {
         String query = "{\"query\":\"{\\n" +
                 "  user(id: \\\"" + userId + "\\\") {\\n" +
                 "    username\\n" +
@@ -411,9 +410,10 @@ public class GitLabGraphQLCaller {
                 "}\\n" +
                 "\",\"variables\":{}}";
 
-        ResponseEntity<UsernameResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, getHeaders(token)), UsernameResponse.class);
-        return responseEntity.getBody().getData().getUser().getUsername();
+        ResponseEntity<UserDataResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), UserDataResponse.class);
+        log.info("Get user data response: " + userId);
+        return responseEntity.getBody();
     }
 
     public IssueSetAssigneesDataResponse updateAssignee(String token, String projectPath,
