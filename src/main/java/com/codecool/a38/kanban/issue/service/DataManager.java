@@ -198,7 +198,7 @@ public class DataManager {
     private User getAssigneeFromIssueNode(IssueNode issueNode) {
         try {
             return issueNode.getAssignees().getNodes().get(0);
-        } catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException | NullPointerException e) {
             return null;
         }
     }
