@@ -410,16 +410,21 @@ public class GitLabGraphQLCaller {
         return Integer.parseInt(responseEntity.getBody().getData().getIssue().getIid());
     }
 
-    public void updateIssue(String token, String path, int id, int removableLabelId, int newLabelId) {
+    public void updateIssue(String token, String projectPath, int issueIid, int removableLabelId, int addLabelId) {
         String query = "{\"query\":\"mutation {\\n" +
-                "  updateIssue(input: {projectPath: \\\"" + path + "\\\", iid: \\\"" + id + "\\\", addLabelIds: \\\"" + newLabelId + "\\\", removeLabelIds: \\\"" + removableLabelId + "\\\"}) {\\n" +
+                "  updateIssue(input: {projectPath: \\\"" + projectPath + "\\\", iid: \\\"" + issueIid + "\\\", removeLabelIds: \\\"" + removableLabelId + "\\\", addLabelIds: \\\"" + addLabelId + "\\\"}) {\\n" +
                 "    issue {\\n" +
+                "      id\\n" +
+                "      title\\n" +
                 "      labels {\\n" +
                 "        nodes {\\n" +
+                "          id\\n" +
                 "          title\\n" +
+                "          color\\n" +
                 "        }\\n" +
                 "      }\\n" +
                 "    }\\n" +
+                "    errors\\n" +
                 "  }\\n" +
                 "}\\n" +
                 "\",\"variables\":{}}";

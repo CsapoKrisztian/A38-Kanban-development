@@ -6,6 +6,9 @@ import lombok.Data;
 public class UpdateIssueRequestBody {
 
     private int projectID;
-    private String id;
-    private String newLabel;
+
+    private String issueId;
+
+    private String newStatusTitle;
+
 }

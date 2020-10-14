@@ -368,11 +368,11 @@ public class DataManager {
     }
 
     public void updateIssue(String token, UpdateIssueRequestBody data) {
-        List<NodesItem> issuesCurrentLabels = gitLabGraphQLCaller.getIssueCurrentStatus(token, data.getId());
+        List<NodesItem> issuesCurrentLabels = gitLabGraphQLCaller.getIssueCurrentStatus(token, data.getIssueId());
         String currentStatusId = "";
-        String path = gitLabGraphQLCaller.getProjectPath(data.getId(), token);
-        int issueIID = gitLabGraphQLCaller.getIssuesIID(token, data.getId());
-        int newLabelID = Integer.parseInt(gitLabGraphQLCaller.getStatusID(path, data.getNewLabel(), token).replaceAll("([A-z /]).", ""));
+        String path = gitLabGraphQLCaller.getProjectPath(data.getIssueId(), token);
+        int issueIID = gitLabGraphQLCaller.getIssuesIID(token, data.getIssueId());
+        int newLabelID = Integer.parseInt(gitLabGraphQLCaller.getStatusID(path, data.getNewStatusTitle(), token).replaceAll("([A-z /]).", ""));
 
         for (NodesItem labelNode : issuesCurrentLabels) {
             if (configDataProvider.getStatusTitles().contains(labelNode.getTitle())) {
