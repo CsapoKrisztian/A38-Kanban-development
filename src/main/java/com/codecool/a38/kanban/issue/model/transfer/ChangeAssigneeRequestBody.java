@@ -5,6 +5,8 @@ import lombok.Data;
 @Data
 public class ChangeAssigneeRequestBody {
 
-    private String assignee;
-    private String issueID;
+    private String issueId;
+
+    private String newAssigneeId;
+
 }

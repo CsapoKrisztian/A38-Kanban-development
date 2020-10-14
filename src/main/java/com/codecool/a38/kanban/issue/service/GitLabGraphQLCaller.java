@@ -354,25 +354,26 @@ public class GitLabGraphQLCaller {
 
     public IssueDataResponse getIssueDataResponse(String token, String issueId) {
         String query = "{\"query\":\"{\\n" +
-                "  project(fullPath: \\\"" + projectFullPath + "\\\") {\\n" +
-                "    labels(searchTerm: \\\"Story: \\\"" + getFormattedPagination(endCursor) + ") {\\n" +
+                "  issue(id: \\\"gid://gitlab/Issue/3387\\\") {\\n" +
+                "    iid\\n" +
+                "    labels {\\n" +
                 "      nodes {\\n" +
                 "        id\\n" +
                 "        title\\n" +
-                "        color\\n" +
                 "      }\\n" +
-                "      pageInfo {\\n" +
-                "        hasNextPage\\n" +
-                "        endCursor\\n" +
+                "    }\\n" +
+                "    designCollection {\\n" +
+                "      project {\\n" +
+                "        fullPath\\n" +
                 "      }\\n" +
                 "    }\\n" +
                 "  }\\n" +
                 "}\\n" +
                 "\",\"variables\":{}}";
 
-        ResponseEntity<SingleProjectDataResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, getHeaders(token)), SingleProjectDataResponse.class);
-        log.info("Get single project stories response: " + projectFullPath);
+        ResponseEntity<IssueDataResponse> responseEntity = restTemplate.postForEntity(
+                URL, new HttpEntity<>(query, getHeaders(token)), IssueDataResponse.class);
+        log.info("Get issue data response: " + issueId);
         return responseEntity.getBody();
     }
 
@@ -407,24 +408,6 @@ public class GitLabGraphQLCaller {
         return responseEntity.getBody().getData().getProject().getLabel().getId();
     }
 
-    public List<NodesItem> getIssueCurrentStatus(String token, String issueID) {
-        String query = "{\"query\":\"{\\n" +
-                "    issue(id:\\\"" + issueID + "\\\"){\\n" +
-                "      labels{\\n" +
-                "        nodes{\\n" +
-                "          id\\n" +
-                "          title\\n" +
-                "        }\\n" +
-                "      }\\n" +
-                "    }\\n" +
-                "  }\\n" +
-                "" +
-                "\",\"variables\":{}}";
-        ResponseEntity<IssueCurrentLabelsResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, getHeaders(token)), IssueCurrentLabelsResponse.class);
-        return responseEntity.getBody().getData().getIssue().getLabels().getNodes();
-    }
-
     public Integer getIssuesIID(String token, String issueID) {
         String query = "{\"query\":\"{\\n" +
                 "  issue(id: \\\"" + issueID + "\\\") {\\n" +
@@ -436,7 +419,7 @@ public class GitLabGraphQLCaller {
         return Integer.parseInt(responseEntity.getBody().getData().getIssue().getIid());
     }
 
-    public void changeStatusLabel(String token, String projectPath, int issueIid, int removableLabelId, int addLabelId) {
+    public void changeStatusLabel(String token, String projectPath, String issueIid, int removableLabelId, int addLabelId) {
         String query = "{\"query\":\"mutation {\\n" +
                 "  updateIssue(input: {projectPath: \\\"" + projectPath + "\\\", iid: \\\"" + issueIid + "\\\", removeLabelIds: \\\"" + removableLabelId + "\\\", addLabelIds: \\\"" + addLabelId + "\\\"}) {\\n" +
                 "    issue {\\n" +
@@ -472,12 +455,12 @@ public class GitLabGraphQLCaller {
 
     }
 
-    public void changeAssignee(String token, String userID, String path, int issueIID) {
+    public void changeAssignee(String token, String userId, String path, String issueIID) {
         String username;
-        if (userID.equals("unassigned") || userID == null || userID.equals("")) {
+        if (userId.equals("unassigned") || userId.equals("")) {
             username = "";
         } else {
-            username = getUsernameByUserID(token, userID);
+            username = getUsernameByUserID(token, userId);
         }
 
         String q = "{\"query\":\"mutation {\\n" +
