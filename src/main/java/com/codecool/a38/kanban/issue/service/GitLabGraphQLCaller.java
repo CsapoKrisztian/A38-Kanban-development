@@ -1,8 +1,8 @@
 package com.codecool.a38.kanban.issue.service;
 
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueData.IssueDataResponse;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.changeAssigneeResponse.ChangeIssueAssigneeResponse;
-import com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issueUpdateResponse.UpdateIssueResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.changeAssigneeResponse.ChangeIssueAssigneeResponse;
+import com.codecool.a38.kanban.issue.model.graphQLResponse.issueUpdateResponse.UpdateIssueResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.projectsData.ProjectsDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.singleGroupData.SingleGroupDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.singleProjectData.SingleProjectDataResponse;
@@ -385,7 +385,7 @@ public class GitLabGraphQLCaller {
         return responseEntity.getBody();
     }
 
-    public void changeStatusLabel(String token, String projectPath, String issueIid,
+    public void updateStatusLabel(String token, String projectPath, String issueIid,
                                   String removableLabelId, String addLabelId) {
         String query = "{\"query\":\"mutation {\\n" +
                 "  updateIssue(input: {projectPath: \\\"" + projectPath + "\\\", iid: \\\"" + issueIid + "\\\", removeLabelIds: \\\"" + removableLabelId + "\\\", addLabelIds: \\\"" + addLabelId + "\\\"}) {\\n" +
@@ -422,7 +422,7 @@ public class GitLabGraphQLCaller {
 
     }
 
-    public void changeAssignee(String token, String userId, String path, String issueIID) {
+    public void updateAssignee(String token, String userId, String path, String issueIID) {
         String username;
         if (userId.equals("unassigned") || userId.equals("")) {
             username = "";

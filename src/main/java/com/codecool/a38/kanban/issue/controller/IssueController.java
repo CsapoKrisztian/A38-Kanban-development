@@ -1,8 +1,8 @@
 package com.codecool.a38.kanban.issue.controller;
 
-import com.codecool.a38.kanban.issue.model.transfer.ChangeAssigneeRequestBody;
+import com.codecool.a38.kanban.issue.model.transfer.UpdateAssigneeRequestBody;
 import com.codecool.a38.kanban.issue.model.Project;
-import com.codecool.a38.kanban.issue.model.transfer.ChangeStatusRequestBody;
+import com.codecool.a38.kanban.issue.model.transfer.UpdateStatusRequestBody;
 import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
 import com.codecool.a38.kanban.issue.model.transfer.FilterRequestBody;
 import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
@@ -55,17 +55,17 @@ public class IssueController {
         return dataManager.getStatusTitles();
     }
 
-    @PostMapping("/changeStatus")
-    public void changeStatus(@CookieValue(defaultValue = "default") String gitlabAccessToken,
-                             @RequestBody ChangeStatusRequestBody changeStatusRequestBody) {
-        dataManager.changeStatus(gitlabAccessToken, changeStatusRequestBody.getIssueId(),
-                changeStatusRequestBody.getNewStatusTitle());
+    @PostMapping("/updateStatus")
+    public void updateStatus(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                             @RequestBody UpdateStatusRequestBody updateStatusRequestBody) {
+        dataManager.updateStatus(gitlabAccessToken, updateStatusRequestBody.getIssueId(),
+                updateStatusRequestBody.getNewStatusTitle());
     }
 
-    @PostMapping("/changeAssignee")
-    public void changeAssignee(@CookieValue(defaultValue = "default") String gitlabAccessToken,
-                               @RequestBody ChangeAssigneeRequestBody changeAssigneeRequestBody) {
-        dataManager.changeAssignee(gitlabAccessToken, changeAssigneeRequestBody.getNewAssigneeId(),
-                changeAssigneeRequestBody.getIssueId());
+    @PostMapping("/updateAssignee")
+    public void updateAssignee(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                               @RequestBody UpdateAssigneeRequestBody updateAssigneeRequestBody) {
+        dataManager.updateAssignee(gitlabAccessToken, updateAssigneeRequestBody.getNewAssigneeId(),
+                updateAssigneeRequestBody.getIssueId());
     }
 }

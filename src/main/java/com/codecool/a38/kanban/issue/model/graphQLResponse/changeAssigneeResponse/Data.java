@@ -1,4 +1,4 @@
-package com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.changeAssigneeResponse;
+package com.codecool.a38.kanban.issue.model.graphQLResponse.changeAssigneeResponse;
 
 import com.google.gson.annotations.SerializedName;
 

@@ -365,7 +365,7 @@ public class DataManager {
         return storyLabelList;
     }
 
-    public void changeStatus(String token, String issueId, String newStatusDisplayTitle) {
+    public void updateStatus(String token, String issueId, String newStatusDisplayTitle) {
         IssueNode issueNode = gitLabGraphQLCaller.getIssueDataResponse(token, issueId).getData().getIssue();
         String issueIid = issueNode.getIid();
         String projectFullPath = issueNode.getDesignCollection().getProject().getFullPath();
@@ -379,7 +379,7 @@ public class DataManager {
         if (!currentStatusLabelId.equals(newStatusLabelId)) {
             String currentStatusLabelIdNum = getIdNumValue(currentStatusLabelId);
             String newStatusLabelIdNum = getIdNumValue(newStatusLabelId);
-            gitLabGraphQLCaller.changeStatusLabel(token, projectFullPath, issueIid,
+            gitLabGraphQLCaller.updateStatusLabel(token, projectFullPath, issueIid,
                     currentStatusLabelIdNum, newStatusLabelIdNum);
         }
     }
@@ -396,13 +396,13 @@ public class DataManager {
         return statusLabel != null ? statusLabel.getId() : "";
     }
 
-    public void changeAssignee(String token, String issueId, String newAssigneeId) {
+    public void updateAssignee(String token, String issueId, String newAssigneeId) {
         IssueNode issueNode = gitLabGraphQLCaller.getIssueDataResponse(token, issueId).getData().getIssue();
 
         String issueIid = issueNode.getIid();
         String projectFullPath = issueNode.getDesignCollection().getProject().getFullPath();
 
-        gitLabGraphQLCaller.changeAssignee(token, newAssigneeId, projectFullPath, issueIid);
+        gitLabGraphQLCaller.updateAssignee(token, newAssigneeId, projectFullPath, issueIid);
     }
 
 }

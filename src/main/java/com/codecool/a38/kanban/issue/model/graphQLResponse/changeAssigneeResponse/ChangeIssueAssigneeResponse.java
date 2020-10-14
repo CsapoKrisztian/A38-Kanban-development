@@ -1,8 +1,8 @@
-package com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issuesIID;
+package com.codecool.a38.kanban.issue.model.graphQLResponse.changeAssigneeResponse;
 
 import com.google.gson.annotations.SerializedName;
 
-public class IssuesIIDResponse {
+public class ChangeIssueAssigneeResponse {
 
     @SerializedName("data")
     private Data data;

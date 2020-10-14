@@ -1,8 +1,8 @@
-package com.codecool.a38.kanban.issue.model.graphQLResponse.issueMutations.issueUpdateResponse;
+package com.codecool.a38.kanban.issue.model.graphQLResponse.changeAssigneeResponse;
 
 import com.google.gson.annotations.SerializedName;
 
-public class NodesItem {
+public class Issue {
 
     @SerializedName("title")
     private String title;
