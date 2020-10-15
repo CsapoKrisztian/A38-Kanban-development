@@ -76,7 +76,7 @@ public class DataManager {
 
     public List<StoryIssues> getStoryIssuesList(String token, Set<String> projectIds,
                                                 Set<String> milestoneTitles, Set<String> storyTitles) {
-        if (projectIds == null || milestoneTitles == null || storyTitles == null) return null;
+        if (projectIds == null || projectIds.size() == 0) return null;
 
         Map<Label, List<Issue>> storyIssuesMap = new HashMap<>();
         String currentEndCursor = GitLabGraphQLCaller.getStartPagination();
