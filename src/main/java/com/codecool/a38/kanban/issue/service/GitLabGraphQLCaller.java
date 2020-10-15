@@ -8,6 +8,7 @@ import com.codecool.a38.kanban.issue.model.graphQLResponse.singleGroupData.Singl
 import com.codecool.a38.kanban.issue.model.graphQLResponse.singleProjectData.SingleProjectDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.userData.UserDataResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,8 @@ import java.util.Set;
 @Slf4j
 public class GitLabGraphQLCaller {
 
-    private static final String URL = "https://gitlab.techpm.guru/api/graphql";
+    @Value("${gitlabServerGraphQLApi.url}")
+    private String gitlabServerGraphQLApiUrl;
 
     private static final String startPagination = "start";
 
@@ -91,7 +93,7 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<ProjectsDataResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, getHeaders(token)), ProjectsDataResponse.class);
+                gitlabServerGraphQLApiUrl, new HttpEntity<>(query, getHeaders(token)), ProjectsDataResponse.class);
         log.info("Get projects issues response");
         return responseEntity.getBody();
     }
@@ -139,7 +141,7 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<SingleProjectDataResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, getHeaders(token)), SingleProjectDataResponse.class);
+                gitlabServerGraphQLApiUrl, new HttpEntity<>(query, getHeaders(token)), SingleProjectDataResponse.class);
         log.info("Get single project issues response: " + projectFullPath);
         return responseEntity.getBody();
     }
@@ -165,7 +167,7 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<ProjectsDataResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, getHeaders(token)), ProjectsDataResponse.class);
+                gitlabServerGraphQLApiUrl, new HttpEntity<>(query, getHeaders(token)), ProjectsDataResponse.class);
         log.info("Get projects response");
         return responseEntity.getBody();
     }
@@ -208,7 +210,7 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<ProjectsDataResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, getHeaders(token)), ProjectsDataResponse.class);
+                gitlabServerGraphQLApiUrl, new HttpEntity<>(query, getHeaders(token)), ProjectsDataResponse.class);
         log.info("Get milestones response");
         return responseEntity.getBody();
     }
@@ -232,7 +234,7 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<SingleProjectDataResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, getHeaders(token)), SingleProjectDataResponse.class);
+                gitlabServerGraphQLApiUrl, new HttpEntity<>(query, getHeaders(token)), SingleProjectDataResponse.class);
         log.info("Get single project milestones response: " + projectFullPath);
         return responseEntity.getBody();
     }
@@ -256,7 +258,7 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<SingleGroupDataResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, getHeaders(token)), SingleGroupDataResponse.class);
+                gitlabServerGraphQLApiUrl, new HttpEntity<>(query, getHeaders(token)), SingleGroupDataResponse.class);
         log.info("Get single group milestones response: " + groupFullPath);
         return responseEntity.getBody();
     }
@@ -287,7 +289,7 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<ProjectsDataResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, getHeaders(token)), ProjectsDataResponse.class);
+                gitlabServerGraphQLApiUrl, new HttpEntity<>(query, getHeaders(token)), ProjectsDataResponse.class);
         log.info("Get stories response");
         return responseEntity.getBody();
     }
@@ -312,7 +314,7 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<SingleProjectDataResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, getHeaders(token)), SingleProjectDataResponse.class);
+                gitlabServerGraphQLApiUrl, new HttpEntity<>(query, getHeaders(token)), SingleProjectDataResponse.class);
         log.info("Get single project stories response: " + projectFullPath);
         return responseEntity.getBody();
     }
@@ -338,7 +340,7 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<IssueDataResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, getHeaders(token)), IssueDataResponse.class);
+                gitlabServerGraphQLApiUrl, new HttpEntity<>(query, getHeaders(token)), IssueDataResponse.class);
         log.info("Get issue data response: " + issueId);
         return responseEntity.getBody();
     }
@@ -353,7 +355,7 @@ public class GitLabGraphQLCaller {
                 "}\\n\",\"variables\":{}}";
 
         ResponseEntity<SingleProjectDataResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, getHeaders(token)), SingleProjectDataResponse.class);
+                gitlabServerGraphQLApiUrl, new HttpEntity<>(query, getHeaders(token)), SingleProjectDataResponse.class);
         log.info("Get label data response: " + labelTitle + " in project: " + projectPath);
         return responseEntity.getBody();
     }
@@ -396,7 +398,7 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<UpdateIssueDataResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, getHeaders(token)), UpdateIssueDataResponse.class);
+                gitlabServerGraphQLApiUrl, new HttpEntity<>(query, getHeaders(token)), UpdateIssueDataResponse.class);
         log.info("Update issue, return update issue data response: " + issueIid);
         return responseEntity.getBody();
     }
@@ -411,7 +413,7 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<UserDataResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, getHeaders(token)), UserDataResponse.class);
+                gitlabServerGraphQLApiUrl, new HttpEntity<>(query, getHeaders(token)), UserDataResponse.class);
         log.info("Get user data response: " + userId);
         return responseEntity.getBody();
     }
@@ -452,7 +454,7 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<IssueSetAssigneesDataResponse> responseEntity = restTemplate.postForEntity(
-                URL, new HttpEntity<>(query, getHeaders(token)), IssueSetAssigneesDataResponse.class);
+                gitlabServerGraphQLApiUrl, new HttpEntity<>(query, getHeaders(token)), IssueSetAssigneesDataResponse.class);
         log.info("Set assignee to issue, return issue set assignee data response: " + projectPath);
         return responseEntity.getBody();
     }
