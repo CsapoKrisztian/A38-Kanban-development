@@ -49,7 +49,7 @@ public class GitLabGraphQLCaller {
                 "        id\\n" +
                 "        name\\n" +
                 "      }\\n" +
-                "      issues(state: opened, milestoneTitle: " + getFormattedFilter(milestoneTitles) + ") {\\n" +
+                "      issues(state: opened" + getMilestoneFilter(milestoneTitles) + ") {\\n" +
                 "        nodes {\\n" +
                 "          id\\n" +
                 "          title\\n" +
@@ -102,7 +102,7 @@ public class GitLabGraphQLCaller {
                                                                     Set<String> milestoneTitles, String endCursor) {
         String query = "{\"query\":\"{\\n" +
                 "  project(fullPath: \\\"" + projectFullPath + "\\\") {\\n" +
-                "    issues(state: opened, milestoneTitle: " + getFormattedFilter(milestoneTitles) + getFormattedPagination(endCursor) + ") {\\n" +
+                "    issues(state: opened" + getMilestoneFilter(milestoneTitles) + getFormattedPagination(endCursor) + ") {\\n" +
                 "      nodes {\\n" +
                 "        id\\n" +
                 "        title\\n" +
@@ -472,6 +472,11 @@ public class GitLabGraphQLCaller {
         String before = "after: \\\"";
         String after = "\\\"";
         return before + cursor + after;
+    }
+
+    private String getMilestoneFilter(Set<String> milestoneTitles) {
+        return milestoneTitles.size() != 0 ?
+                "milestoneTitle: " + getFormattedFilter(milestoneTitles) : "";
     }
 
     private String getFormattedFilter(Set<String> strings) {
