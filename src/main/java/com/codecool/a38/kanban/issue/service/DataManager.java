@@ -49,13 +49,14 @@ public class DataManager {
                     Issue issue = createIssueFromIssueNode(issueNode);
                     issue.setProject(currentProject);
 
-                    if (issue.getStatus() != null && issue.getStory() != null
-                            && storyTitles.contains(issue.getStory().getTitle())) {
-                        User assignee = issue.getAssignee();
-                        if (!assigneeIssuesMap.containsKey(assignee)) {
-                            assigneeIssuesMap.put(assignee, new ArrayList<>());
+                    if (issue.getStatus() != null) {
+                        if (storyTitles != null && storyTitles.size() != 0) {
+                            if (issue.getStory() != null && storyTitles.contains(issue.getStory().getTitle())) {
+                                addIssueToAssigneeIssuesMap(assigneeIssuesMap, issue);
+                            }
+                        } else {
+                            addIssueToAssigneeIssuesMap(assigneeIssuesMap, issue);
                         }
-                        assigneeIssuesMap.get(assignee).add(issue);
                     }
                 });
             });
@@ -72,6 +73,14 @@ public class DataManager {
                         .issues(e.getValue())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    private void addIssueToAssigneeIssuesMap(Map<User, List<Issue>> assigneeIssuesMap, Issue issue) {
+        User assignee = issue.getAssignee();
+        if (!assigneeIssuesMap.containsKey(assignee)) {
+            assigneeIssuesMap.put(assignee, new ArrayList<>());
+        }
+        assigneeIssuesMap.get(assignee).add(issue);
     }
 
     public List<StoryIssues> getStoryIssuesList(String token, Set<String> projectIds,
@@ -93,13 +102,15 @@ public class DataManager {
                     Issue issue = createIssueFromIssueNode(issueNode);
                     issue.setProject(currentProject);
 
-                    Label story = issue.getStory();
-                    if (issue.getStatus() != null && story != null
-                            && storyTitles.contains(story.getTitle())) {
-                        if (!storyIssuesMap.containsKey(story)) {
-                            storyIssuesMap.put(story, new ArrayList<>());
+                    if (issue.getStatus() != null) {
+                        Label story = issue.getStory();
+                        if (storyTitles != null && storyTitles.size() != 0) {
+                            if (story != null && storyTitles.contains(story.getTitle())) {
+                                addStoryToStoryIssuesMap(storyIssuesMap, issue, story);
+                            }
+                        } else {
+                            addStoryToStoryIssuesMap(storyIssuesMap, issue, story);
                         }
-                        storyIssuesMap.get(story).add(issue);
                     }
                 });
             });
@@ -116,6 +127,13 @@ public class DataManager {
                         .issues(e.getValue())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    private void addStoryToStoryIssuesMap(Map<Label, List<Issue>> storyIssuesMap, Issue issue, Label story) {
+        if (!storyIssuesMap.containsKey(story)) {
+            storyIssuesMap.put(story, new ArrayList<>());
+        }
+        storyIssuesMap.get(story).add(issue);
     }
 
     private List<IssueNode> getAllProjectsIssueNodes(String token, Set<String> milestoneTitles, ProjectNode projectNode) {
