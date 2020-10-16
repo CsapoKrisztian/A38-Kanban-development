@@ -475,7 +475,10 @@ public class GitLabGraphQLCaller {
     }
 
     private String getMilestoneFilter(Set<String> milestoneTitles) {
-        return milestoneTitles != null && milestoneTitles.size() != 0 ?
+        if (milestoneTitles == null) return "";
+        String defaultOptionText = "Select milestone";
+        milestoneTitles.remove(defaultOptionText);
+        return milestoneTitles.size() != 0 ?
                 "milestoneTitle: " + getFormattedFilter(milestoneTitles) : "";
     }
 
