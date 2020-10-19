@@ -1,0 +1,46 @@
+{
+  "storyPrefix": "Story: ",
+
+  "priorities": [
+    {
+      "title": "Priority: P0",
+      "display": "PO"
+    },
+    {
+      "title": "Priority: P1",
+      "display": "P1"
+    },
+    {
+      "title": "Priority: P2",
+      "display": "P2"
+    }
+  ],
+
+  "statuses": [
+    {
+      "title": "Backlog",
+      "display": "Backlog"
+    },
+    {
+      "title": "Todo",
+      "display": "Todo"
+    },
+    {
+      "title": "Development",
+      "display": "Development"
+    },
+    {
+      "title": "Dev review",
+      "display": "Dev review"
+    },
+    {
+      "title": "Final review",
+      "display": "Final review"
+    },
+    {
+      "title": "Documentation",
+      "display": "Documentation"
+    }
+  ]
+
+}
