@@ -1,7 +1,3 @@
-# Config files
-application.properties
-configprops.json
-
 # Compiled class file
 *.class
 
@@ -153,3 +149,5 @@ fabric.properties
 # Cache file creation bug
 # See https://youtrack.jetbrains.com/issue/JBR-2257
 .idea/$CACHE_FILE$
+/src/main/resources/application.properties
+/src/main/resources/configprops.json
