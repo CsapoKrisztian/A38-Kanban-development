@@ -2,8 +2,8 @@ package com.codecool.a38.kanban.authorization.controller;
 
 import com.codecool.a38.kanban.authorization.model.AppData;
 import com.codecool.a38.kanban.authorization.model.OAuthResponse;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,16 +13,22 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
-@AllArgsConstructor
 @Slf4j
 public class AuthController {
 
+    @Value("${gitlabServer.url}")
+    private String gitlabServerUrl;
+
     private RestTemplate restTemplate;
+
+    public AuthController(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     @PostMapping("/getToken")
     public ResponseEntity<String> getToken(HttpServletResponse response, @RequestParam String code,
                                            @RequestBody AppData appData) {
-        String url = "https://gitlab.techpm.guru/oauth/token";
+        String gitlabServerOauthTokenUrl = gitlabServerUrl + "/oauth/token";
         String parameters = "?client_id=" + appData.getAppId() +
                 "&client_secret=" + appData.getAppSecret() +
                 "&code=" + code +
@@ -30,7 +36,7 @@ public class AuthController {
                 "&redirect_uri=" + appData.getRedirectUri();
 
         HttpEntity<String> request = new HttpEntity<>(null);
-        OAuthResponse oAuthResponse = restTemplate.postForEntity(url + parameters,
+        OAuthResponse oAuthResponse = restTemplate.postForEntity(gitlabServerOauthTokenUrl + parameters,
                 request, OAuthResponse.class).getBody();
         if (oAuthResponse != null) {
             String gitlabAccessToken = oAuthResponse.getAccess_token();
