@@ -1,9 +1,9 @@
 # A38-Kanban-development
 
 ## Short description
-This application is a kanban board. In the board you can see, filter and manipulate your gitlab issues. The columns of the board are the statuses of the issues. The swimlanes are optionally assignees or stories of the issues.  
+This application is a kanban board. In the board you can see, filter and manipulate your gitlab issues. The columns of the board are the possible statuses. Horizontally there are swimlanes, which optionally can be the assignees of the issues or the stories of the issues.
 
-Our application uses OAuth to access the datas in gitlab. We use graphQL API to get the issues from gitlab, and then we show them on a kanban board. The columns of the board are the possible statuses. Horizontally there are swimlanes, which may be the assignees of the issues or the story of the issue.
+Our application uses OAuth to access the datas in gitlab. We use graphQL API to get the issues from gitlab, and then we show them on a kanban board. 
 
 This is the backend of the application, which is a Spring application. The frontend is written React.  
 This is the frontend remote repository: https://github.com/CsapoKrisztian/A38-Kanban-development-Frontend.
