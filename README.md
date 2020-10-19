@@ -27,26 +27,26 @@ In this file set the parameters listed below:
 
 ##### Please go to this file: A38 Kanban project/A38-Kanban-development/src/main/resources/configprops.json
 In this file you have to set you predefined properties in a Json file.
-{
-  "storyPrefix": "Story: ", //(this should be your own story prefix)
-
-  "priorities": [
-    {
-      "title": "Priority: P0", //(this is the label title of one of your priority labels on gitlab)
-      "display": "PO" //(this is what you want to display on the kanban board, that corresponds to the above given title)
-    }
-    ...
-  ],
-
-  "statuses": [
-    {
-      "title": "Backlog", //(this is the label title of one of your status labels on gitlab)
-      "display": "Backlog" //(this is what you want to display on the kanban board, that corresponds to the above given title)
-    }
-  ]
-
-}
-
+{  
+  "storyPrefix": "Story: ", //(this should be your own story prefix)  
+  
+  "priorities": [  
+    {  
+      "title": "Priority: P0", //(this is the label title of one of your priority labels on gitlab)  
+      "display": "PO" //(this is what you want to display on the kanban board, that corresponds to the above given title)  
+    }  
+    ...  
+  ],  
+  
+  "statuses": [  
+    {  
+      "title": "Backlog", //(this is the label title of one of your status labels on gitlab)  
+      "display": "Backlog" //(this is what you want to display on the kanban board, that corresponds to the above given title)  
+    }  
+  ]  
+  
+}  
+  
 
 ## Docker deployment
 
