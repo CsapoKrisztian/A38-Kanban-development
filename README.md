@@ -1,9 +1,17 @@
 # A38-Kanban-development
 
-Clone this repository and the frontend repostiroy (https://github.com/CsapoKrisztian/A38-Kanban-development-Frontend) to your local copmuter.
-Make sure that the two downloaded directories are on the same level.
+## Short description
+This application is a kanban board. In the board you can see, filter and manipulate your gitlab issues. The columns of the board are the statuses of the issues. The swimlanes are optionally assignees or stories of the issues.  
+
+Our application uses OAuth to access the datas in gitlab. We use graphQL API to get the issues from gitlab, and then we show them on a kanban board. The columns of the board are the possible statuses. Horizontally there are swimlanes, which may be the assignees of the issues or the story of the issue.
+
+This is the backend of the application, which is a Spring application. The frontend is written React.  
+This is the frontend remote repository: https://github.com/CsapoKrisztian/A38-Kanban-development-Frontend.
 
 ## Configuration
+
+Clone this repository and the frontend repostiroy to your local copmuter.
+Make sure that the two downloaded directories are on the same level.
 
 ##### Please go to this file: A38 Kanban project/A38-Kanban-development-Frontend/kanban/.env (this is a hidden file, so show hidden files checkbox must be checked to see it)  
 In this file Change the listed parameters below:
