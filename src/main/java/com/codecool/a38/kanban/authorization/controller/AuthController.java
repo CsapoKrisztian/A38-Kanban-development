@@ -4,6 +4,7 @@ import com.codecool.a38.kanban.authorization.model.AppData;
 import com.codecool.a38.kanban.authorization.model.OAuthResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,11 +14,17 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
-@AllArgsConstructor
 @Slf4j
 public class AuthController {
 
+    @Value("${gitlabServerGraphQLApi.url}")
+    private String gitlabServerGraphQLApiUrl;
+
     private RestTemplate restTemplate;
+
+    public AuthController(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     @PostMapping("/getToken")
     public ResponseEntity<String> getToken(HttpServletResponse response, @RequestParam String code,
