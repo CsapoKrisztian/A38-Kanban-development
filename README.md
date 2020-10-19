@@ -13,6 +13,12 @@ This is the frontend remote repository: https://github.com/CsapoKrisztian/A38-Ka
 Clone this repository and the frontend repostiroy to your local copmuter.
 Make sure that the two downloaded directories are on the same level.
 
+For only testing purposes you can use the current configurations. In this case you can use the following credentials at the login part:  
+username or email: tothmate911@gmail.com  
+password: tothmate911  
+
+http://localhost:3000/getToken
+
 ##### Please go to this file: A38 Kanban project/A38-Kanban-development-Frontend/kanban/.env (this is a hidden file, so show hidden files checkbox must be checked to see it)  
 In this file Change the listed parameters below:
 
