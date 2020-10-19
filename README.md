@@ -10,7 +10,7 @@ This is the frontend remote repository: https://github.com/CsapoKrisztian/A38-Ka
 
 ## Configuration
 
-Clone this repository and the frontend repostiroy to your local copmuter.
+Clone this repository and the frontend repository to your local computer.
 Make sure that the two downloaded directories are on the same level.
 
 For only testing purposes you can use the current configurations. In this case you can use the following credentials at the login part:  
