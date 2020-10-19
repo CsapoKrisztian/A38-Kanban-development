@@ -31,7 +31,7 @@ In this file set the listed parameters below:
 ##### Please go to this file: A38 Kanban project/A38-Kanban-development/src/main/resources/application.properties
 In this file set the parameters listed below.
 - frontend.url=http://localhost:3000 (this should be the frontend url)
-- gitlabServerGraphQLApi.url=https://gitlab.techpm.guru/api/graphql (this should be your own gitlab server's graphQL api url, so only change the part of the url before "/api/graphql")
+- gitlabServer.url=https://gitlab.techpm.guru (this should be your own gitlab server url)
 
 ##### Please go to this file: A38 Kanban project/A38-Kanban-development/docker-compose.yml
 In this file set the parameters listed below:
