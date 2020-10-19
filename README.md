@@ -20,7 +20,7 @@ password: tothmate911
 http://localhost:3000/getToken
 
 ##### Please go to this file: A38 Kanban project/A38-Kanban-development-Frontend/kanban/.env (this is a hidden file, so show hidden files checkbox must be checked to see it)  
-In this file Change the listed parameters below:
+In this file set the listed parameters below:
 
 - REACT_APP_GITLAB_SERVER=https://gitlab.techpm.guru (this should be your own gitlab server)
 - REACT_APP_GITLAB_APP_ID=458f27c6eb357cf7419231331e3af3e3a9d39782b7edf50ac2cc083e7a7f1a4a (this should be the app id of your application on your gitlab server)
@@ -37,10 +37,10 @@ In this file set the parameters listed below.
 In this file set the parameters listed below:
 
 - frontend.url=http://localhost:3000 (this should be your frontend url)
-- ports: - '3000:3000' (you can set the port here, if you want)
+- ports: - '3000:3000' (you can set the port here)
 
 ##### Please go to this file: A38 Kanban project/A38-Kanban-development/src/main/resources/configprops.json
-In this file you have to set you predefined properties in a Json file.
+In this file set your predefined properties in a Json file.
 {  
   "storyPrefix": "Story: ", //(this should be your own story prefix)  
   
