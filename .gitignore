@@ -1,6 +1,6 @@
 # Config files
-*.properties
-*.json
+src/main/resources/application.properties
+src/main/resources/configprops.json
 
 # Compiled class file
 *.class
