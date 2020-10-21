@@ -89,7 +89,7 @@ services:
     - '8080:8080'
     environment:
       - frontend.url=http://localhost:3000 
-# This should be your frontend url
+# This should be your frontend url in the line above
 
   frontend:
     image: kanban-frontend:latest
@@ -98,7 +98,7 @@ services:
       dockerfile: 'Dockerfile'
     ports:
     - '3000:3000' 
-# You can set the port here
+# You can set the port in the line above
 
     environment:
       - REACT_APP_SERVER=http://localhost:8080
