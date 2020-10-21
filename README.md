@@ -30,17 +30,19 @@ Clone this repository and the frontend repository to your local computer.
 Make sure that the two downloaded directories are on the same level.
 
 Please find the following files:
-- A38 Kanban project/A38-Kanban-development/src/main/resources/application.properties-dist
-- A38 Kanban project/A38-Kanban-development/src/main/resources/configprops-dist.json
-- A38 Kanban project/A38-Kanban-development-Frontend/kanban/.env-dist (this is a hidden file, so you have to check the
+- A38-Kanban-development-Frontend/kanban/.env-dist (this is a hidden file, so you have to check the
 show hidden files checkbox)
+- A38-Kanban-development/src/main/resources/application.properties-dist
+- A38-Kanban-development/docker-compose-dist.yml
+- A38-Kanban-development/src/main/resources/configprops-dist.json
 
 These are sample config files. Make a copy of each of these files in the same directory where they are.
 Rename these new files, so that their new name is the same as the old, except that they don't contain the text: "-dist".
 After this process you should have the following new files in your local computer:
-- A38 Kanban project/A38-Kanban-development/src/main/resources/application.properties
+- A38-Kanban-development-Frontend/kanban/.env
+- A38-Kanban-development/src/main/resources/application.properties
+- A38-Kanban-development/docker-compose.yml
 - A38 Kanban project/A38-Kanban-development/src/main/resources/configprops.json
-- A38 Kanban project/A38-Kanban-development-Frontend/kanban/.env
 
 For only testing purposes you can use our test gitlab server (https://gitlab.techpm.guru) 
 with the current configurations 
@@ -62,7 +64,7 @@ Save your application. Now you can see your Application ID and Secret, which you
 Now please go to the configuration files, that you created previously, and in each one set the parameters
 that are listed below them respectively, as described in the following section:
 
-##### A38 Kanban project/A38-Kanban-development-Frontend/kanban/.env  
+##### A38-Kanban-development-Frontend/kanban/.env  
 - REACT_APP_GITLAB_SERVER=https://gitlab.techpm.guru (this should be your own gitlab server url)
 - REACT_APP_GITLAB_APP_ID=458f27c6eb357cf7419231331e3af3e3a9d39782b7edf50ac2cc083e7a7f1a4a 
 (this should be the Applications ID of your application on your gitlab server)
@@ -70,15 +72,40 @@ that are listed below them respectively, as described in the following section:
 (this should be the Applications Secret of your application on your gitlab server)
 - REACT_APP_APPLICATION=http://localhost:3000 (this should be your frontend url)
 
-##### A38 Kanban project/A38-Kanban-development/src/main/resources/application.properties
+##### A38-Kanban-development/src/main/resources/application.properties
 - frontend.url=http://localhost:3000 (this should be your frontend url)
 - gitlabServer.url=https://gitlab.techpm.guru (this should be your own gitlab server url)
 
-##### A38 Kanban project/A38-Kanban-development/docker-compose.yml
-- frontend.url=http://localhost:3000 (this should be your frontend url)
-- ports: - '3000:3000' (you can set the port here)
+##### A38-Kanban-development/docker-compose.yml
+```yaml
+version: '3'
+services:
+  backend:
+    image: kanban-backend:latest
+    build:
+      context: '.'
+      dockerfile: 'Dockerfile'
+    ports:
+    - '8080:8080'
+    environment:
+      - frontend.url=http://localhost:3000 
+# This should be your frontend url
 
-##### A38 Kanban project/A38-Kanban-development/src/main/resources/configprops.json
+  frontend:
+    image: kanban-frontend:latest
+    build:
+      context: '../A38-Kanban-development-Frontend/kanban'
+      dockerfile: 'Dockerfile'
+    ports:
+    - '3000:3000' 
+# You can set the port here
+
+    environment:
+      - REACT_APP_SERVER=http://localhost:8080
+    stdin_open: true
+```
+
+##### A38-Kanban-development/src/main/resources/configprops.json
 In this file set your predefined properties in a Json file.
 ```jsonc
 {
