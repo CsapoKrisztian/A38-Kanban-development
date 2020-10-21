@@ -40,7 +40,7 @@ public class IssueController {
     }
 
     @PostMapping("/milestones")
-    public Set<String> getMilestoneTitles(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+    public List<String> getMilestoneTitles(@CookieValue(defaultValue = "default") String gitlabAccessToken,
                                           @RequestBody FilterRequestBody filter) {
         return dataManager.getMilestoneTitles(gitlabAccessToken, filter.getProjectIds());
     }

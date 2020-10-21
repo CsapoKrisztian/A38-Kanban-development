@@ -252,7 +252,7 @@ public class DataManager {
                 project.getGroup().getName() + "/" + project.getName() : project.getName();
     }
 
-    public Set<String> getMilestoneTitles(String token, Set<String> projectIds) {
+    public List<String> getMilestoneTitles(String token, Set<String> projectIds) {
         if (projectIds == null) return null;
 
         Set<String> milestoneTitles = new HashSet<>();
@@ -279,7 +279,7 @@ public class DataManager {
         } while (hasNextPage);
 
         log.info("Get milestone titles");
-        return milestoneTitles;
+        return milestoneTitles.stream().sorted().collect(Collectors.toList());
     }
 
     private void addProjectMilestones(String token, ProjectNode projectNode, List<Milestone> milestoneList) {
