@@ -222,7 +222,7 @@ public class DataManager {
         }
     }
 
-    public Set<Project> getProjects(String token) {
+    public List<Project> getProjects(String token) {
         Set<Project> projects = new HashSet<>();
 
         String endCursor = GitLabGraphQLCaller.getStartPagination();
@@ -238,7 +238,18 @@ public class DataManager {
         } while (hasNextPage);
 
         log.info("Get projects");
-        return projects;
+        return getSortedProjects(projects);
+    }
+
+    private List<Project> getSortedProjects(Set<Project> projects) {
+        return projects.stream()
+                .sorted(Comparator.comparing(this::getProjectDisplayName))
+                .collect(Collectors.toList());
+    }
+
+    private String getProjectDisplayName(Project project) {
+        return project.getGroup() != null ?
+                project.getGroup().getName() + "/" + project.getName() : project.getName();
     }
 
     public Set<String> getMilestoneTitles(String token, Set<String> projectIds) {
