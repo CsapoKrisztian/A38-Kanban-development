@@ -12,7 +12,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @AllArgsConstructor
@@ -41,13 +40,13 @@ public class IssueController {
 
     @PostMapping("/milestones")
     public List<String> getMilestoneTitles(@CookieValue(defaultValue = "default") String gitlabAccessToken,
-                                          @RequestBody FilterRequestBody filter) {
+                                           @RequestBody FilterRequestBody filter) {
         return dataManager.getMilestoneTitles(gitlabAccessToken, filter.getProjectIds());
     }
 
     @PostMapping("/stories")
-    public Set<String> getStoryTitles(@CookieValue(defaultValue = "default") String gitlabAccessToken,
-                                      @RequestBody FilterRequestBody filter) {
+    public List<String> getStoryTitles(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                                       @RequestBody FilterRequestBody filter) {
         return dataManager.getStoryTitles(gitlabAccessToken, filter.getProjectIds());
     }
 
@@ -65,7 +64,7 @@ public class IssueController {
 
     @PostMapping("/updateAssignee")
     public Issue updateAssignee(@CookieValue(defaultValue = "default") String gitlabAccessToken,
-                               @RequestBody UpdateAssigneeRequestBody updateAssigneeRequestBody) {
+                                @RequestBody UpdateAssigneeRequestBody updateAssigneeRequestBody) {
         return dataManager.updateAssignee(gitlabAccessToken, updateAssigneeRequestBody.getIssueId(),
                 updateAssigneeRequestBody.getNewAssigneeId());
     }

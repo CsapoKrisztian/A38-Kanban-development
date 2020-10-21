@@ -344,7 +344,7 @@ public class DataManager {
         return milestones;
     }
 
-    public Set<String> getStoryTitles(String token, Set<String> projectIds) {
+    public List<String> getStoryTitles(String token, Set<String> projectIds) {
         if (projectIds == null) return null;
 
         Set<String> storyTitles = new HashSet<>();
@@ -374,7 +374,7 @@ public class DataManager {
         } while (hasNextPage);
 
         log.info("Get story titles");
-        return storyTitles;
+        return storyTitles.stream().sorted().collect(Collectors.toList());
     }
 
     private List<Label> getSingleProjectStoryLabelList(String token, String projectFullPath, String endCursor) {
