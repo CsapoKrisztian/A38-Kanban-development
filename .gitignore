@@ -149,5 +149,8 @@ fabric.properties
 # Cache file creation bug
 # See https://youtrack.jetbrains.com/issue/JBR-2257
 .idea/$CACHE_FILE$
+
+# Config files
 /src/main/resources/application.properties
 /src/main/resources/configprops.json
+/docker-compose.yml
