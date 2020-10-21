@@ -222,7 +222,7 @@ public class DataManager {
         }
     }
 
-    public Set<Project> getProjects(String token) {
+    public List<Project> getProjects(String token) {
         Set<Project> projects = new HashSet<>();
 
         String endCursor = GitLabGraphQLCaller.getStartPagination();
@@ -238,10 +238,21 @@ public class DataManager {
         } while (hasNextPage);
 
         log.info("Get projects");
-        return projects;
+        return getSortedProjects(projects);
     }
 
-    public Set<String> getMilestoneTitles(String token, Set<String> projectIds) {
+    private List<Project> getSortedProjects(Set<Project> projects) {
+        return projects.stream()
+                .sorted(Comparator.comparing(this::getProjectDisplayName))
+                .collect(Collectors.toList());
+    }
+
+    private String getProjectDisplayName(Project project) {
+        return project.getGroup() != null ?
+                project.getGroup().getName() + "/" + project.getName() : project.getName();
+    }
+
+    public List<String> getMilestoneTitles(String token, Set<String> projectIds) {
         if (projectIds == null) return null;
 
         Set<String> milestoneTitles = new HashSet<>();
@@ -268,7 +279,7 @@ public class DataManager {
         } while (hasNextPage);
 
         log.info("Get milestone titles");
-        return milestoneTitles;
+        return milestoneTitles.stream().sorted().collect(Collectors.toList());
     }
 
     private void addProjectMilestones(String token, ProjectNode projectNode, List<Milestone> milestoneList) {
@@ -333,7 +344,7 @@ public class DataManager {
         return milestones;
     }
 
-    public Set<String> getStoryTitles(String token, Set<String> projectIds) {
+    public List<String> getStoryTitles(String token, Set<String> projectIds) {
         if (projectIds == null) return null;
 
         Set<String> storyTitles = new HashSet<>();
@@ -363,7 +374,7 @@ public class DataManager {
         } while (hasNextPage);
 
         log.info("Get story titles");
-        return storyTitles;
+        return storyTitles.stream().sorted().collect(Collectors.toList());
     }
 
     private List<Label> getSingleProjectStoryLabelList(String token, String projectFullPath, String endCursor) {
