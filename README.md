@@ -1,9 +1,25 @@
 # A38-Kanban-development
 
-## Short description
-This application is a kanban board. In the board you can see, filter and manipulate your gitlab issues. The columns of the board are the possible statuses. Horizontally there are swimlanes, which optionally can be the assignees of the issues or the stories of the issues.
+## Description
+This application is a kanban board. The board displays gitlab issue cards, showing the title,
+assignee, project, story, milestone, priority of the issue, and some other information.  
+The columns of the board are the statuses of the issues.
+Horizontally there are swimlanes, which optionally can be the assignees or the stories of the issues.
 
-Our application uses OAuth to access the datas in gitlab. We use graphQL API to get the issues from gitlab, and then we show them on a kanban board. 
+The statuses, stories and priorities are actually stored in the labels of a story
+ as described below in the configuration part.
+
+Issues can be filtered by project, milestone and story. If no story or/and milestone is selected
+then every issue will be shown, even possibly those which do not have a story or/and milestone.
+
+The gitlab page of the issues can be reached by clicking on the gitlab logo on the issues.
+The statuses and the assignees of issues can be directly changed from the board by the drag and drop
+function of the issues.
+
+Our application uses the OAuth2 protocol to access GitLab resources on the user’s behalf.
+We use the web application flow as described here: https://docs.gitlab.com/ee/api/oauth2.html. 
+
+We use graphQL API to get datas from gitlab and modify them (https://docs.gitlab.com/ee/api/graphql/).
 
 This is the backend of the application, which is a Spring application. The frontend is written React.  
 This is the frontend remote repository: https://github.com/CsapoKrisztian/A38-Kanban-development-Frontend.
@@ -13,70 +29,92 @@ This is the frontend remote repository: https://github.com/CsapoKrisztian/A38-Ka
 Clone this repository and the frontend repository to your local computer.
 Make sure that the two downloaded directories are on the same level.
 
-For only testing purposes you can use the current configurations. In this case you can use the following credentials at the login part:  
+Please find the following files:
+- A38 Kanban project/A38-Kanban-development/src/main/resources/application.properties-dist
+- A38 Kanban project/A38-Kanban-development/src/main/resources/configprops-dist.json
+- A38 Kanban project/A38-Kanban-development-Frontend/kanban/.env-dist (this is a hidden file, so you have to check the
+show hidden files checkbox)
+
+These are sample config files. Make a copy of each of these files in the same directory where they are.
+Rename these new files, so that their new name is the same as the old, except that they don't contain the text: "-dist".
+After this process you should have the following new files in your local computer:
+- A38 Kanban project/A38-Kanban-development/src/main/resources/application.properties
+- A38 Kanban project/A38-Kanban-development/src/main/resources/configprops.json
+- A38 Kanban project/A38-Kanban-development-Frontend/kanban/.env
+
+For only testing purposes you can use our test gitlab server (https://gitlab.techpm.guru) 
+with the current configurations 
+(which means you can skip the part below that describes the configurations for your gitlab server).  
+In this case you can use the following credentials at the login part:  
 username or email: tothmate911@gmail.com  
 password: tothmate911  
 
-http://localhost:3000/getToken
+### Configurations for your gitlab server
+If you want to use the application with your own gitlab server, please follow the steps described in this part.
 
-##### Please go to this file: A38 Kanban project/A38-Kanban-development-Frontend/kanban/.env (this is a hidden file, so show hidden files checkbox must be checked to see it)  
-In this file set the listed parameters below:
+First you need to add a new application to your gitlab server.
+Go to your gitlab server -> Settings -> Applications.
+The Redirect URI should be this: <your_frontend_url>/getToken.  
+The current configuration uses this Redirect URI: http://localhost:3000/getToken.  
+The scopes of the application should be api.  
+Save your application. Now you can see your Application ID and Secret, which you will need later.
 
-- REACT_APP_GITLAB_SERVER=https://gitlab.techpm.guru (this should be your own gitlab server)
-- REACT_APP_GITLAB_APP_ID=458f27c6eb357cf7419231331e3af3e3a9d39782b7edf50ac2cc083e7a7f1a4a (this should be the app id of your application on your gitlab server)
-- REACT_APP_GITLAB_APP_SECRET=f0fbf238c1ef5d0be56bf1118c430b15daff2b85d790d4bbfd76b8ccbb5bac33 (this should be the app secret of your application on your gitlab server)
-- REACT_APP_APPLICATION=http://localhost:3000 (this should be the url of the frontend)
+Now please go to the configuration files, that you created previously, and in each one set the parameters
+that are listed below them respectively, as described in the following section:
 
+##### A38 Kanban project/A38-Kanban-development-Frontend/kanban/.env  
+- REACT_APP_GITLAB_SERVER=https://gitlab.techpm.guru (this should be your own gitlab server url)
+- REACT_APP_GITLAB_APP_ID=458f27c6eb357cf7419231331e3af3e3a9d39782b7edf50ac2cc083e7a7f1a4a 
+(this should be the Applications ID of your application on your gitlab server)
+- REACT_APP_GITLAB_APP_SECRET=f0fbf238c1ef5d0be56bf1118c430b15daff2b85d790d4bbfd76b8ccbb5bac33 
+(this should be the Applications Secret of your application on your gitlab server)
+- REACT_APP_APPLICATION=http://localhost:3000 (this should be your frontend url)
 
-##### Please go to this file: A38 Kanban project/A38-Kanban-development/src/main/resources/application.properties
-In this file set the parameters listed below.
-- frontend.url=http://localhost:3000 (this should be the frontend url)
+##### A38 Kanban project/A38-Kanban-development/src/main/resources/application.properties
+- frontend.url=http://localhost:3000 (this should be your frontend url)
 - gitlabServer.url=https://gitlab.techpm.guru (this should be your own gitlab server url)
 
-##### Please go to this file: A38 Kanban project/A38-Kanban-development/docker-compose.yml
-In this file set the parameters listed below:
-
+##### A38 Kanban project/A38-Kanban-development/docker-compose.yml
 - frontend.url=http://localhost:3000 (this should be your frontend url)
 - ports: - '3000:3000' (you can set the port here)
 
-##### Please go to this file: A38 Kanban project/A38-Kanban-development/src/main/resources/configprops.json
+##### A38 Kanban project/A38-Kanban-development/src/main/resources/configprops.json
 In this file set your predefined properties in a Json file.
-{  
-  "storyPrefix": "Story: ", //(this should be your own story prefix)  
-  
-  "priorities": [  
-    {  
-      "title": "Priority: P0", //(this is the label title of one of your priority labels on gitlab)  
-      "display": "PO" //(this is what you want to display on the kanban board, that corresponds to the above given title)  
-    }  
-    ...  
-  ],  
-  
-  "statuses": [  
-    {  
-      "title": "Backlog", //(this is the label title of one of your status labels on gitlab)  
-      "display": "Backlog" //(this is what you want to display on the kanban board, that corresponds to the above given title)  
-    }  
-  ]  
-  
+```jsonc
+{
+  "storyPrefix": "Story: ", //this should be your own story prefix
+
+  "priorities": [
+    {
+      "title": "Priority: P0", //this is the label title of one of your priority labels on gitlab
+      "display": "PO" //this is what you want to display on the kanban board, 
+                      // that corresponds to the above given priority label title
+    }
+  ],
+  "statuses": [
+    {
+      "title": "Backlog", //this is the label title of one of your status labels on gitlab
+      "display": "Backlog" //this is what you want to display on the kanban board, 
+                           // that corresponds to the above given status label title
+    }
+  ]
 }  
-  
+``` 
 
 ## Docker deployment
 
-prerequisite:  
-- freshly built jar file has to accessible under target/*.jar  
+Prerequisites:  
+- Freshly built jar file has to accessible under target/*.jar  
 You can have it by running `mvn clean install` 
-- docker installed (https://docs.docker.com/engine/install/)  
-- docker-compose installed (https://docs.docker.com/compose/install/)  
-- frontend has to accessible under A38-Kanban-development-Frontend/ and be on the same level with the current directory
+- Docker installed (https://docs.docker.com/engine/install/)  
+- Docker-compose installed (https://docs.docker.com/compose/install/)  
+- Frontend has to accessible under A38-Kanban-development-Frontend/ and be on the same level with the current directory
 
 If he above points are met:
 
-- hit `docker-compose up --build` this will build the docker images from the specified  
+- Hit `docker-compose up --build` this will build the docker images from the specified  
 docker files based on the `docker-compose.yml` and spin up the application stack.
-- Visit `localhost:3000` (To change the host see the docker-compose.yml configuration)  
-Be amazed.  
+- Visit `localhost:3000` (To change the host see the docker-compose.yml configuration)
 - The `--build` options forces a rebuild every time it is issued. If images are already build
 simply hit `docker-compose up`
   
