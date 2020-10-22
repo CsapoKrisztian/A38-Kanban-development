@@ -24,6 +24,8 @@ public class DataManager {
 
     private ConfigDataProvider configDataProvider;
 
+    private DataManagerUtil util;
+
 
     public List<String> getStatusTitles() {
         log.info("get status titles");
@@ -43,10 +45,10 @@ public class DataManager {
                     .getData().getProjects();
 
             currentProjects.getNodes().forEach(projectNode -> {
-                Project currentProject = createProjectFromProjectNode(projectNode);
+                Project currentProject = util.createProjectFromProjectNode(projectNode);
                 List<IssueNode> issueNodeList = getAllProjectsIssueNodes(token, milestoneTitles, projectNode);
                 issueNodeList.forEach(issueNode -> {
-                    Issue issue = createIssueFromIssueNode(issueNode);
+                    Issue issue = util.createIssueFromIssueNode(issueNode);
                     issue.setProject(currentProject);
 
                     if (issue.getStatus() != null) {
@@ -96,10 +98,10 @@ public class DataManager {
                     .getData().getProjects();
 
             currentProjects.getNodes().forEach(projectNode -> {
-                Project currentProject = createProjectFromProjectNode(projectNode);
+                Project currentProject = util.createProjectFromProjectNode(projectNode);
                 List<IssueNode> issueNodeList = getAllProjectsIssueNodes(token, milestoneTitles, projectNode);
                 issueNodeList.forEach((issueNode) -> {
-                    Issue issue = createIssueFromIssueNode(issueNode);
+                    Issue issue = util.createIssueFromIssueNode(issueNode);
                     issue.setProject(currentProject);
 
                     if (issue.getStatus() != null) {
@@ -168,60 +170,6 @@ public class DataManager {
         return issueNodeList;
     }
 
-    private Project createProjectFromProjectNode(ProjectNode projectNode) {
-        return Project.builder()
-                .id(projectNode.getId())
-                .fullPath(projectNode.getFullPath())
-                .name(projectNode.getName())
-                .group(projectNode.getGroup())
-                .build();
-    }
-
-    private Issue createIssueFromIssueNode(IssueNode issueNode) {
-        Issue issue = Issue.builder()
-                .id(issueNode.getId())
-                .title(issueNode.getTitle())
-                .description(issueNode.getDescription())
-                .webUrl(issueNode.getWebUrl())
-                .dueDate(issueNode.getDueDate())
-                .userNotesCount(issueNode.getUserNotesCount())
-                .reference(issueNode.getReference())
-                .mileStone(issueNode.getMilestone())
-                .assignee(getAssigneeFromIssueNode(issueNode))
-                .build();
-        setStoryPriorityStatusOfIssueFromIssueNode(issue, issueNode);
-        return issue;
-    }
-
-    private void setStoryPriorityStatusOfIssueFromIssueNode(Issue thisIssue, IssueNode issueNode) {
-        issueNode.getLabels().getNodes().forEach(label -> {
-            if (label.getTitle().startsWith(configDataProvider.getStoryPrefix())) {
-                label.setTitle(label.getTitle().substring(configDataProvider.getStoryPrefix().length()));
-                thisIssue.setStory(label);
-                return;
-            }
-            String priorityDisplayTitle = configDataProvider.getPriorityTitleDisplayMap().get(label.getTitle());
-            if (priorityDisplayTitle != null) {
-                label.setTitle(priorityDisplayTitle);
-                thisIssue.setPriority(label);
-                return;
-            }
-            String statusDisplayTitle = configDataProvider.getStatusTitleDisplayMap().get(label.getTitle());
-            if (statusDisplayTitle != null) {
-                label.setTitle(statusDisplayTitle);
-                thisIssue.setStatus(label);
-            }
-        });
-    }
-
-    private User getAssigneeFromIssueNode(IssueNode issueNode) {
-        try {
-            return issueNode.getAssignees().getNodes().get(0);
-        } catch (IndexOutOfBoundsException | NullPointerException e) {
-            return null;
-        }
-    }
-
     public List<Project> getProjects(String token) {
         Set<Project> projects = new HashSet<>();
 
@@ -230,7 +178,8 @@ public class DataManager {
         do {
             Projects currentProjects = gitLabGraphQLCaller.getProjectsResponse(token, endCursor)
                     .getData().getProjects();
-            currentProjects.getNodes().forEach(projectNode -> projects.add(createProjectFromProjectNode(projectNode)));
+            currentProjects.getNodes()
+                    .forEach(projectNode -> projects.add(util.createProjectFromProjectNode(projectNode)));
 
             PageInfo pageInfo = currentProjects.getPageInfo();
             endCursor = pageInfo.getEndCursor();
@@ -238,18 +187,7 @@ public class DataManager {
         } while (hasNextPage);
 
         log.info("Get projects");
-        return getSortedProjects(projects);
-    }
-
-    private List<Project> getSortedProjects(Set<Project> projects) {
-        return projects.stream()
-                .sorted(Comparator.comparing(this::getProjectDisplayName))
-                .collect(Collectors.toList());
-    }
-
-    private String getProjectDisplayName(Project project) {
-        return project.getGroup() != null ?
-                project.getGroup().getName() + "/" + project.getName() : project.getName();
+        return util.getSortedProjects(projects);
     }
 
     public List<String> getMilestoneTitles(String token, Set<String> projectIds) {
@@ -400,7 +338,7 @@ public class DataManager {
         IssueNode issueNode = gitLabGraphQLCaller.getIssueDataResponse(token, issueId).getData().getIssue();
         String issueIid = issueNode.getIid();
         String projectFullPath = issueNode.getDesignCollection().getProject().getFullPath();
-        String currentStatusLabelId = getStatusLabelId(issueNode);
+        String currentStatusLabelId = util.getStatusLabelId(issueNode);
 
         String newStatusLabelTitle = configDataProvider.getStatusDisplayTitleMap().get(newStatusDisplayTitle);
         String newStatusLabelId = gitLabGraphQLCaller.
@@ -408,29 +346,17 @@ public class DataManager {
                 .getData().getProject().getLabel().getId();
 
         if (!currentStatusLabelId.equals(newStatusLabelId)) {
-            String currentStatusLabelIdNum = getIdNumValue(currentStatusLabelId);
-            String newStatusLabelIdNum = getIdNumValue(newStatusLabelId);
+            String currentStatusLabelIdNum = util.getIdNumValue(currentStatusLabelId);
+            String newStatusLabelIdNum = util.getIdNumValue(newStatusLabelId);
 
             UpdateIssueDataResponse updateIssueDataResponse = gitLabGraphQLCaller.
                     updateStatusLabel(token, projectFullPath, issueIid, currentStatusLabelIdNum, newStatusLabelIdNum);
 
             log.info("Updated status: " + newStatusDisplayTitle + " of issue: " + issueId);
-            return createIssueFromIssueNode(updateIssueDataResponse.getData().getUpdateIssue().getIssue());
+            return util.createIssueFromIssueNode(updateIssueDataResponse.getData().getUpdateIssue().getIssue());
         }
         log.info("Failed to update status of issue: " + issueId);
-        return createIssueFromIssueNode(issueNode);
-    }
-
-    private String getIdNumValue(String currentStatusLabelId) {
-        return currentStatusLabelId.substring(currentStatusLabelId.lastIndexOf("/") + 1);
-    }
-
-
-    private String getStatusLabelId(IssueNode issueNode) {
-        Label statusLabel = issueNode.getLabels().getNodes().stream()
-                .filter(label -> configDataProvider.getStatusTitleDisplayMap().containsKey(label.getTitle()))
-                .findFirst().orElse(null);
-        return statusLabel != null ? statusLabel.getId() : "";
+        return util.createIssueFromIssueNode(issueNode);
     }
 
     public Issue updateAssignee(String token, String issueId, String newAssigneeId) {
@@ -447,7 +373,7 @@ public class DataManager {
         IssueSetAssigneesDataResponse issueSetAssigneesDataResponse = gitLabGraphQLCaller.
                 updateAssignee(token, projectFullPath, issueIid, assigneeUsername);
         log.info("Set assignee: " + assigneeUsername + " to issue: " + issueId);
-        return createIssueFromIssueNode(issueSetAssigneesDataResponse.getData().getIssueSetAssignees().getIssue());
+        return util.createIssueFromIssueNode(issueSetAssigneesDataResponse.getData().getIssueSetAssignees().getIssue());
     }
 
 }
