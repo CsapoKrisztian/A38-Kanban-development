@@ -12,7 +12,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @AllArgsConstructor
@@ -35,19 +34,19 @@ public class IssueController {
     }
 
     @GetMapping("/projects")
-    public Set<Project> getProjects(@CookieValue(defaultValue = "default") String gitlabAccessToken) {
+    public List<Project> getProjects(@CookieValue(defaultValue = "default") String gitlabAccessToken) {
         return dataManager.getProjects(gitlabAccessToken);
     }
 
     @PostMapping("/milestones")
-    public Set<String> getMilestoneTitles(@CookieValue(defaultValue = "default") String gitlabAccessToken,
-                                          @RequestBody FilterRequestBody filter) {
+    public List<String> getMilestoneTitles(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                                           @RequestBody FilterRequestBody filter) {
         return dataManager.getMilestoneTitles(gitlabAccessToken, filter.getProjectIds());
     }
 
     @PostMapping("/stories")
-    public Set<String> getStoryTitles(@CookieValue(defaultValue = "default") String gitlabAccessToken,
-                                      @RequestBody FilterRequestBody filter) {
+    public List<String> getStoryTitles(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                                       @RequestBody FilterRequestBody filter) {
         return dataManager.getStoryTitles(gitlabAccessToken, filter.getProjectIds());
     }
 
@@ -65,7 +64,7 @@ public class IssueController {
 
     @PostMapping("/updateAssignee")
     public Issue updateAssignee(@CookieValue(defaultValue = "default") String gitlabAccessToken,
-                               @RequestBody UpdateAssigneeRequestBody updateAssigneeRequestBody) {
+                                @RequestBody UpdateAssigneeRequestBody updateAssigneeRequestBody) {
         return dataManager.updateAssignee(gitlabAccessToken, updateAssigneeRequestBody.getIssueId(),
                 updateAssigneeRequestBody.getNewAssigneeId());
     }

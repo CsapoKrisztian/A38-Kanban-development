@@ -7,10 +7,9 @@ import com.codecool.a38.kanban.issue.model.graphQLResponse.projectsData.Projects
 import com.codecool.a38.kanban.issue.model.graphQLResponse.singleGroupData.SingleGroupDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.singleProjectData.SingleProjectDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.userData.UserDataResponse;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -18,29 +17,24 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Set;
 
 @Service
+@AllArgsConstructor
 @Slf4j
 public class GitLabGraphQLCaller {
 
-    @Value("${gitlabServer.url}")
-    private String gitlabServerUrl;
-
-    private static final String startPagination = "start";
-
-    public static String getStartPagination() {
-        return startPagination;
-    }
+    private GitlabGraphQLCallerUtil util;
 
     private RestTemplate restTemplate;
 
-    public GitLabGraphQLCaller(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+
+    public String getStartPagination() {
+        return util.getStartPagination();
     }
 
 
     public ProjectsDataResponse getProjectsIssuesResponse(String token, Set<String> projectIds,
                                                           Set<String> milestoneTitles, String endCursor) {
         String query = "{\"query\":\"{\\n" +
-                "  projects(ids: " + getFormattedFilter(projectIds) + getFormattedPagination(endCursor) + ") {\\n" +
+                "  projects(ids: " + util.getFormattedFilter(projectIds) + util.getFormattedPagination(endCursor) + ") {\\n" +
                 "    nodes {\\n" +
                 "      id\\n" +
                 "      fullPath\\n" +
@@ -49,7 +43,7 @@ public class GitLabGraphQLCaller {
                 "        id\\n" +
                 "        name\\n" +
                 "      }\\n" +
-                "      issues(state: opened " + getMilestoneFilter(milestoneTitles) + ") {\\n" +
+                "      issues(state: opened " + util.getMilestoneFilter(milestoneTitles) + ") {\\n" +
                 "        nodes {\\n" +
                 "          id\\n" +
                 "          title\\n" +
@@ -93,7 +87,7 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<ProjectsDataResponse> responseEntity = restTemplate.postForEntity(
-                getGraphQlApiUrl(), new HttpEntity<>(query, getHeaders(token)), ProjectsDataResponse.class);
+                util.getGraphQlApiUrl(), new HttpEntity<>(query, util.getHeaders(token)), ProjectsDataResponse.class);
         log.info("Get projects issues response");
         return responseEntity.getBody();
     }
@@ -102,7 +96,7 @@ public class GitLabGraphQLCaller {
                                                                     Set<String> milestoneTitles, String endCursor) {
         String query = "{\"query\":\"{\\n" +
                 "  project(fullPath: \\\"" + projectFullPath + "\\\") {\\n" +
-                "    issues(state: opened " + getMilestoneFilter(milestoneTitles) + getFormattedPagination(endCursor) + ") {\\n" +
+                "    issues(state: opened " + util.getMilestoneFilter(milestoneTitles) + util.getFormattedPagination(endCursor) + ") {\\n" +
                 "      nodes {\\n" +
                 "        id\\n" +
                 "        title\\n" +
@@ -141,14 +135,14 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<SingleProjectDataResponse> responseEntity = restTemplate.postForEntity(
-                getGraphQlApiUrl(), new HttpEntity<>(query, getHeaders(token)), SingleProjectDataResponse.class);
+                util.getGraphQlApiUrl(), new HttpEntity<>(query, util.getHeaders(token)), SingleProjectDataResponse.class);
         log.info("Get single project issues response: " + projectFullPath);
         return responseEntity.getBody();
     }
 
     public ProjectsDataResponse getProjectsResponse(String token, String endCursor) {
         String query = "{\"query\":\"{\\n" +
-                "  projects" + getFormattedPaginationWithBrackets(endCursor) + " {\\n" +
+                "  projects" + util.getFormattedPaginationWithBrackets(endCursor) + " {\\n" +
                 "    nodes {\\n" +
                 "      id\\n" +
                 "      fullPath\\n" +
@@ -167,14 +161,14 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<ProjectsDataResponse> responseEntity = restTemplate.postForEntity(
-                getGraphQlApiUrl(), new HttpEntity<>(query, getHeaders(token)), ProjectsDataResponse.class);
+                util.getGraphQlApiUrl(), new HttpEntity<>(query, util.getHeaders(token)), ProjectsDataResponse.class);
         log.info("Get projects response");
         return responseEntity.getBody();
     }
 
     public ProjectsDataResponse getMilestonesResponse(String token, Set<String> projectIds, String endCursor) {
         String query = "{\"query\":\"{\\n" +
-                "  projects(ids: " + getFormattedFilter(projectIds) + getFormattedPagination(endCursor) + ") {\\n" +
+                "  projects(ids: " + util.getFormattedFilter(projectIds) + util.getFormattedPagination(endCursor) + ") {\\n" +
                 "    nodes {\\n" +
                 "      fullPath\\n" +
                 "      milestones {\\n" +
@@ -210,7 +204,7 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<ProjectsDataResponse> responseEntity = restTemplate.postForEntity(
-                getGraphQlApiUrl(), new HttpEntity<>(query, getHeaders(token)), ProjectsDataResponse.class);
+                util.getGraphQlApiUrl(), new HttpEntity<>(query, util.getHeaders(token)), ProjectsDataResponse.class);
         log.info("Get milestones response");
         return responseEntity.getBody();
     }
@@ -219,7 +213,7 @@ public class GitLabGraphQLCaller {
                                                                         String endCursor) {
         String query = "{\"query\":\"{\\n" +
                 "  project(fullPath: \\\"" + projectFullPath + "\\\") {\\n" +
-                "    milestones" + getFormattedPaginationWithBrackets(endCursor) + " {\\n" +
+                "    milestones" + util.getFormattedPaginationWithBrackets(endCursor) + " {\\n" +
                 "      nodes {\\n" +
                 "        id\\n" +
                 "        title\\n" +
@@ -234,7 +228,7 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<SingleProjectDataResponse> responseEntity = restTemplate.postForEntity(
-                getGraphQlApiUrl(), new HttpEntity<>(query, getHeaders(token)), SingleProjectDataResponse.class);
+                util.getGraphQlApiUrl(), new HttpEntity<>(query, util.getHeaders(token)), SingleProjectDataResponse.class);
         log.info("Get single project milestones response: " + projectFullPath);
         return responseEntity.getBody();
     }
@@ -243,7 +237,7 @@ public class GitLabGraphQLCaller {
                                                                     String endCursor) {
         String query = "{\"query\":\"{\\n" +
                 "  group(fullPath: \\\"" + groupFullPath + "\\\") {\\n" +
-                "    milestones" + getFormattedPaginationWithBrackets(endCursor) + " {\\n" +
+                "    milestones" + util.getFormattedPaginationWithBrackets(endCursor) + " {\\n" +
                 "      nodes {\\n" +
                 "        id\\n" +
                 "        title\\n" +
@@ -258,14 +252,14 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<SingleGroupDataResponse> responseEntity = restTemplate.postForEntity(
-                getGraphQlApiUrl(), new HttpEntity<>(query, getHeaders(token)), SingleGroupDataResponse.class);
+                util.getGraphQlApiUrl(), new HttpEntity<>(query, util.getHeaders(token)), SingleGroupDataResponse.class);
         log.info("Get single group milestones response: " + groupFullPath);
         return responseEntity.getBody();
     }
 
     public ProjectsDataResponse getProjectsStoryLabelsResponse(String token, Set<String> projectIds, String endCursor) {
         String query = "{\"query\":\"{\\n" +
-                "  projects(ids: " + getFormattedFilter(projectIds) + getFormattedPagination(endCursor) + ") {\\n" +
+                "  projects(ids: " + util.getFormattedFilter(projectIds) + util.getFormattedPagination(endCursor) + ") {\\n" +
                 "    nodes {\\n" +
                 "      fullPath\\n" +
                 "      labels(searchTerm: \\\"Story: \\\") {\\n" +
@@ -289,7 +283,7 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<ProjectsDataResponse> responseEntity = restTemplate.postForEntity(
-                getGraphQlApiUrl(), new HttpEntity<>(query, getHeaders(token)), ProjectsDataResponse.class);
+                util.getGraphQlApiUrl(), new HttpEntity<>(query, util.getHeaders(token)), ProjectsDataResponse.class);
         log.info("Get stories response");
         return responseEntity.getBody();
     }
@@ -298,7 +292,7 @@ public class GitLabGraphQLCaller {
                                                                      String endCursor) {
         String query = "{\"query\":\"{\\n" +
                 "  project(fullPath: \\\"" + projectFullPath + "\\\") {\\n" +
-                "    labels(searchTerm: \\\"Story: \\\"" + getFormattedPagination(endCursor) + ") {\\n" +
+                "    labels(searchTerm: \\\"Story: \\\"" + util.getFormattedPagination(endCursor) + ") {\\n" +
                 "      nodes {\\n" +
                 "        id\\n" +
                 "        title\\n" +
@@ -314,7 +308,7 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<SingleProjectDataResponse> responseEntity = restTemplate.postForEntity(
-                getGraphQlApiUrl(), new HttpEntity<>(query, getHeaders(token)), SingleProjectDataResponse.class);
+                util.getGraphQlApiUrl(), new HttpEntity<>(query, util.getHeaders(token)), SingleProjectDataResponse.class);
         log.info("Get single project stories response: " + projectFullPath);
         return responseEntity.getBody();
     }
@@ -340,7 +334,7 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<IssueDataResponse> responseEntity = restTemplate.postForEntity(
-                getGraphQlApiUrl(), new HttpEntity<>(query, getHeaders(token)), IssueDataResponse.class);
+                util.getGraphQlApiUrl(), new HttpEntity<>(query, util.getHeaders(token)), IssueDataResponse.class);
         log.info("Get issue data response: " + issueId);
         return responseEntity.getBody();
     }
@@ -355,7 +349,7 @@ public class GitLabGraphQLCaller {
                 "}\\n\",\"variables\":{}}";
 
         ResponseEntity<SingleProjectDataResponse> responseEntity = restTemplate.postForEntity(
-                getGraphQlApiUrl(), new HttpEntity<>(query, getHeaders(token)), SingleProjectDataResponse.class);
+                util.getGraphQlApiUrl(), new HttpEntity<>(query, util.getHeaders(token)), SingleProjectDataResponse.class);
         log.info("Get label data response: " + labelTitle + " in project: " + projectPath);
         return responseEntity.getBody();
     }
@@ -398,7 +392,7 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<UpdateIssueDataResponse> responseEntity = restTemplate.postForEntity(
-                getGraphQlApiUrl(), new HttpEntity<>(query, getHeaders(token)), UpdateIssueDataResponse.class);
+                util.getGraphQlApiUrl(), new HttpEntity<>(query, util.getHeaders(token)), UpdateIssueDataResponse.class);
         log.info("Update issue, return update issue data response: " + issueIid);
         return responseEntity.getBody();
     }
@@ -413,7 +407,7 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<UserDataResponse> responseEntity = restTemplate.postForEntity(
-                getGraphQlApiUrl(), new HttpEntity<>(query, getHeaders(token)), UserDataResponse.class);
+                util.getGraphQlApiUrl(), new HttpEntity<>(query, util.getHeaders(token)), UserDataResponse.class);
         log.info("Get user data response: " + userId);
         return responseEntity.getBody();
     }
@@ -454,50 +448,9 @@ public class GitLabGraphQLCaller {
                 "\",\"variables\":{}}";
 
         ResponseEntity<IssueSetAssigneesDataResponse> responseEntity = restTemplate.postForEntity(
-                getGraphQlApiUrl(), new HttpEntity<>(query, getHeaders(token)), IssueSetAssigneesDataResponse.class);
+                util.getGraphQlApiUrl(), new HttpEntity<>(query, util.getHeaders(token)), IssueSetAssigneesDataResponse.class);
         log.info("Set assignee to issue, return issue set assignee data response: " + projectPath);
         return responseEntity.getBody();
-    }
-
-
-    private String getFormattedPagination(String cursor) {
-        return !cursor.equals(startPagination) ? getFormattedAfter(cursor) : "";
-    }
-
-    private String getFormattedPaginationWithBrackets(String cursor) {
-        return !cursor.equals(startPagination) ? "(" + getFormattedAfter(cursor) + ")" : "";
-    }
-
-    private String getFormattedAfter(String cursor) {
-        String before = "after: \\\"";
-        String after = "\\\"";
-        return before + cursor + after;
-    }
-
-    private String getMilestoneFilter(Set<String> milestoneTitles) {
-        if (milestoneTitles == null) return "";
-        String defaultOptionText = "Select milestone";
-        milestoneTitles.remove(defaultOptionText);
-        return milestoneTitles.size() != 0 ?
-                "milestoneTitle: " + getFormattedFilter(milestoneTitles) : "";
-    }
-
-    private String getFormattedFilter(Set<String> strings) {
-        String before = "[\\\"";
-        String delimiter = "\\\", \\\"";
-        String after = "\\\"]";
-        return before + String.join(delimiter, strings) + after;
-    }
-
-    private String getGraphQlApiUrl() {
-        return gitlabServerUrl + "/api/graphql";
-    }
-
-    private HttpHeaders getHeaders(String token) {
-        return new HttpHeaders() {{
-            add("Authorization", "Bearer " + token);
-            add("Content-Type", "application/json");
-        }};
     }
 
 }
