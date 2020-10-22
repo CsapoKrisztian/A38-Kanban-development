@@ -37,7 +37,7 @@ public class DataManager {
         if (projectIds == null || projectIds.size() == 0) return null;
 
         Map<User, List<Issue>> assigneeIssuesMap = new HashMap<>();
-        String currentEndCursor = GitLabGraphQLCaller.getStartPagination();
+        String currentEndCursor = gitLabGraphQLCaller.getStartPagination();
         boolean hasNextPage;
         do {
             Projects currentProjects = gitLabGraphQLCaller
@@ -90,7 +90,7 @@ public class DataManager {
         if (projectIds == null || projectIds.size() == 0) return null;
 
         Map<Label, List<Issue>> storyIssuesMap = new HashMap<>();
-        String currentEndCursor = GitLabGraphQLCaller.getStartPagination();
+        String currentEndCursor = gitLabGraphQLCaller.getStartPagination();
         boolean hasNextPage;
         do {
             Projects currentProjects = gitLabGraphQLCaller
@@ -173,7 +173,7 @@ public class DataManager {
     public List<Project> getProjects(String token) {
         Set<Project> projects = new HashSet<>();
 
-        String endCursor = GitLabGraphQLCaller.getStartPagination();
+        String endCursor = gitLabGraphQLCaller.getStartPagination();
         boolean hasNextPage;
         do {
             Projects currentProjects = gitLabGraphQLCaller.getProjectsResponse(token, endCursor)
@@ -194,7 +194,7 @@ public class DataManager {
         if (projectIds == null) return null;
 
         Set<String> milestoneTitles = new HashSet<>();
-        String currentEndCursor = GitLabGraphQLCaller.getStartPagination();
+        String currentEndCursor = gitLabGraphQLCaller.getStartPagination();
         boolean hasNextPage;
         do {
             Projects currentProjects = gitLabGraphQLCaller
@@ -286,7 +286,7 @@ public class DataManager {
         if (projectIds == null) return null;
 
         Set<String> storyTitles = new HashSet<>();
-        String currentEndCursor = GitLabGraphQLCaller.getStartPagination();
+        String currentEndCursor = gitLabGraphQLCaller.getStartPagination();
         boolean hasNextPage;
         do {
             Projects currentProjects = gitLabGraphQLCaller
