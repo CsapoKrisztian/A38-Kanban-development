@@ -166,7 +166,7 @@ public class DataManager {
             hasNextPage = pageInfo.isHasNextPage();
         } while (hasNextPage);
 
-        log.info("Get single project assignee issue node list: " + projectFullPath);
+        log.info("Get single project issue node list: " + projectFullPath);
         return issueNodeList;
     }
 
