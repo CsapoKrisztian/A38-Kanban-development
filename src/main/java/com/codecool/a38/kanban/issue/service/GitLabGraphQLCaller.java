@@ -314,7 +314,7 @@ public class GitLabGraphQLCaller {
     }
 
 
-    public IssueDataResponse getIssueDataResponse(String token, String issueId) {
+    public IssueDataResponse getIssueResponse(String token, String issueId) {
         String query = "{\"query\":\"{\\n" +
                 "  issue(id: \\\"" + issueId + "\\\") {\\n" +
                 "    iid\\n" +
@@ -339,7 +339,7 @@ public class GitLabGraphQLCaller {
         return responseEntity.getBody();
     }
 
-    public SingleProjectDataResponse getProjectLabelDataResponse(String token, String projectPath, String labelTitle) {
+    public SingleProjectDataResponse getProjectLabelResponse(String token, String projectPath, String labelTitle) {
         String query = "{\"query\":\"{\\n" +
                 "  project(fullPath: \\\"" + projectPath + "\\\") {\\n" +
                 "    label(title: \\\"" + labelTitle + "\\\") {\\n" +
@@ -398,7 +398,7 @@ public class GitLabGraphQLCaller {
     }
 
 
-    public UserDataResponse getUsernameByUserID(String token, String userId) {
+    public UserDataResponse getUserResponse(String token, String userId) {
         String query = "{\"query\":\"{\\n" +
                 "  user(id: \\\"" + userId + "\\\") {\\n" +
                 "    username\\n" +

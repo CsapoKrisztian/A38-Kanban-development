@@ -335,14 +335,14 @@ public class DataManager {
     }
 
     public Issue updateStatus(String token, String issueId, String newStatusDisplayTitle) {
-        IssueNode issueNode = gitLabGraphQLCaller.getIssueDataResponse(token, issueId).getData().getIssue();
+        IssueNode issueNode = gitLabGraphQLCaller.getIssueResponse(token, issueId).getData().getIssue();
         String issueIid = issueNode.getIid();
         String projectFullPath = issueNode.getDesignCollection().getProject().getFullPath();
         String currentStatusLabelId = util.getStatusLabelId(issueNode);
 
         String newStatusLabelTitle = configDataProvider.getStatusDisplayTitleMap().get(newStatusDisplayTitle);
         String newStatusLabelId = gitLabGraphQLCaller.
-                getProjectLabelDataResponse(token, projectFullPath, newStatusLabelTitle)
+                getProjectLabelResponse(token, projectFullPath, newStatusLabelTitle)
                 .getData().getProject().getLabel().getId();
 
         if (!currentStatusLabelId.equals(newStatusLabelId)) {
@@ -360,13 +360,13 @@ public class DataManager {
     }
 
     public Issue updateAssignee(String token, String issueId, String newAssigneeId) {
-        IssueNode issueNode = gitLabGraphQLCaller.getIssueDataResponse(token, issueId).getData().getIssue();
+        IssueNode issueNode = gitLabGraphQLCaller.getIssueResponse(token, issueId).getData().getIssue();
         String issueIid = issueNode.getIid();
         String projectFullPath = issueNode.getDesignCollection().getProject().getFullPath();
 
         String assigneeUsername = "";
         if (!newAssigneeId.equals("unassigned") && !newAssigneeId.equals("")) {
-            assigneeUsername = gitLabGraphQLCaller.getUsernameByUserID(token, newAssigneeId)
+            assigneeUsername = gitLabGraphQLCaller.getUserResponse(token, newAssigneeId)
                     .getData().getUser().getUsername();
         }
 
