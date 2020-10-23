@@ -30,9 +30,9 @@ public class Issue {
     private Milestone mileStone;
 
 
-    private Label story;
-
     private Label status;
+
+    private Label story;
 
     private Label priority;
 
