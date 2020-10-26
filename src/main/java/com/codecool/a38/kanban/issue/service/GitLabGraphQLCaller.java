@@ -1,5 +1,6 @@
 package com.codecool.a38.kanban.issue.service;
 
+import com.codecool.a38.kanban.config.service.ConfigDataProvider;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueData.IssueDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueSetAsignee.IssueSetAssigneesDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.updateIssueData.UpdateIssueDataResponse;
@@ -24,6 +25,8 @@ public class GitLabGraphQLCaller {
     private GitlabGraphQLCallerUtil util;
 
     private RestTemplate restTemplate;
+
+    private ConfigDataProvider configDataProvider;
 
 
     public String getStartPagination() {
@@ -262,7 +265,7 @@ public class GitLabGraphQLCaller {
                 "  projects(ids: " + util.getFormattedFilter(projectIds) + util.getFormattedPagination(endCursor) + ") {\\n" +
                 "    nodes {\\n" +
                 "      fullPath\\n" +
-                "      labels(searchTerm: \\\"Story: \\\") {\\n" +
+                "      labels(searchTerm: \\\"" + configDataProvider.getStoryPrefix() + "\\\") {\\n" +
                 "        nodes {\\n" +
                 "          id\\n" +
                 "          title\\n" +
