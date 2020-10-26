@@ -295,7 +295,7 @@ public class GitLabGraphQLCaller {
                                                                      String endCursor) {
         String query = "{\"query\":\"{\\n" +
                 "  project(fullPath: \\\"" + projectFullPath + "\\\") {\\n" +
-                "    labels(searchTerm: \\\"Story: \\\"" + util.getFormattedPagination(endCursor) + ") {\\n" +
+                "    labels(searchTerm: \\\"" + configDataProvider.getStoryPrefix() + "\\\" " + util.getFormattedPagination(endCursor) + ") {\\n" +
                 "      nodes {\\n" +
                 "        id\\n" +
                 "        title\\n" +
