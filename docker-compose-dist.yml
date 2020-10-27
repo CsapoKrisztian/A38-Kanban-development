@@ -6,17 +6,21 @@ services:
       context: '.'
       dockerfile: 'Dockerfile'
     ports:
-    - '8080:8080'
+      - '8080:8080'
     environment:
       - frontend.url=http://localhost:3000
-      - gitlabServer.url=https://gitlab.techpm.guru
+      - gitlabServer.url=https://git.a38.hu/
   frontend:
     image: kanban-frontend:latest
     build:
       context: '../A38-Kanban-development-Frontend/kanban'
       dockerfile: 'Dockerfile'
     ports:
-    - '3000:3000'
+      - '3000:3000'
     environment:
       - REACT_APP_SERVER=http://localhost:8080
+      - REACT_APP_GITLAB_SERVER=https://git.a38.hu/
+      - REACT_APP_GITLAB_APP_ID=05babd01949c10e52ae0a5843e179d5d69bd1ef1002ba9239b529136f30492dd
+      - REACT_APP_GITLAB_APP_SECRET=07a012282ccc243face008f119dd2d583252e733601b9ec7924518f7c838b5ee
+      - REACT_APP_APPLICATION=http://localhost:3000
     stdin_open: true
