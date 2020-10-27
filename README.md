@@ -30,17 +30,12 @@ Clone this repository and the frontend repository to your local computer.
 Make sure that the two downloaded directories are on the same level.
 
 Please find the following files:
-- A38-Kanban-development-Frontend/kanban/.env-dist (this is a hidden file, so you have to check the
-show hidden files checkbox)
-- A38-Kanban-development/src/main/resources/application.properties-dist
 - A38-Kanban-development/docker-compose-dist.yml
 - A38-Kanban-development/src/main/resources/configprops-dist.json
 
 These are sample config files. Make a copy of each of these files in the same directory where they are.
 Rename these new files, so that their new name is the same as the old, except that they don't contain the text: "-dist".
 After this process you should have the following new files in your local computer:
-- A38-Kanban-development-Frontend/kanban/.env
-- A38-Kanban-development/src/main/resources/application.properties
 - A38-Kanban-development/docker-compose.yml
 - A38 Kanban project/A38-Kanban-development/src/main/resources/configprops.json
 
@@ -55,26 +50,15 @@ password: tothmate911
 If you want to use the application with your own gitlab server, please follow the steps described in this part.
 
 First you need to add a new application to your gitlab server.
-Go to your gitlab server -> Settings -> Applications.
-The Redirect URI should be this: <your_frontend_url>/getToken.  
-The current configuration uses this Redirect URI: http://localhost:3000/getToken.  
-The scopes of the application should be api.  
-Save your application. Now you can see your Application ID and Secret, which you will need later.
+- Go to your gitlab server -> Settings -> Applications.
+ - The Redirect URI should be this: <your_frontend_url>/getToken.  
+(The current configuration uses this Redirect URI: http://localhost:3000/getToken.)  
+ - The scopes of the application should be api.  
+ - Save your application. 
+ - Now you should be able to see your Application ID and Secret, which you will need later.
 
 Now please go to the configuration files, that you created previously, and in each one set the parameters
 that are listed below them respectively, as described in the following section:
-
-##### A38-Kanban-development-Frontend/kanban/.env  
-- REACT_APP_GITLAB_SERVER=https://gitlab.techpm.guru (this should be your own gitlab server url)
-- REACT_APP_GITLAB_APP_ID=458f27c6eb357cf7419231331e3af3e3a9d39782b7edf50ac2cc083e7a7f1a4a 
-(this should be the Applications ID of your application on your gitlab server)
-- REACT_APP_GITLAB_APP_SECRET=f0fbf238c1ef5d0be56bf1118c430b15daff2b85d790d4bbfd76b8ccbb5bac33 
-(this should be the Applications Secret of your application on your gitlab server)
-- REACT_APP_APPLICATION=http://localhost:3000 (this should be your frontend url)
-
-##### A38-Kanban-development/src/main/resources/application.properties
-- frontend.url=http://localhost:3000 (this should be your frontend url)
-- gitlabServer.url=https://gitlab.techpm.guru (this should be your own gitlab server url)
 
 ##### A38-Kanban-development/docker-compose.yml
 ```yaml
@@ -86,22 +70,22 @@ services:
       context: '.'
       dockerfile: 'Dockerfile'
     ports:
-    - '8080:8080'
+      - '8080:8080'
     environment:
-      - frontend.url=http://localhost:3000 
-# This should be your frontend url in the line above
-
+      - frontend.url=http://localhost:3000    #This should be your frontend url
+      - gitlabServer.url=https://gitlab.techpm.guru   #This should be your gitlab server url      
   frontend:
     image: kanban-frontend:latest
     build:
       context: '../A38-Kanban-development-Frontend/kanban'
       dockerfile: 'Dockerfile'
     ports:
-    - '3000:3000' 
-# You can set the port in the line above
-
+      - '3000:3000'   #You can set the port here
     environment:
-      - REACT_APP_SERVER=http://localhost:8080
+      - REACT_APP_GITLAB_SERVER=https://gitlab.techpm.guru    #This should be your gitlab server url
+      - REACT_APP_GITLAB_APP_ID=458f27c6eb357cf7419231331e3af3e3a9d39782b7edf50ac2cc083e7a7f1a4a    #This should be your gitlab application id
+      - REACT_APP_GITLAB_APP_SECRET=f0fbf238c1ef5d0be56bf1118c430b15daff2b85d790d4bbfd76b8ccbb5bac33    #This should be your gitlab application secret
+      - REACT_APP_APPLICATION=http://localhost:3000   #This should be your frontend url
     stdin_open: true
 ```
 
@@ -109,23 +93,25 @@ services:
 In this file set your predefined properties in a Json file.
 ```jsonc
 {
-  "storyPrefix": "Story: ", //this should be your own story prefix
+  "storyPrefix": "story:",  //this should be your own story prefix
 
   "priorities": [
     {
-      "title": "Priority: P0", //this is the label title of one of your priority labels on gitlab
-      "display": "PO" //this is what you want to display on the kanban board, 
-                      // that corresponds to the above given priority label title
+      "title": "KB[priority][70][P3]",  //this is the label title of one of your priority labels on gitlab
+      "display": "P3"   //this is what you want to display on the kanban board, 
+                        // that corresponds to the above given priority label title
     }
   ],
+
   "statuses": [
     {
-      "title": "Backlog", //this is the label title of one of your status labels on gitlab
-      "display": "Backlog" //this is what you want to display on the kanban board, 
-                           // that corresponds to the above given status label title
+      "title": "KB[stage][00][Backlog]",    //this is the label title of one of your status labels on gitlab
+      "display": "Backlog"     //this is what you want to display on the kanban board, 
+                               // that corresponds to the above given status label title
     }
   ]
-}  
+
+}
 ``` 
 
 ## Docker deployment
