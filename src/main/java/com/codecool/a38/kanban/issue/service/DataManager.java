@@ -222,6 +222,7 @@ public class DataManager {
 
     private void addProjectMilestones(String token, ProjectNode projectNode, List<Milestone> milestoneList) {
         Milestones projectMilestones = projectNode.getMilestones();
+        if (projectMilestones == null) return;
         milestoneList.addAll(projectMilestones.getNodes());
 
         PageInfo projectMilestonesPageInfo = projectMilestones.getPageInfo();
@@ -253,6 +254,7 @@ public class DataManager {
 
     private void addGroupMilestones(String token, List<Milestone> milestoneList, Group group) {
         Milestones groupMilestones = group.getMilestones();
+        if (groupMilestones == null) return;
         milestoneList.addAll(groupMilestones.getNodes());
 
         PageInfo groupMilestonesPageInfo = groupMilestones.getPageInfo();
