@@ -3,4 +3,4 @@ spring.profiles.active=production
 server.error.include-stacktrace=never
 
 frontend.url=http://localhost:3000
-gitlabServer.url=https://gitlab.techpm.guru
+gitlabServer.url=https://git.a38.hu
