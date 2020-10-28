@@ -31,7 +31,7 @@ public class DataManagerUtil {
     }
 
     public Issue createIssueFromIssueNode(IssueNode issueNode) {
-        Issue issue = Issue.builder()
+        return Issue.builder()
                 .id(issueNode.getId())
                 .title(issueNode.getTitle())
                 .description(issueNode.getDescription())
@@ -39,32 +39,41 @@ public class DataManagerUtil {
                 .dueDate(issueNode.getDueDate())
                 .userNotesCount(issueNode.getUserNotesCount())
                 .reference(issueNode.getReference())
-                .mileStone(issueNode.getMilestone())
                 .assignee(getAssigneeFromIssueNode(issueNode))
+                .mileStone(issueNode.getMilestone())
+                .status(getStatusFromIssueNode(issueNode))
+                .story(getStoryFromIssueNode(issueNode))
+                .priority(getPriorityFromIssueNode(issueNode))
                 .build();
-        setStoryPriorityStatusOfIssueFromIssueNode(issue, issueNode);
-        return issue;
     }
 
-    private void setStoryPriorityStatusOfIssueFromIssueNode(Issue thisIssue, IssueNode issueNode) {
-        issueNode.getLabels().getNodes().forEach(label -> {
-            if (label.getTitle().startsWith(configDataProvider.getStoryPrefix())) {
-                label.setTitle(label.getTitle().substring(configDataProvider.getStoryPrefix().length()));
-                thisIssue.setStory(label);
-                return;
-            }
-            String priorityDisplayTitle = configDataProvider.getPriorityTitleDisplayMap().get(label.getTitle());
-            if (priorityDisplayTitle != null) {
-                label.setTitle(priorityDisplayTitle);
-                thisIssue.setPriority(label);
-                return;
-            }
+    private Label getStatusFromIssueNode(IssueNode issueNode) {
+        for (Label label : issueNode.getLabels().getNodes()) {
             String statusDisplayTitle = configDataProvider.getStatusTitleDisplayMap().get(label.getTitle());
             if (statusDisplayTitle != null) {
                 label.setTitle(statusDisplayTitle);
-                thisIssue.setStatus(label);
+                return label;
             }
-        });
+        }
+        return null;
+    }
+
+    private Label getStoryFromIssueNode(IssueNode issueNode) {
+        return issueNode.getLabels().getNodes().stream()
+                .filter(label -> label.getTitle().startsWith(configDataProvider.getStoryPrefix()))
+                .peek(label -> label.setTitle(label.getTitle().substring(configDataProvider.getStoryPrefix().length())))
+                .findFirst().orElse(null);
+    }
+
+    private Label getPriorityFromIssueNode(IssueNode issueNode) {
+        for (Label label : issueNode.getLabels().getNodes()) {
+            String priorityDisplayTitle = configDataProvider.getPriorityTitleDisplayMap().get(label.getTitle());
+            if (priorityDisplayTitle != null) {
+                label.setTitle(priorityDisplayTitle);
+                return label;
+            }
+        }
+        return null;
     }
 
     private User getAssigneeFromIssueNode(IssueNode issueNode) {

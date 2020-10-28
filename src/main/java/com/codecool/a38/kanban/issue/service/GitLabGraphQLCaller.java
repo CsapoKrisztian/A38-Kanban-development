@@ -1,5 +1,6 @@
 package com.codecool.a38.kanban.issue.service;
 
+import com.codecool.a38.kanban.config.service.ConfigDataProvider;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueData.IssueDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.issueSetAsignee.IssueSetAssigneesDataResponse;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.updateIssueData.UpdateIssueDataResponse;
@@ -24,6 +25,8 @@ public class GitLabGraphQLCaller {
     private GitlabGraphQLCallerUtil util;
 
     private RestTemplate restTemplate;
+
+    private ConfigDataProvider configDataProvider;
 
 
     public String getStartPagination() {
@@ -262,7 +265,7 @@ public class GitLabGraphQLCaller {
                 "  projects(ids: " + util.getFormattedFilter(projectIds) + util.getFormattedPagination(endCursor) + ") {\\n" +
                 "    nodes {\\n" +
                 "      fullPath\\n" +
-                "      labels(searchTerm: \\\"Story: \\\") {\\n" +
+                "      labels(searchTerm: \\\"" + configDataProvider.getStoryPrefix() + "\\\") {\\n" +
                 "        nodes {\\n" +
                 "          id\\n" +
                 "          title\\n" +
@@ -292,7 +295,7 @@ public class GitLabGraphQLCaller {
                                                                      String endCursor) {
         String query = "{\"query\":\"{\\n" +
                 "  project(fullPath: \\\"" + projectFullPath + "\\\") {\\n" +
-                "    labels(searchTerm: \\\"Story: \\\"" + util.getFormattedPagination(endCursor) + ") {\\n" +
+                "    labels(searchTerm: \\\"" + configDataProvider.getStoryPrefix() + "\\\" " + util.getFormattedPagination(endCursor) + ") {\\n" +
                 "      nodes {\\n" +
                 "        id\\n" +
                 "        title\\n" +
@@ -314,7 +317,7 @@ public class GitLabGraphQLCaller {
     }
 
 
-    public IssueDataResponse getIssueDataResponse(String token, String issueId) {
+    public IssueDataResponse getIssueResponse(String token, String issueId) {
         String query = "{\"query\":\"{\\n" +
                 "  issue(id: \\\"" + issueId + "\\\") {\\n" +
                 "    iid\\n" +
@@ -339,7 +342,7 @@ public class GitLabGraphQLCaller {
         return responseEntity.getBody();
     }
 
-    public SingleProjectDataResponse getProjectLabelDataResponse(String token, String projectPath, String labelTitle) {
+    public SingleProjectDataResponse getProjectLabelResponse(String token, String projectPath, String labelTitle) {
         String query = "{\"query\":\"{\\n" +
                 "  project(fullPath: \\\"" + projectPath + "\\\") {\\n" +
                 "    label(title: \\\"" + labelTitle + "\\\") {\\n" +
@@ -398,7 +401,7 @@ public class GitLabGraphQLCaller {
     }
 
 
-    public UserDataResponse getUsernameByUserID(String token, String userId) {
+    public UserDataResponse getUserResponse(String token, String userId) {
         String query = "{\"query\":\"{\\n" +
                 "  user(id: \\\"" + userId + "\\\") {\\n" +
                 "    username\\n" +
