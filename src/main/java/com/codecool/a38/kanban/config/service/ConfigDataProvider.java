@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -21,6 +22,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ConfigDataProvider {
 
+    @Value("${frontend.url}")
+    private String frontendUrl;
+
     private String storyPrefix;
 
     private List<String> statusTitles;
@@ -33,6 +37,8 @@ public class ConfigDataProvider {
 
     @PostConstruct
     public void init() {
+        System.out.println(frontendUrl);
+
         ObjectMapper mapper = new ObjectMapper();
         TypeReference<JsonProperties> typeReference = new TypeReference<>() {
         };
