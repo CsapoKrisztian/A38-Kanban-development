@@ -31,9 +31,9 @@ public class ConfigDataProvider {
 
     private Map<String, String> priorityTitleDisplayMap = new HashMap<>();
 
-//    @PostConstruct
-//    public void init() {
-//        ObjectMapper mapper = new ObjectMapper();
+    @PostConstruct
+    public void init() {
+        ObjectMapper mapper = new ObjectMapper();
 //        TypeReference<JsonProperties> typeReference = new TypeReference<>() {
 //        };
 //        InputStream inputStream = TypeReference.class.getResourceAsStream("/configprops.json");
@@ -50,7 +50,7 @@ public class ConfigDataProvider {
 //            log.info("Unable to read configprops.json");
 //            e.printStackTrace();
 //        }
-//    }
+    }
 
     private void setDataFromJsonProperties(JsonProperties jsonProperties) {
         storyPrefix = jsonProperties.getStoryPrefix();
