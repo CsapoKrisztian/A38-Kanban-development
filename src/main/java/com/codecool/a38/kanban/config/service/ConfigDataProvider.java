@@ -22,9 +22,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ConfigDataProvider {
 
-    @Value("${frontend.url}")
-    private String frontendUrl;
-
     private String storyPrefix;
 
     private List<String> statusTitles;
@@ -37,8 +34,6 @@ public class ConfigDataProvider {
 
     @PostConstruct
     public void init() {
-        System.out.println(frontendUrl);
-
         ObjectMapper mapper = new ObjectMapper();
         TypeReference<JsonProperties> typeReference = new TypeReference<>() {
         };
