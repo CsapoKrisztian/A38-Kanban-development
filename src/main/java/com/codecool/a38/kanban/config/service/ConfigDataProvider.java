@@ -36,7 +36,7 @@ public class ConfigDataProvider {
         ObjectMapper mapper = new ObjectMapper();
         TypeReference<JsonProperties> typeReference = new TypeReference<>() {
         };
-        InputStream inputStream = TypeReference.class.getResourceAsStream("/configprops.json");
+        InputStream inputStream = TypeReference.class.getResourceAsStream("/configprops-dist.json");
         try {
             JsonProperties jsonProperties = mapper.readValue(inputStream, typeReference);
             setDataFromJsonProperties(jsonProperties);
@@ -48,9 +48,6 @@ public class ConfigDataProvider {
 
         } catch (IOException e) {
             log.info("Unable to read configprops.json");
-            e.printStackTrace();
-        } catch (Exception e) {
-            log.info("!!!!!");
             e.printStackTrace();
         }
     }
