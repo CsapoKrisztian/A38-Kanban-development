@@ -34,22 +34,25 @@ public class ConfigDataProvider {
     @PostConstruct
     public void init() {
         ObjectMapper mapper = new ObjectMapper();
-//        TypeReference<JsonProperties> typeReference = new TypeReference<>() {
-//        };
-//        InputStream inputStream = TypeReference.class.getResourceAsStream("/configprops.json");
-//        try {
-//            JsonProperties jsonProperties = mapper.readValue(inputStream, typeReference);
-//            setDataFromJsonProperties(jsonProperties);
-//            log.info("Config properties loaded from configprops.json");
-//            log.info("Status titles: " + statusTitles.toString());
-//            log.info("Story prefix: " + storyPrefix);
-//            log.info("statusTitleDisplayMap: " + statusTitleDisplayMap.toString());
-//            log.info("priorityTitleDisplayMap: " + priorityTitleDisplayMap.toString());
-//
-//        } catch (IOException e) {
-//            log.info("Unable to read configprops.json");
-//            e.printStackTrace();
-//        }
+        TypeReference<JsonProperties> typeReference = new TypeReference<>() {
+        };
+        InputStream inputStream = TypeReference.class.getResourceAsStream("/configprops.json");
+        try {
+            JsonProperties jsonProperties = mapper.readValue(inputStream, typeReference);
+            setDataFromJsonProperties(jsonProperties);
+            log.info("Config properties loaded from configprops.json");
+            log.info("Status titles: " + statusTitles.toString());
+            log.info("Story prefix: " + storyPrefix);
+            log.info("statusTitleDisplayMap: " + statusTitleDisplayMap.toString());
+            log.info("priorityTitleDisplayMap: " + priorityTitleDisplayMap.toString());
+
+        } catch (IOException e) {
+            log.info("Unable to read configprops.json");
+            e.printStackTrace();
+        } catch (Exception e) {
+            log.info("!!!!!");
+            e.printStackTrace();
+        }
     }
 
     private void setDataFromJsonProperties(JsonProperties jsonProperties) {
