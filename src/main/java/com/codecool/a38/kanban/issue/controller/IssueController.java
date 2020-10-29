@@ -35,6 +35,7 @@ public class IssueController {
 
     @GetMapping("/projects")
     public List<Project> getProjects(@CookieValue(defaultValue = "default") String gitlabAccessToken) {
+        System.out.println("token from cookie: " + gitlabAccessToken);
         return dataManager.getProjects(gitlabAccessToken);
     }
 
