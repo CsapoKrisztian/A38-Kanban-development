@@ -73,7 +73,7 @@ public class DataManager {
                 .map(e -> AssigneeIssues.builder()
                         .assignee(e.getKey())
                         .issues(e.getValue().stream()
-                                .sorted(Comparator.comparing(i -> i.getPriority().getTitle()))
+                                .sorted(Comparator.comparing(issue -> issue.getPriority().getPriorityNum()))
                                 .collect(Collectors.toList()))
                         .build())
                 .collect(Collectors.toList());
