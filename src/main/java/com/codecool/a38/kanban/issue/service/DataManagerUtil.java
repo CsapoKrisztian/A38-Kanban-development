@@ -1,5 +1,6 @@
 package com.codecool.a38.kanban.issue.service;
 
+import com.codecool.a38.kanban.config.model.PriorityDisplayNum;
 import com.codecool.a38.kanban.config.service.ConfigDataProvider;
 import com.codecool.a38.kanban.issue.model.Issue;
 import com.codecool.a38.kanban.issue.model.Project;
@@ -67,9 +68,11 @@ public class DataManagerUtil {
 
     private Label getPriorityFromIssueNode(IssueNode issueNode) {
         for (Label label : issueNode.getLabels().getNodes()) {
-            String priorityDisplayTitle = configDataProvider.getPriorityTitleDisplayMap().get(label.getTitle());
-            if (priorityDisplayTitle != null) {
-                label.setTitle(priorityDisplayTitle);
+            PriorityDisplayNum priorityDisplayNum = configDataProvider.getPriorityTitleDisplayNumMap()
+                    .get(label.getTitle());
+            if (priorityDisplayNum != null) {
+                label.setTitle(priorityDisplayNum.getDisplay());
+                label.setPriorityNum(priorityDisplayNum.getPriorityNum());
                 return label;
             }
         }

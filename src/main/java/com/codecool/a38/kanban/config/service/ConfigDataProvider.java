@@ -2,6 +2,7 @@ package com.codecool.a38.kanban.config.service;
 
 import com.codecool.a38.kanban.config.model.JsonProperties;
 import com.codecool.a38.kanban.config.model.LabelProperty;
+import com.codecool.a38.kanban.config.model.PriorityDisplayNum;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
@@ -29,7 +30,7 @@ public class ConfigDataProvider {
 
     private Map<String, String> statusDisplayTitleMap = new HashMap<>();
 
-    private Map<String, String> priorityTitleDisplayMap = new HashMap<>();
+    private Map<String, PriorityDisplayNum> priorityTitleDisplayNumMap = new HashMap<>();
 
     @PostConstruct
     public void init() {
@@ -44,7 +45,7 @@ public class ConfigDataProvider {
             log.info("Status titles: " + statusTitles.toString());
             log.info("Story prefix: " + storyPrefix);
             log.info("statusTitleDisplayMap: " + statusTitleDisplayMap.toString());
-            log.info("priorityTitleDisplayMap: " + priorityTitleDisplayMap.toString());
+            log.info("priorityTitleDisplayMap: " + priorityTitleDisplayNumMap.toString());
 
         } catch (IOException e) {
             log.info("Unable to read configprops.json");
@@ -54,6 +55,7 @@ public class ConfigDataProvider {
 
     private void setDataFromJsonProperties(JsonProperties jsonProperties) {
         storyPrefix = jsonProperties.getStoryPrefix();
+
         statusTitles = jsonProperties.getStatuses().stream()
                 .map(LabelProperty::getDisplay)
                 .collect(Collectors.toList());
@@ -64,8 +66,12 @@ public class ConfigDataProvider {
         statusDisplayTitleMap = jsonProperties.getStatuses().stream()
                 .collect(Collectors.toMap(LabelProperty::getDisplay, LabelProperty::getTitle));
 
-        priorityTitleDisplayMap = jsonProperties.getPriorities().stream()
-                .collect(Collectors.toMap(LabelProperty::getTitle, LabelProperty::getDisplay));
+        int serial = 0;
+        for (LabelProperty labelProperty : jsonProperties.getPriorities()) {
+            priorityTitleDisplayNumMap.put(labelProperty.getTitle(),
+                    new PriorityDisplayNum(labelProperty.getDisplay(), serial++));
+        }
+
     }
 
 }
