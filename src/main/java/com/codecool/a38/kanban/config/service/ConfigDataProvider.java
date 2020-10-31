@@ -32,14 +32,14 @@ public class ConfigDataProvider {
 
     private Map<String, PriorityDisplayNum> priorityTitleDisplayNumMap = new HashMap<>();
 
-    private final String configJsonFile = "/configprops.json";
+    private final String configJsonFilePath = "/configprops.json";
 
     @PostConstruct
     public void init() {
         ObjectMapper mapper = new ObjectMapper();
         TypeReference<JsonProperties> typeReference = new TypeReference<>() {
         };
-        InputStream inputStream = TypeReference.class.getResourceAsStream(configJsonFile);
+        InputStream inputStream = TypeReference.class.getResourceAsStream(configJsonFilePath);
         try {
             JsonProperties jsonProperties = mapper.readValue(inputStream, typeReference);
             setStoryPrefix(jsonProperties);
@@ -48,7 +48,7 @@ public class ConfigDataProvider {
             setStatusDisplayTitleMap(jsonProperties);
             setPriorityTitleDisplayNumMap(jsonProperties);
         } catch (IOException e) {
-            log.info("Unable to read file: " + configJsonFile);
+            log.info("Unable to read file: " + configJsonFilePath);
             e.printStackTrace();
         }
     }

@@ -147,8 +147,13 @@ public class DataManagerUtil {
 
     private List<Issue> getIssuesSortedByPriority(List<Issue> issues) {
         return issues.stream()
-                .sorted(Comparator.comparing(issue -> issue.getPriority().getPriorityNum()))
+                .sorted(Comparator.comparing(this::getIssuePriority))
                 .collect(Collectors.toList());
+    }
+
+    private int getIssuePriority(Issue issue) {
+        return issue.getPriority() != null ?
+                issue.getPriority().getPriorityNum() : configDataProvider.getPriorityTitleDisplayNumMap().size();
     }
 
     public List<Project> getSortedProjects(Set<Project> projects) {
