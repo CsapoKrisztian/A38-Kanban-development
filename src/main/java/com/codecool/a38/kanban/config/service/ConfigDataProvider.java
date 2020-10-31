@@ -40,38 +40,47 @@ public class ConfigDataProvider {
         InputStream inputStream = TypeReference.class.getResourceAsStream("/configprops.json");
         try {
             JsonProperties jsonProperties = mapper.readValue(inputStream, typeReference);
-            setDataFromJsonProperties(jsonProperties);
-            log.info("Config properties loaded from configprops.json");
-            log.info("Status titles: " + statusTitles.toString());
-            log.info("Story prefix: " + storyPrefix);
-            log.info("statusTitleDisplayMap: " + statusTitleDisplayMap.toString());
-            log.info("priorityTitleDisplayMap: " + priorityTitleDisplayNumMap.toString());
-
+            setStoryPrefix(jsonProperties);
+            setStatusTitles(jsonProperties);
+            setStatusTitleDisplayMap(jsonProperties);
+            setStatusDisplayTitleMap(jsonProperties);
+            setPriorityTitleDisplayNumMap(jsonProperties);
         } catch (IOException e) {
             log.info("Unable to read configprops.json");
             e.printStackTrace();
         }
     }
 
-    private void setDataFromJsonProperties(JsonProperties jsonProperties) {
+    private void setStoryPrefix(JsonProperties jsonProperties) {
         storyPrefix = jsonProperties.getStoryPrefix();
+        log.info("Story prefix loaded from config Json: " + storyPrefix);
+    }
 
+    private void setStatusTitles(JsonProperties jsonProperties) {
         statusTitles = jsonProperties.getStatuses().stream()
                 .map(LabelProperty::getDisplay)
                 .collect(Collectors.toList());
+        log.info("Status titles loaded from config Json: " + statusTitles.toString());
+    }
 
+    private void setStatusTitleDisplayMap(JsonProperties jsonProperties) {
         statusTitleDisplayMap = jsonProperties.getStatuses().stream()
                 .collect(Collectors.toMap(LabelProperty::getTitle, LabelProperty::getDisplay));
+        log.info("Status title display map loaded from config Json: " + statusTitleDisplayMap.toString());
+    }
 
+    private void setStatusDisplayTitleMap(JsonProperties jsonProperties) {
         statusDisplayTitleMap = jsonProperties.getStatuses().stream()
                 .collect(Collectors.toMap(LabelProperty::getDisplay, LabelProperty::getTitle));
+    }
 
+    private void setPriorityTitleDisplayNumMap(JsonProperties jsonProperties) {
         int serial = 0;
         for (LabelProperty labelProperty : jsonProperties.getPriorities()) {
             priorityTitleDisplayNumMap.put(labelProperty.getTitle(),
                     new PriorityDisplayNum(labelProperty.getDisplay(), serial++));
         }
-
+        log.info("Priority title display map loaded from config Json: " + priorityTitleDisplayNumMap.toString());
     }
 
 }
