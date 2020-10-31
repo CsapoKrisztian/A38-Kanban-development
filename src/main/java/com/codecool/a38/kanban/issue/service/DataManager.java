@@ -45,21 +45,12 @@ public class DataManager {
                     .getData().getProjects();
 
             currentProjects.getNodes().forEach(projectNode -> {
-                Project currentProject = util.createProjectFromProjectNode(projectNode);
+                Project currentProject = util.makeProjectFromProjectNode(projectNode);
                 List<IssueNode> issueNodeList = getAllProjectsIssueNodes(token, milestoneTitles, projectNode);
                 issueNodeList.forEach(issueNode -> {
-                    Issue issue = util.createIssueFromIssueNode(issueNode);
+                    Issue issue = util.makeIssueFromIssueNode(issueNode);
                     issue.setProject(currentProject);
-
-                    if (issue.getStatus() != null) {
-                        if (storyTitles != null && storyTitles.size() != 0) {
-                            if (issue.getStory() != null && storyTitles.contains(issue.getStory().getTitle())) {
-                                addIssueToAssigneeIssuesMap(assigneeIssuesMap, issue);
-                            }
-                        } else {
-                            addIssueToAssigneeIssuesMap(assigneeIssuesMap, issue);
-                        }
-                    }
+                    util.putIssueToAssigneeIssueMap(storyTitles, assigneeIssuesMap, issue);
                 });
             });
 
@@ -69,22 +60,7 @@ public class DataManager {
         } while (hasNextPage);
 
         log.info("Get assignee issues list");
-        return assigneeIssuesMap.entrySet().stream()
-                .map(e -> AssigneeIssues.builder()
-                        .assignee(e.getKey())
-                        .issues(e.getValue().stream()
-                                .sorted(Comparator.comparing(issue -> issue.getPriority().getPriorityNum()))
-                                .collect(Collectors.toList()))
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    private void addIssueToAssigneeIssuesMap(Map<User, List<Issue>> assigneeIssuesMap, Issue issue) {
-        User assignee = issue.getAssignee();
-        if (!assigneeIssuesMap.containsKey(assignee)) {
-            assigneeIssuesMap.put(assignee, new ArrayList<>());
-        }
-        assigneeIssuesMap.get(assignee).add(issue);
+        return util.makeAssigneeIssuesListFromMap(assigneeIssuesMap);
     }
 
     public List<StoryIssues> getStoryIssuesList(String token, Set<String> projectIds,
@@ -100,22 +76,12 @@ public class DataManager {
                     .getData().getProjects();
 
             currentProjects.getNodes().forEach(projectNode -> {
-                Project currentProject = util.createProjectFromProjectNode(projectNode);
+                Project currentProject = util.makeProjectFromProjectNode(projectNode);
                 List<IssueNode> issueNodeList = getAllProjectsIssueNodes(token, milestoneTitles, projectNode);
                 issueNodeList.forEach((issueNode) -> {
-                    Issue issue = util.createIssueFromIssueNode(issueNode);
+                    Issue issue = util.makeIssueFromIssueNode(issueNode);
                     issue.setProject(currentProject);
-
-                    if (issue.getStatus() != null) {
-                        Label story = issue.getStory();
-                        if (storyTitles != null && storyTitles.size() != 0) {
-                            if (story != null && storyTitles.contains(story.getTitle())) {
-                                addStoryToStoryIssuesMap(storyIssuesMap, issue, story);
-                            }
-                        } else {
-                            addStoryToStoryIssuesMap(storyIssuesMap, issue, story);
-                        }
-                    }
+                    util.putIssueToStoryIssueMap(storyTitles, storyIssuesMap, issue);
                 });
             });
 
@@ -125,19 +91,7 @@ public class DataManager {
         } while (hasNextPage);
 
         log.info("Get story issues list");
-        return storyIssuesMap.entrySet().stream()
-                .map(e -> StoryIssues.builder()
-                        .story(e.getKey())
-                        .issues(e.getValue())
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    private void addStoryToStoryIssuesMap(Map<Label, List<Issue>> storyIssuesMap, Issue issue, Label story) {
-        if (!storyIssuesMap.containsKey(story)) {
-            storyIssuesMap.put(story, new ArrayList<>());
-        }
-        storyIssuesMap.get(story).add(issue);
+        return util.makeStoryIssuesListFromMap(storyIssuesMap);
     }
 
     private List<IssueNode> getAllProjectsIssueNodes(String token, Set<String> milestoneTitles, ProjectNode projectNode) {
@@ -152,8 +106,8 @@ public class DataManager {
         return issueNodeList;
     }
 
-    public List<IssueNode> getSingleProjectIssueNodeList(String token, String projectFullPath,
-                                                         Set<String> milestoneTitles, String endCursor) {
+    private List<IssueNode> getSingleProjectIssueNodeList(String token, String projectFullPath,
+                                                          Set<String> milestoneTitles, String endCursor) {
         List<IssueNode> issueNodeList = new ArrayList<>();
         String currentEndCursor = endCursor;
         boolean hasNextPage;
@@ -181,7 +135,7 @@ public class DataManager {
             Projects currentProjects = gitLabGraphQLCaller.getProjectsResponse(token, endCursor)
                     .getData().getProjects();
             currentProjects.getNodes()
-                    .forEach(projectNode -> projects.add(util.createProjectFromProjectNode(projectNode)));
+                    .forEach(projectNode -> projects.add(util.makeProjectFromProjectNode(projectNode)));
 
             PageInfo pageInfo = currentProjects.getPageInfo();
             endCursor = pageInfo.getEndCursor();
@@ -357,10 +311,10 @@ public class DataManager {
                     updateStatusLabel(token, projectFullPath, issueIid, currentStatusLabelIdNum, newStatusLabelIdNum);
 
             log.info("Updated status: " + newStatusDisplayTitle + " of issue: " + issueId);
-            return util.createIssueFromIssueNode(updateIssueDataResponse.getData().getUpdateIssue().getIssue());
+            return util.makeIssueFromIssueNode(updateIssueDataResponse.getData().getUpdateIssue().getIssue());
         }
         log.info("Failed to update status of issue: " + issueId);
-        return util.createIssueFromIssueNode(issueNode);
+        return util.makeIssueFromIssueNode(issueNode);
     }
 
     public Issue updateAssignee(String token, String issueId, String newAssigneeId) {
@@ -377,7 +331,7 @@ public class DataManager {
         IssueSetAssigneesDataResponse issueSetAssigneesDataResponse = gitLabGraphQLCaller.
                 updateAssignee(token, projectFullPath, issueIid, assigneeUsername);
         log.info("Set assignee: " + assigneeUsername + " to issue: " + issueId);
-        return util.createIssueFromIssueNode(issueSetAssigneesDataResponse.getData().getIssueSetAssignees().getIssue());
+        return util.makeIssueFromIssueNode(issueSetAssigneesDataResponse.getData().getIssueSetAssignees().getIssue());
     }
 
 }
