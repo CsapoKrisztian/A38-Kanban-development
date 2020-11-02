@@ -1,5 +1,6 @@
 package com.codecool.a38.kanban.issue.service;
 
+import com.codecool.a38.kanban.config.model.PriorityDisplayNum;
 import com.codecool.a38.kanban.config.service.ConfigDataProvider;
 import com.codecool.a38.kanban.issue.model.Issue;
 import com.codecool.a38.kanban.issue.model.Project;
@@ -7,12 +8,12 @@ import com.codecool.a38.kanban.issue.model.graphQLResponse.IssueNode;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.Label;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.ProjectNode;
 import com.codecool.a38.kanban.issue.model.graphQLResponse.User;
+import com.codecool.a38.kanban.issue.model.transfer.AssigneeIssues;
+import com.codecool.a38.kanban.issue.model.transfer.StoryIssues;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,7 +22,7 @@ public class DataManagerUtil {
 
     private ConfigDataProvider configDataProvider;
 
-    public Project createProjectFromProjectNode(ProjectNode projectNode) {
+    public Project makeProjectFromProjectNode(ProjectNode projectNode) {
         return Project.builder()
                 .id(projectNode.getId())
                 .fullPath(projectNode.getFullPath())
@@ -30,7 +31,7 @@ public class DataManagerUtil {
                 .build();
     }
 
-    public Issue createIssueFromIssueNode(IssueNode issueNode) {
+    public Issue makeIssueFromIssueNode(IssueNode issueNode) {
         return Issue.builder()
                 .id(issueNode.getId())
                 .title(issueNode.getTitle())
@@ -67,9 +68,11 @@ public class DataManagerUtil {
 
     private Label getPriorityFromIssueNode(IssueNode issueNode) {
         for (Label label : issueNode.getLabels().getNodes()) {
-            String priorityDisplayTitle = configDataProvider.getPriorityTitleDisplayMap().get(label.getTitle());
-            if (priorityDisplayTitle != null) {
-                label.setTitle(priorityDisplayTitle);
+            PriorityDisplayNum priorityDisplayNum = configDataProvider.getPriorityTitleDisplayNumMap()
+                    .get(label.getTitle());
+            if (priorityDisplayNum != null) {
+                label.setTitle(priorityDisplayNum.getDisplay());
+                label.setPriorityNum(priorityDisplayNum.getPriorityNum());
                 return label;
             }
         }
@@ -82,6 +85,64 @@ public class DataManagerUtil {
         } catch (IndexOutOfBoundsException | NullPointerException e) {
             return null;
         }
+    }
+
+    public void putIssueToAssigneeIssueMap(Set<String> storyTitles, Map<User, List<Issue>> assigneeIssuesMap, Issue issue) {
+        if (issue.getStatus() != null) {
+            if (storyTitles != null && storyTitles.size() != 0) {
+                if (issue.getStory() != null && storyTitles.contains(issue.getStory().getTitle())) {
+                    addIssueToAssigneeIssuesMap(assigneeIssuesMap, issue);
+                }
+            } else {
+                addIssueToAssigneeIssuesMap(assigneeIssuesMap, issue);
+            }
+        }
+    }
+
+    private void addIssueToAssigneeIssuesMap(Map<User, List<Issue>> assigneeIssuesMap, Issue issue) {
+        User assignee = issue.getAssignee();
+        if (!assigneeIssuesMap.containsKey(assignee)) {
+            assigneeIssuesMap.put(assignee, new ArrayList<>());
+        }
+        assigneeIssuesMap.get(assignee).add(issue);
+    }
+
+    public void putIssueToStoryIssueMap(Set<String> storyTitles, Map<Label, List<Issue>> storyIssuesMap, Issue issue) {
+        if (issue.getStatus() != null) {
+            Label story = issue.getStory();
+            if (storyTitles != null && storyTitles.size() != 0) {
+                if (story != null && storyTitles.contains(story.getTitle())) {
+                    addStoryToStoryIssuesMap(storyIssuesMap, issue, story);
+                }
+            } else {
+                addStoryToStoryIssuesMap(storyIssuesMap, issue, story);
+            }
+        }
+    }
+
+    private void addStoryToStoryIssuesMap(Map<Label, List<Issue>> storyIssuesMap, Issue issue, Label story) {
+        if (!storyIssuesMap.containsKey(story)) {
+            storyIssuesMap.put(story, new ArrayList<>());
+        }
+        storyIssuesMap.get(story).add(issue);
+    }
+
+    public List<AssigneeIssues> makeAssigneeIssuesListFromMap(Map<User, List<Issue>> assigneeIssuesMap) {
+        return assigneeIssuesMap.entrySet().stream()
+                .map(e -> AssigneeIssues.builder()
+                        .assignee(e.getKey())
+                        .issues(e.getValue())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    public List<StoryIssues> makeStoryIssuesListFromMap(Map<Label, List<Issue>> storyIssuesMap) {
+        return storyIssuesMap.entrySet().stream()
+                .map(e -> StoryIssues.builder()
+                        .story(e.getKey())
+                        .issues(e.getValue())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     public List<Project> getSortedProjects(Set<Project> projects) {

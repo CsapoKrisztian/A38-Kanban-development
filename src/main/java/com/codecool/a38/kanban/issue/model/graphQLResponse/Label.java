@@ -24,4 +24,6 @@ public class Label {
     @JsonProperty("color")
     private String color;
 
+    private int priorityNum;
+
 }
