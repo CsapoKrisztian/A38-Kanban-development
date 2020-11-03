@@ -13,7 +13,7 @@ services:
   frontend:
     image: kanban-frontend:latest
     build:
-      context: '../A38-Kanban-development-Frontend/kanban'
+      context: '../A38-Kanban-development-Frontend'
       dockerfile: 'Dockerfile'
     ports:
       - '3000:3000'
