@@ -37,7 +37,7 @@ These are sample config files. Make a copy of each of these files in the same di
 Rename these new files, so that their new name is the same as the old, except that they don't contain the text: "-dist".
 After this process you should have the following new files in your local computer:
 - A38-Kanban-development/docker-compose.yml
-- A38 Kanban project/A38-Kanban-development/src/main/resources/configprops.json
+- A38-Kanban-development/src/main/resources/configprops.json
 
 For only testing purposes you can use our test gitlab server (https://gitlab.techpm.guru) 
 with the current configurations 
@@ -77,7 +77,7 @@ services:
   frontend:
     image: kanban-frontend:latest
     build:
-      context: '../A38-Kanban-development-Frontend/kanban'
+      context: '../A38-Kanban-development-Frontend'
       dockerfile: 'Dockerfile'
     ports:
       - '3000:3000'   #You can set the port here
