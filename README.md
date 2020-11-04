@@ -1,5 +1,17 @@
 # A38-Kanban-development
 
+## Contributors:
+### Developer team:
+
+György Noémi
+Hegedüs Enikő 
+Tóth Lajos Máté
+
+### Project Management:
+
+Csapó Krisztián
+Csürke Gábor
+
 ## Description
 This application is a kanban board. The board displays gitlab issue cards, showing the title,
 assignee, project, story, milestone, priority of the issue, and some other information.  
