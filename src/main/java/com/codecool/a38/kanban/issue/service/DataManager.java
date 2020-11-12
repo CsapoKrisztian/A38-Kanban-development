@@ -27,9 +27,9 @@ public class DataManager {
     private DataManagerUtil util;
 
 
-    public List<String> getStatusTitles() {
+    public List<String> getStatusDisplayTitles() {
         log.info("get status titles");
-        return configDataProvider.getStatusTitles();
+        return configDataProvider.getStatusDisplayTitles();
     }
 
     public List<AssigneeIssues> getAssigneeIssuesList(String token, Set<String> projectIds,

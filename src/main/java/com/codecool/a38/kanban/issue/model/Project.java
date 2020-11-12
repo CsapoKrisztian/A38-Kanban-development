@@ -17,8 +17,8 @@ public class Project implements Comparable<Project> {
     private Group group;
 
     @Override
-    public int compareTo(Project project) {
-        return this.getProjectDisplayName().compareTo(project.getProjectDisplayName());
+    public int compareTo(Project otherProject) {
+        return this.getProjectDisplayName().compareTo(otherProject.getProjectDisplayName());
     }
 
     private String getProjectDisplayName() {

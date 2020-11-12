@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @Data
@@ -17,6 +18,6 @@ public class AssigneeIssues {
 
     private User assignee;
 
-    private List<Issue> issues;
+    private LinkedHashMap<String, List<Issue>> statusIssuesMap;
 
 }

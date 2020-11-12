@@ -24,7 +24,7 @@ public class ConfigDataProvider {
 
     private String storyPrefix;
 
-    private List<String> statusTitles;
+    private List<String> statusDisplayTitles;
 
     private Map<String, String> statusTitleDisplayMap = new HashMap<>();
 
@@ -43,7 +43,7 @@ public class ConfigDataProvider {
         try {
             JsonProperties jsonProperties = mapper.readValue(inputStream, typeReference);
             setStoryPrefix(jsonProperties);
-            setStatusTitles(jsonProperties);
+            setStatusDisplayTitles(jsonProperties);
             setStatusTitleDisplayMap(jsonProperties);
             setStatusDisplayTitleMap(jsonProperties);
             setPriorityTitleDisplayNumMap(jsonProperties);
@@ -58,11 +58,11 @@ public class ConfigDataProvider {
         log.info("Story prefix loaded from config Json: " + storyPrefix);
     }
 
-    private void setStatusTitles(JsonProperties jsonProperties) {
-        statusTitles = jsonProperties.getStatuses().stream()
+    private void setStatusDisplayTitles(JsonProperties jsonProperties) {
+        statusDisplayTitles = jsonProperties.getStatuses().stream()
                 .map(LabelProperty::getDisplay)
                 .collect(Collectors.toList());
-        log.info("Status titles loaded from config Json: " + statusTitles.toString());
+        log.info("Status titles loaded from config Json: " + statusDisplayTitles.toString());
     }
 
     private void setStatusTitleDisplayMap(JsonProperties jsonProperties) {

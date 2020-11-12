@@ -33,6 +33,12 @@ public class IssueController {
                 filter.getMilestoneTitles(), filter.getStoryTitles());
     }
 
+    @GetMapping("/statuses")
+    public List<String> getStatusTitles() {
+        return dataManager.getStatusDisplayTitles();
+    }
+
+
     @GetMapping("/projects")
     public List<Project> getProjects(@CookieValue(defaultValue = "default") String gitlabAccessToken) {
         return dataManager.getProjects(gitlabAccessToken);
@@ -50,10 +56,6 @@ public class IssueController {
         return dataManager.getStoryTitles(gitlabAccessToken, filter.getProjectIds());
     }
 
-    @GetMapping("/statuses")
-    public List<String> getStatusTitles() {
-        return dataManager.getStatusTitles();
-    }
 
     @PostMapping("/updateStatus")
     public Issue updateStatus(@CookieValue(defaultValue = "default") String gitlabAccessToken,
