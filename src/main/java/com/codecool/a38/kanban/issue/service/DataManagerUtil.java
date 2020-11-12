@@ -131,12 +131,21 @@ public class DataManagerUtil {
         return assigneeIssuesMap.entrySet().stream()
                 .map(e -> AssigneeIssues.builder()
                         .assignee(e.getKey())
-                        .statusIssuesMap(getStatusIssuesMap(e.getValue()))
+                        .statusIssuesMap(makeStatusIssuesMap(e.getValue()))
                         .build())
                 .collect(Collectors.toList());
     }
 
-    private LinkedHashMap<String, List<Issue>> getStatusIssuesMap(List<Issue> issues) {
+    public List<StoryIssues> makeStoryIssuesListFromMap(Map<Label, List<Issue>> storyIssuesMap) {
+        return storyIssuesMap.entrySet().stream()
+                .map(e -> StoryIssues.builder()
+                        .story(e.getKey())
+                        .statusIssuesMap(makeStatusIssuesMap(e.getValue()))
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    private LinkedHashMap<String, List<Issue>> makeStatusIssuesMap(List<Issue> issues) {
         LinkedHashMap<String, List<Issue>> statusIssuesMap = new LinkedHashMap<>();
         for (String status : configDataProvider.getStatusDisplayTitles()) {
             statusIssuesMap.put(status, issues.stream()
@@ -146,15 +155,6 @@ public class DataManagerUtil {
             );
         }
         return statusIssuesMap;
-    }
-
-    public List<StoryIssues> makeStoryIssuesListFromMap(Map<Label, List<Issue>> storyIssuesMap) {
-        return storyIssuesMap.entrySet().stream()
-                .map(e -> StoryIssues.builder()
-                        .story(e.getKey())
-                        .issues(e.getValue())
-                        .build())
-                .collect(Collectors.toList());
     }
 
     public String getIdNumValue(String currentStatusLabelId) {
