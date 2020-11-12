@@ -143,7 +143,7 @@ public class DataManager {
         } while (hasNextPage);
 
         log.info("Get projects");
-        return util.getSortedProjects(projects);
+        return projects.stream().sorted().collect(Collectors.toList());
     }
 
     public List<String> getMilestoneTitles(String token, Set<String> projectIds) {

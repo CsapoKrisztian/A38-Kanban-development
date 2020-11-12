@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class Project {
+public class Project implements Comparable<Project> {
 
     private String id;
 
@@ -16,4 +16,12 @@ public class Project {
 
     private Group group;
 
+    @Override
+    public int compareTo(Project project) {
+        return this.getProjectDisplayName().compareTo(project.getProjectDisplayName());
+    }
+
+    private String getProjectDisplayName() {
+        return group != null ? group.getName() + "/" + name : name;
+    }
 }

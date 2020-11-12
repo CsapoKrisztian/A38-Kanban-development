@@ -145,17 +145,6 @@ public class DataManagerUtil {
                 .collect(Collectors.toList());
     }
 
-    public List<Project> getSortedProjects(Set<Project> projects) {
-        return projects.stream()
-                .sorted(Comparator.comparing(this::getProjectDisplayName))
-                .collect(Collectors.toList());
-    }
-
-    private String getProjectDisplayName(Project project) {
-        return project.getGroup() != null ?
-                project.getGroup().getName() + "/" + project.getName() : project.getName();
-    }
-
     public String getIdNumValue(String currentStatusLabelId) {
         return currentStatusLabelId.substring(currentStatusLabelId.lastIndexOf("/") + 1);
     }
