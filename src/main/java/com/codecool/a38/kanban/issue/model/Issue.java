@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class Issue {
+public class Issue implements Comparable<Issue> {
 
     private String id;
 
@@ -39,4 +39,10 @@ public class Issue {
 
     private Project project;
 
+    @Override
+    public int compareTo(Issue otherIssue) {
+        if (this.priority == null) return 1;
+        if (otherIssue.priority == null) return -1;
+        return this.priority.getPriorityNum() - otherIssue.priority.getPriorityNum();
+    }
 }

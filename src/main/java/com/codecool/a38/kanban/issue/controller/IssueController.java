@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @AllArgsConstructor
@@ -20,18 +21,24 @@ public class IssueController {
     private DataManager dataManager;
 
     @PostMapping("/issues/orderByAssignee")
-    public List<AssigneeIssues> getAssigneeIssuesList(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+    public Map<String, AssigneeIssues> getAssigneeIssuesList(@CookieValue(defaultValue = "default") String gitlabAccessToken,
                                                       @RequestBody FilterRequestBody filter) {
-        return dataManager.getAssigneeIssuesList(gitlabAccessToken, filter.getProjectIds(),
+        return dataManager.getAssigneeIdIssuesMap(gitlabAccessToken, filter.getProjectIds(),
                 filter.getMilestoneTitles(), filter.getStoryTitles());
     }
 
     @PostMapping("/issues/orderByStory")
-    public List<StoryIssues> getStoryIssuesList(@CookieValue(defaultValue = "default") String gitlabAccessToken,
-                                                @RequestBody FilterRequestBody filter) {
-        return dataManager.getStoryIssuesList(gitlabAccessToken, filter.getProjectIds(),
+    public Map<String, StoryIssues> getStoryIssuesList(@CookieValue(defaultValue = "default") String gitlabAccessToken,
+                                                       @RequestBody FilterRequestBody filter) {
+        return dataManager.getStoryIdIssuesMap(gitlabAccessToken, filter.getProjectIds(),
                 filter.getMilestoneTitles(), filter.getStoryTitles());
     }
+
+    @GetMapping("/statuses")
+    public List<String> getStatusTitles() {
+        return dataManager.getStatusDisplayTitles();
+    }
+
 
     @GetMapping("/projects")
     public List<Project> getProjects(@CookieValue(defaultValue = "default") String gitlabAccessToken) {
@@ -50,10 +57,6 @@ public class IssueController {
         return dataManager.getStoryTitles(gitlabAccessToken, filter.getProjectIds());
     }
 
-    @GetMapping("/statuses")
-    public List<String> getStatusTitles() {
-        return dataManager.getStatusTitles();
-    }
 
     @PostMapping("/updateStatus")
     public Issue updateStatus(@CookieValue(defaultValue = "default") String gitlabAccessToken,
