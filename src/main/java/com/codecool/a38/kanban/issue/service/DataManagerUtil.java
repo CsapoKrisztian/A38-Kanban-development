@@ -127,22 +127,22 @@ public class DataManagerUtil {
         storyIssuesMap.get(story).add(issue);
     }
 
-    public List<AssigneeIssues> makeAssigneeIssuesListFromMap(Map<User, List<Issue>> assigneeIssuesMap) {
+    public Map<String, AssigneeIssues> makeAssigneeIdIssuesMap(Map<User, List<Issue>> assigneeIssuesMap) {
         return assigneeIssuesMap.entrySet().stream()
-                .map(e -> AssigneeIssues.builder()
-                        .assignee(e.getKey())
-                        .statusIssuesMap(makeStatusIssuesMap(e.getValue()))
-                        .build())
-                .collect(Collectors.toList());
+                .collect(Collectors.toMap(e -> e.getKey() != null ? e.getKey().getId() : "",
+                        e -> AssigneeIssues.builder()
+                                .assignee(e.getKey())
+                                .statusIssuesMap(makeStatusIssuesMap(e.getValue()))
+                                .build()));
     }
 
-    public List<StoryIssues> makeStoryIssuesListFromMap(Map<Label, List<Issue>> storyIssuesMap) {
+    public Map<String, StoryIssues> makeStoryIdIssuesMap(Map<Label, List<Issue>> storyIssuesMap) {
         return storyIssuesMap.entrySet().stream()
-                .map(e -> StoryIssues.builder()
-                        .story(e.getKey())
-                        .statusIssuesMap(makeStatusIssuesMap(e.getValue()))
-                        .build())
-                .collect(Collectors.toList());
+                .collect(Collectors.toMap(e -> e.getKey() != null ? e.getKey().getId() : "",
+                        e -> StoryIssues.builder()
+                                .story(e.getKey())
+                                .statusIssuesMap(makeStatusIssuesMap(e.getValue()))
+                                .build()));
     }
 
     private LinkedHashMap<String, List<Issue>> makeStatusIssuesMap(List<Issue> issues) {

@@ -32,8 +32,8 @@ public class DataManager {
         return configDataProvider.getStatusDisplayTitles();
     }
 
-    public List<AssigneeIssues> getAssigneeIssuesList(String token, Set<String> projectIds,
-                                                      Set<String> milestoneTitles, Set<String> storyTitles) {
+    public Map<String, AssigneeIssues> getAssigneeIdIssuesMap(String token, Set<String> projectIds,
+                                                              Set<String> milestoneTitles, Set<String> storyTitles) {
         if (projectIds == null || projectIds.size() == 0) return null;
 
         Map<User, List<Issue>> assigneeIssuesMap = new HashMap<>();
@@ -60,11 +60,11 @@ public class DataManager {
         } while (hasNextPage);
 
         log.info("Get assignee issues list");
-        return util.makeAssigneeIssuesListFromMap(assigneeIssuesMap);
+        return util.makeAssigneeIdIssuesMap(assigneeIssuesMap);
     }
 
-    public List<StoryIssues> getStoryIssuesList(String token, Set<String> projectIds,
-                                                Set<String> milestoneTitles, Set<String> storyTitles) {
+    public Map<String, StoryIssues> getStoryIdIssuesMap(String token, Set<String> projectIds,
+                                                        Set<String> milestoneTitles, Set<String> storyTitles) {
         if (projectIds == null || projectIds.size() == 0) return null;
 
         Map<Label, List<Issue>> storyIssuesMap = new HashMap<>();
@@ -91,7 +91,7 @@ public class DataManager {
         } while (hasNextPage);
 
         log.info("Get story issues list");
-        return util.makeStoryIssuesListFromMap(storyIssuesMap);
+        return util.makeStoryIdIssuesMap(storyIssuesMap);
     }
 
     private List<IssueNode> getAllProjectsIssueNodes(String token, Set<String> milestoneTitles, ProjectNode projectNode) {
