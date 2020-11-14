@@ -147,7 +147,7 @@ public class DataManager {
     }
 
     public List<String> getMilestoneTitles(String token, Set<String> projectIds) {
-        if (projectIds == null) return null;
+        if (projectIds == null || projectIds.size() == 0) return null;
 
         Set<String> milestoneTitles = new HashSet<>();
         String currentEndCursor = gitLabGraphQLCaller.getStartPagination();
@@ -241,7 +241,7 @@ public class DataManager {
     }
 
     public List<String> getStoryTitles(String token, Set<String> projectIds) {
-        if (projectIds == null) return null;
+        if (projectIds == null || projectIds.size() == 0) return null;
 
         Set<String> storyTitles = new HashSet<>();
         String currentEndCursor = gitLabGraphQLCaller.getStartPagination();
