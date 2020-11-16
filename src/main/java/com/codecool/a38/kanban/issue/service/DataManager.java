@@ -32,6 +32,23 @@ public class DataManager {
         return configDataProvider.getStatusDisplayTitles();
     }
 
+    /**
+     * Returns the issues in a nested map, in which the issues are grouped together first by their assignee and then by their status.
+     * The keys of the outer map are the ids of assignees, the keys of the inner map are the statuses.
+     * This arrangement helps the frontend to display the issues on a board,
+     * and to easily find and manipulate particular issues when the drag and drop function is used.
+     * The issues are filtered by project ids, milestone titles and story titles.
+     * Since the API restricts the number of nodes that can be received from it, a nested pagination is used.
+     * The outer pagination paginates over the projects,
+     * and if it is necessary for a particular project, then inner pagination paginates over the issues of that project.
+     * @param token             the token that is used in request to gitlab API for the authentication
+     * @param projectIds        the project ids by which the issues are filtered.
+     * @param milestoneTitles   the milestone titles by which the issues are filtered.
+     *                          If no milestone titles are given, then this filter is ignored.
+     * @param storyTitles       the story titles by which the issues are filtered.
+     *                          If no story titles titles are given, then this filter is ignored.
+     * @return                  the map containing the issues in an ordered way
+     */
     public Map<String, AssigneeIssues> getAssigneeIdIssuesMap(String token, Set<String> projectIds,
                                                               Set<String> milestoneTitles, Set<String> storyTitles) {
         if (projectIds == null || projectIds.size() == 0) return null;
@@ -63,6 +80,23 @@ public class DataManager {
         return util.makeAssigneeIdIssuesMap(assigneeIssuesMap);
     }
 
+    /**
+     * Returns the issues in a nested map, in which the issues are grouped together first by their story and then by their status.
+     * The keys of the outer map are the ids of stories, the keys of the inner map are the statuses.
+     * This arrangement helps the frontend to display the issues on a board,
+     * and to easily find and manipulate particular issues when the drag and drop function is used.
+     * The issues are filtered by project ids, milestone titles and story titles.
+     * Since the API restricts the number of nodes that can be received from it, a nested pagination is used.
+     * The outer pagination paginates over the projects,
+     * and if it is necessary for a particular project, then inner pagination paginates over the issues of that project.
+     * @param token             the token that is used in request to gitlab API for the authentication
+     * @param projectIds        the project ids by which the issues are filtered.
+     * @param milestoneTitles   the milestone titles by which the issues are filtered.
+     *                          If no milestone titles are given, then this filter is ignored.
+     * @param storyTitles       the story titles by which the issues are filtered.
+     *                          If no story titles titles are given, then this filter is ignored.
+     * @return                  the map containing the issues in an ordered way
+     */
     public Map<String, StoryIssues> getStoryIdIssuesMap(String token, Set<String> projectIds,
                                                         Set<String> milestoneTitles, Set<String> storyTitles) {
         if (projectIds == null || projectIds.size() == 0) return null;

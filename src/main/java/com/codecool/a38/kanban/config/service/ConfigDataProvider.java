@@ -33,6 +33,9 @@ public class ConfigDataProvider {
 
     private final String configJsonFilePath = "/configprops.json";
 
+    /**
+     * Loads the config data from the provided json config file
+     */
     @PostConstruct
     public void init() {
         ObjectMapper mapper = new ObjectMapper();
@@ -63,12 +66,23 @@ public class ConfigDataProvider {
         log.info("Status titles loaded from config Json: " + statusDisplayTitles.toString());
     }
 
+    /**
+     * The status label titles and the given corresponding display titles are put in a map.
+     * This map is a LinkedHashMap ot maintain the order of the statuses.
+     * @param jsonProperties    the json properties containing the config data
+     */
     private void setStatusTitleDisplayMap(JsonProperties jsonProperties) {
         jsonProperties.getStatuses().forEach(status -> statusTitleDisplayMap
                 .put(status.getTitle(), status.getDisplay()));
         log.info("Status title display map loaded from config Json: " + statusTitleDisplayMap.toString());
     }
 
+    /**
+     * The priority label titles and the given corresponding display titles are put in a map.
+     * A priority number is added to each priority, which corresponds to their order in the config file.
+     * This priority number will be later used to sort issues.
+     * @param jsonProperties    the json properties containing the config data
+     */
     private void setPriorityTitleDisplayNumMap(JsonProperties jsonProperties) {
         int serial = 0;
         for (LabelProperty labelProperty : jsonProperties.getPriorities()) {

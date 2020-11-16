@@ -25,6 +25,16 @@ public class AuthController {
         this.restTemplate = restTemplate;
     }
 
+    /**
+     * With the received code and application data, it sends a request to gitlab to get the token
+     * as described in gitlab's Web application OAuth2 flow (https://docs.gitlab.com/ee/api/oauth2.html).
+     * After that the token is put into an HTTP only cookie and the cookie is added to the response.
+     * The cookie's max age is set either to the token's expiration time (if it exists) or one week.
+     * @param response
+     * @param code      the code received in query parameter
+     * @param appData
+     * @return
+     */
     @PostMapping("/getToken")
     public ResponseEntity<String> getToken(HttpServletResponse response, @RequestParam String code,
                                            @RequestBody AppData appData) {
