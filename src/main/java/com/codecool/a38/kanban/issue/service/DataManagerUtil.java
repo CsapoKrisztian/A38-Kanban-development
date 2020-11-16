@@ -49,14 +49,9 @@ public class DataManagerUtil {
     }
 
     private Label getStatusFromIssueNode(IssueNode issueNode) {
-        for (Label label : issueNode.getLabels().getNodes()) {
-            String statusDisplayTitle = configDataProvider.getStatusTitleDisplayMap().get(label.getTitle());
-            if (statusDisplayTitle != null) {
-                label.setTitle(statusDisplayTitle);
-                return label;
-            }
-        }
-        return null;
+        return issueNode.getLabels().getNodes().stream()
+                .filter(label -> configDataProvider.getStatusTitleDisplayMap().containsKey(label.getTitle()))
+                .findFirst().orElse(null);
     }
 
     private Label getStoryFromIssueNode(IssueNode issueNode) {
@@ -147,13 +142,12 @@ public class DataManagerUtil {
 
     private LinkedHashMap<String, List<Issue>> makeStatusIssuesMap(List<Issue> issues) {
         LinkedHashMap<String, List<Issue>> statusIssuesMap = new LinkedHashMap<>();
-        for (String status : configDataProvider.getStatusDisplayTitles()) {
-            statusIssuesMap.put(status, issues.stream()
-                    .filter(issue -> issue.getStatus().getTitle().equals(status))
-                    .sorted()
-                    .collect(Collectors.toList())
-            );
-        }
+        configDataProvider.getStatusTitleDisplayMap().keySet().forEach((statusTitle) -> statusIssuesMap.put(
+                statusTitle, issues.stream()
+                        .filter(issue -> issue.getStatus().getTitle().equals(statusTitle))
+                        .sorted()
+                        .collect(Collectors.toList())
+        ));
         return statusIssuesMap;
     }
 

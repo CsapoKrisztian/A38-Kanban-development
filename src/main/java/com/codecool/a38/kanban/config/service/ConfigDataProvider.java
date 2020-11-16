@@ -13,6 +13,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,9 +27,7 @@ public class ConfigDataProvider {
 
     private List<String> statusDisplayTitles;
 
-    private Map<String, String> statusTitleDisplayMap = new HashMap<>();
-
-    private Map<String, String> statusDisplayTitleMap = new HashMap<>();
+    private LinkedHashMap<String, String> statusTitleDisplayMap = new LinkedHashMap<>();
 
     private Map<String, PriorityDisplayNum> priorityTitleDisplayNumMap = new HashMap<>();
 
@@ -45,7 +44,6 @@ public class ConfigDataProvider {
             setStoryPrefix(jsonProperties);
             setStatusDisplayTitles(jsonProperties);
             setStatusTitleDisplayMap(jsonProperties);
-            setStatusDisplayTitleMap(jsonProperties);
             setPriorityTitleDisplayNumMap(jsonProperties);
         } catch (IOException e) {
             log.info("Unable to read file: " + configJsonFilePath);
@@ -66,14 +64,9 @@ public class ConfigDataProvider {
     }
 
     private void setStatusTitleDisplayMap(JsonProperties jsonProperties) {
-        statusTitleDisplayMap = jsonProperties.getStatuses().stream()
-                .collect(Collectors.toMap(LabelProperty::getTitle, LabelProperty::getDisplay));
+        jsonProperties.getStatuses().forEach(status -> statusTitleDisplayMap
+                .put(status.getTitle(), status.getDisplay()));
         log.info("Status title display map loaded from config Json: " + statusTitleDisplayMap.toString());
-    }
-
-    private void setStatusDisplayTitleMap(JsonProperties jsonProperties) {
-        statusDisplayTitleMap = jsonProperties.getStatuses().stream()
-                .collect(Collectors.toMap(LabelProperty::getDisplay, LabelProperty::getTitle));
     }
 
     private void setPriorityTitleDisplayNumMap(JsonProperties jsonProperties) {

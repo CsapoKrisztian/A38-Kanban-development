@@ -292,15 +292,14 @@ public class DataManager {
         return storyLabelList;
     }
 
-    public Issue updateStatus(String token, String issueId, String newStatusDisplayTitle) {
+    public Issue updateStatus(String token, String issueId, String newStatusTitle) {
         IssueNode issueNode = gitLabGraphQLCaller.getIssueResponse(token, issueId).getData().getIssue();
         String issueIid = issueNode.getIid();
         String projectFullPath = issueNode.getDesignCollection().getProject().getFullPath();
         String currentStatusLabelId = util.getStatusLabelId(issueNode);
 
-        String newStatusLabelTitle = configDataProvider.getStatusDisplayTitleMap().get(newStatusDisplayTitle);
         String newStatusLabelId = gitLabGraphQLCaller.
-                getProjectLabelResponse(token, projectFullPath, newStatusLabelTitle)
+                getProjectLabelResponse(token, projectFullPath, newStatusTitle)
                 .getData().getProject().getLabel().getId();
 
         if (!currentStatusLabelId.equals(newStatusLabelId)) {
@@ -310,7 +309,7 @@ public class DataManager {
             UpdateIssueDataResponse updateIssueDataResponse = gitLabGraphQLCaller.
                     updateStatusLabel(token, projectFullPath, issueIid, currentStatusLabelIdNum, newStatusLabelIdNum);
 
-            log.info("Updated status: " + newStatusDisplayTitle + " of issue: " + issueId);
+            log.info("Updated status: " + newStatusTitle + " of issue: " + issueId);
             return util.makeIssueFromIssueNode(updateIssueDataResponse.getData().getUpdateIssue().getIssue());
         }
         log.info("Failed to update status of issue: " + issueId);
