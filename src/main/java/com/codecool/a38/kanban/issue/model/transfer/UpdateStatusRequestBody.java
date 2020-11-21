@@ -9,4 +9,6 @@ public class UpdateStatusRequestBody {
 
     private String newStatusTitle;
 
+    private String projectFullPath;
+
 }
