@@ -327,11 +327,6 @@ public class GitLabGraphQLCaller {
                 "        title\\n" +
                 "      }\\n" +
                 "    }\\n" +
-                "    designCollection {\\n" +
-                "      project {\\n" +
-                "        fullPath\\n" +
-                "      }\\n" +
-                "    }\\n" +
                 "  }\\n" +
                 "}\\n" +
                 "\",\"variables\":{}}";

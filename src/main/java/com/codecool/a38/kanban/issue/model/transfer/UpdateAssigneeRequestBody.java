@@ -9,4 +9,6 @@ public class UpdateAssigneeRequestBody {
 
     private String newAssigneeId;
 
+    private String projectFullPath;
+
 }

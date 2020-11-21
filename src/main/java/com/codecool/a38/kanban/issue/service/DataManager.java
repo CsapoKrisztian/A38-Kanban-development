@@ -326,10 +326,9 @@ public class DataManager {
         return storyLabelList;
     }
 
-    public Issue updateStatus(String token, String issueId, String newStatusTitle) {
+    public Issue updateStatus(String token, String issueId, String newStatusTitle, String projectFullPath) {
         IssueNode issueNode = gitLabGraphQLCaller.getIssueResponse(token, issueId).getData().getIssue();
         String issueIid = issueNode.getIid();
-        String projectFullPath = issueNode.getDesignCollection().getProject().getFullPath();
         String currentStatusLabelId = util.getStatusLabelId(issueNode);
 
         String newStatusLabelId = gitLabGraphQLCaller.
@@ -350,10 +349,9 @@ public class DataManager {
         return util.makeIssueFromIssueNode(issueNode);
     }
 
-    public Issue updateAssignee(String token, String issueId, String newAssigneeId) {
+    public Issue updateAssignee(String token, String issueId, String newAssigneeId, String projectFullPath) {
         IssueNode issueNode = gitLabGraphQLCaller.getIssueResponse(token, issueId).getData().getIssue();
         String issueIid = issueNode.getIid();
-        String projectFullPath = issueNode.getDesignCollection().getProject().getFullPath();
 
         String assigneeUsername = "";
         if (!newAssigneeId.equals("unassigned") && !newAssigneeId.equals("")) {
