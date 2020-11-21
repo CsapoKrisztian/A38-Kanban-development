@@ -43,7 +43,4 @@ public class IssueNode {
     @JsonProperty("labels")
     private Labels labels;
 
-    @JsonProperty("designCollection")
-    private DesignCollection designCollection;
-
 }

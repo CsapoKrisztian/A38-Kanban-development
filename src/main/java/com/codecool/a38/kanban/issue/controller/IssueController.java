@@ -22,7 +22,7 @@ public class IssueController {
 
     @PostMapping("/issues/orderByAssignee")
     public Map<String, AssigneeIssues> getAssigneeIssuesList(@CookieValue(defaultValue = "default") String gitlabAccessToken,
-                                                      @RequestBody FilterRequestBody filter) {
+                                                             @RequestBody FilterRequestBody filter) {
         return dataManager.getAssigneeIdIssuesMap(gitlabAccessToken, filter.getProjectIds(),
                 filter.getMilestoneTitles(), filter.getStoryTitles());
     }
@@ -62,14 +62,14 @@ public class IssueController {
     public Issue updateStatus(@CookieValue(defaultValue = "default") String gitlabAccessToken,
                               @RequestBody UpdateStatusRequestBody updateStatusRequestBody) {
         return dataManager.updateStatus(gitlabAccessToken, updateStatusRequestBody.getIssueId(),
-                updateStatusRequestBody.getNewStatusTitle());
+                updateStatusRequestBody.getNewStatusTitle(), updateStatusRequestBody.getProjectFullPath());
     }
 
     @PostMapping("/updateAssignee")
     public Issue updateAssignee(@CookieValue(defaultValue = "default") String gitlabAccessToken,
                                 @RequestBody UpdateAssigneeRequestBody updateAssigneeRequestBody) {
         return dataManager.updateAssignee(gitlabAccessToken, updateAssigneeRequestBody.getIssueId(),
-                updateAssigneeRequestBody.getNewAssigneeId());
+                updateAssigneeRequestBody.getNewAssigneeId(), updateAssigneeRequestBody.getProjectFullPath());
     }
 
 }
