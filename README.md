@@ -112,15 +112,15 @@ In this file set your predefined properties in a Json file.
       "title": "KB[priority][70][P3]",  // this is the label title of one of your priority labels on gitlab
       "display": "P3"   // this is what you want to display on the kanban board, 
                         // that corresponds to the above given priority label title
-                        // those issues that have no status labels will be handled by default as belonging to "Backlog"
     }
   ],
 
   "statuses": [
     {
-      "title": "KB[stage][00][Backlog]",    // this is the label title of one of your status labels on gitlab
-      "display": "Backlog"     // this is what you want to display on the kanban board, 
-                               // that corresponds to the above given status label title
+      "title": "KB[stage][10][Todo]",   // this is the label title of one of your status labels on gitlab
+      "display": "Todo"     // this is what you want to display on the kanban board, 
+                            // that corresponds to the above given status label title
+                            // issues without status label will be handled by default as belonging to "Backlog" on the board
     }
   ]
 
