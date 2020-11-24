@@ -337,7 +337,7 @@ public class DataManager {
             newStatusLabelId = getNewStatusLabelId(token, newStatusTitle, projectFullPath);
         } catch (NullPointerException e) {
             log.error("Could not find status with the title: " + newStatusTitle +
-                    ", please check if this is a valid status title!");
+                    ", please check if this is really a valid status title!");
             return util.makeIssueFromIssueNode(issueNode);
         }
 
