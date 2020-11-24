@@ -332,10 +332,7 @@ public class DataManager {
         IssueNode issueNode = gitLabGraphQLCaller.getIssueResponse(token, issueId).getData().getIssue();
         String issueIid = issueNode.getIid();
         String currentStatusLabelId = util.getStatusLabelId(issueNode);
-
-        String newStatusLabelId = gitLabGraphQLCaller.
-                getProjectLabelResponse(token, projectFullPath, newStatusTitle)
-                .getData().getProject().getLabel().getId();
+        String newStatusLabelId = getNewStatusLabelId(token, newStatusTitle, projectFullPath);
 
         if (!currentStatusLabelId.equals(newStatusLabelId)) {
             String currentStatusLabelIdNum = util.getIdNumValue(currentStatusLabelId);
@@ -351,12 +348,24 @@ public class DataManager {
         return util.makeIssueFromIssueNode(issueNode);
     }
 
+    private String getNewStatusLabelId(String token, String newStatusTitle, String projectFullPath) {
+        String newStatusLabelId;
+        if (newStatusTitle.equals("Backlog") || newStatusTitle.equals("")) {
+            newStatusLabelId = "";
+        } else {
+            newStatusLabelId = gitLabGraphQLCaller.
+                    getProjectLabelResponse(token, projectFullPath, newStatusTitle)
+                    .getData().getProject().getLabel().getId();
+        }
+        return newStatusLabelId;
+    }
+
     public Issue updateAssignee(String token, String issueId, String newAssigneeId, String projectFullPath) {
         IssueNode issueNode = gitLabGraphQLCaller.getIssueResponse(token, issueId).getData().getIssue();
         String issueIid = issueNode.getIid();
 
         String assigneeUsername = "";
-        if (!newAssigneeId.equals("unassigned") && !newAssigneeId.equals("")) {
+        if (!newAssigneeId.toLowerCase().equals("unassigned") && !newAssigneeId.equals("")) {
             assigneeUsername = gitLabGraphQLCaller.getUserResponse(token, newAssigneeId)
                     .getData().getUser().getUsername();
         }

@@ -12,10 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,16 +57,20 @@ public class ConfigDataProvider {
     }
 
     private void setStatusDisplayTitles(JsonProperties jsonProperties) {
-        statusDisplayTitles = jsonProperties.getStatuses().stream()
+        statusDisplayTitles = new ArrayList<>() {{
+            add("Backlog");
+        }};
+        statusDisplayTitles.addAll(jsonProperties.getStatuses().stream()
                 .map(LabelProperty::getDisplay)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
         log.info("Status titles loaded from config Json: " + statusDisplayTitles.toString());
     }
 
     /**
      * The status label titles and the given corresponding display titles are put in a map.
      * This map is a LinkedHashMap ot maintain the order of the statuses.
-     * @param jsonProperties    the json properties containing the config data
+     *
+     * @param jsonProperties the json properties containing the config data
      */
     private void setStatusTitleDisplayMap(JsonProperties jsonProperties) {
         jsonProperties.getStatuses().forEach(status -> statusTitleDisplayMap
@@ -81,7 +82,8 @@ public class ConfigDataProvider {
      * The priority label titles and the given corresponding display titles are put in a map.
      * A priority number is added to each priority, which corresponds to their order in the config file.
      * This priority number will be later used to sort issues.
-     * @param jsonProperties    the json properties containing the config data
+     *
+     * @param jsonProperties the json properties containing the config data
      */
     private void setPriorityTitleDisplayNumMap(JsonProperties jsonProperties) {
         int serial = 0;

@@ -22,10 +22,6 @@
 
   "statuses": [
     {
-      "title": "KB[stage][00][Backlog]",
-      "display": "Backlog"
-    },
-    {
       "title": "KB[stage][10][Todo]",
       "display": "Todo"
     },

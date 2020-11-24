@@ -83,14 +83,12 @@ public class DataManagerUtil {
     }
 
     public void putIssueToAssigneeIssueMap(Set<String> storyTitles, Map<User, List<Issue>> assigneeIssuesMap, Issue issue) {
-        if (issue.getStatus() != null) {
-            if (storyTitles != null && storyTitles.size() != 0) {
-                if (issue.getStory() != null && storyTitles.contains(issue.getStory().getTitle())) {
-                    addIssueToAssigneeIssuesMap(assigneeIssuesMap, issue);
-                }
-            } else {
+        if (storyTitles != null && storyTitles.size() != 0) {
+            if (issue.getStory() != null && storyTitles.contains(issue.getStory().getTitle())) {
                 addIssueToAssigneeIssuesMap(assigneeIssuesMap, issue);
             }
+        } else {
+            addIssueToAssigneeIssuesMap(assigneeIssuesMap, issue);
         }
     }
 
@@ -103,15 +101,13 @@ public class DataManagerUtil {
     }
 
     public void putIssueToStoryIssueMap(Set<String> storyTitles, Map<Label, List<Issue>> storyIssuesMap, Issue issue) {
-        if (issue.getStatus() != null) {
-            Label story = issue.getStory();
-            if (storyTitles != null && storyTitles.size() != 0) {
-                if (story != null && storyTitles.contains(story.getTitle())) {
-                    addStoryToStoryIssuesMap(storyIssuesMap, issue, story);
-                }
-            } else {
+        Label story = issue.getStory();
+        if (storyTitles != null && storyTitles.size() != 0) {
+            if (story != null && storyTitles.contains(story.getTitle())) {
                 addStoryToStoryIssuesMap(storyIssuesMap, issue, story);
             }
+        } else {
+            addStoryToStoryIssuesMap(storyIssuesMap, issue, story);
         }
     }
 
@@ -142,9 +138,15 @@ public class DataManagerUtil {
 
     private LinkedHashMap<String, List<Issue>> makeStatusIssuesMap(List<Issue> issues) {
         LinkedHashMap<String, List<Issue>> statusIssuesMap = new LinkedHashMap<>();
+
+        statusIssuesMap.put("Backlog", issues.stream()
+                .filter(issue -> issue.getStatus() == null)
+                .sorted()
+                .collect(Collectors.toList()));
+
         configDataProvider.getStatusTitleDisplayMap().keySet().forEach((statusTitle) -> statusIssuesMap.put(
                 statusTitle, issues.stream()
-                        .filter(issue -> issue.getStatus().getTitle().equals(statusTitle))
+                        .filter(issue -> issue.getStatus() != null && issue.getStatus().getTitle().equals(statusTitle))
                         .sorted()
                         .collect(Collectors.toList())
         ));
