@@ -56,6 +56,12 @@ public class ConfigDataProvider {
         log.info("Story prefix loaded from config Json: " + storyPrefix);
     }
 
+    /**
+     * The status displays are put into a list.
+     * The first and the default status display is "Backlog".
+     * If there is no status label is given to the issue, then it will be handled as belonging to the "Backlog".
+     * @param jsonProperties the json properties containing the config data
+     */
     private void setStatusDisplayTitles(JsonProperties jsonProperties) {
         statusDisplayTitles = new ArrayList<>() {{
             add("Backlog");

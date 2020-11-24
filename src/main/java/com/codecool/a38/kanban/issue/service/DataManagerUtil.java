@@ -139,6 +139,7 @@ public class DataManagerUtil {
     private LinkedHashMap<String, List<Issue>> makeStatusIssuesMap(List<Issue> issues) {
         LinkedHashMap<String, List<Issue>> statusIssuesMap = new LinkedHashMap<>();
 
+        // Issues in "Backlog" have actually no status label.
         statusIssuesMap.put("Backlog", issues.stream()
                 .filter(issue -> issue.getStatus() == null)
                 .sorted()

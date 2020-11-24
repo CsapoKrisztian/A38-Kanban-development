@@ -350,6 +350,8 @@ public class DataManager {
 
     private String getNewStatusLabelId(String token, String newStatusTitle, String projectFullPath) {
         String newStatusLabelId;
+        // Actually issues in "Backlog" have no status label.
+        // Therefore if we want to move an issue to Backlog then we only need to remove the current status label.
         if (newStatusTitle.equals("Backlog") || newStatusTitle.equals("")) {
             newStatusLabelId = "";
         } else {
