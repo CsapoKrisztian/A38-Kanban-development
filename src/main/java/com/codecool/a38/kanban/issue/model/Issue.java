@@ -41,6 +41,7 @@ public class Issue implements Comparable<Issue> {
 
     @Override
     public int compareTo(Issue otherIssue) {
+        if (this.priority == null && otherIssue.priority == null) return 0;
         if (this.priority == null) return 1;
         if (otherIssue.priority == null) return -1;
         return this.priority.getPriorityNum() - otherIssue.priority.getPriorityNum();
