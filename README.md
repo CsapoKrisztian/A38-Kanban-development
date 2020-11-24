@@ -118,9 +118,10 @@ In this file set your predefined properties in a Json file.
 
   "statuses": [
     {
-      "title": "KB[stage][00][Backlog]",    // this is the label title of one of your status labels on gitlab
-      "display": "Backlog"     // this is what you want to display on the kanban board, 
-                               // that corresponds to the above given status label title
+      "title": "KB[stage][10][Todo]",   // this is the label title of one of your status labels on gitlab
+      "display": "Todo"     // this is what you want to display on the kanban board, 
+                            // that corresponds to the above given status label title
+                            // issues without status label will be handled by default as belonging to "Backlog" on the board
     }
   ]
 
