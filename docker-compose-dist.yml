@@ -10,6 +10,7 @@ services:
     environment:
       - frontend.url=http://localhost:3000
       - gitlabServer.url=https://gitlab.techpm.guru
+      - configprops.path=/configprops.json
   frontend:
     image: kanban-frontend:latest
     build:

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -28,7 +29,8 @@ public class ConfigDataProvider {
 
     private Map<String, PriorityDisplayNum> priorityTitleDisplayNumMap = new HashMap<>();
 
-    private final String configJsonFilePath = "/configprops.json";
+    @Value("${configprops.path}")
+    private String configpropsPath;
 
     /**
      * Loads the config data from the provided json config file
@@ -38,7 +40,7 @@ public class ConfigDataProvider {
         ObjectMapper mapper = new ObjectMapper();
         TypeReference<JsonProperties> typeReference = new TypeReference<>() {
         };
-        InputStream inputStream = TypeReference.class.getResourceAsStream(configJsonFilePath);
+        InputStream inputStream = TypeReference.class.getResourceAsStream(configpropsPath);
         try {
             JsonProperties jsonProperties = mapper.readValue(inputStream, typeReference);
             setStoryPrefix(jsonProperties);
@@ -46,7 +48,7 @@ public class ConfigDataProvider {
             setStatusTitleDisplayMap(jsonProperties);
             setPriorityTitleDisplayNumMap(jsonProperties);
         } catch (IOException e) {
-            log.info("Unable to read file: " + configJsonFilePath);
+            log.info("Unable to read file: " + configpropsPath);
             e.printStackTrace();
         }
     }
