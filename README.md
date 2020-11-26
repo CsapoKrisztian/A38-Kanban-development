@@ -85,7 +85,9 @@ services:
       - '8080:8080'
     environment:
       - frontend.url=http://localhost:3000    #This should be your frontend url
-      - gitlabServer.url=https://gitlab.techpm.guru   #This should be your gitlab server url      
+      - gitlabServer.url=https://gitlab.techpm.guru   #This should be your gitlab server url
+      - configprops.path=/configprops.json    #This should be the path of the config json file
+                                              #The default path ("/configprops.json") points to this file: "A38-Kanban-development/src/main/resources/configprops.json"
   frontend:
     image: kanban-frontend:latest
     build:
