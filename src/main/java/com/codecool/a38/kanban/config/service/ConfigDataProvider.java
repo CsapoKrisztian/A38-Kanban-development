@@ -43,6 +43,7 @@ public class ConfigDataProvider {
         InputStream inputStream = TypeReference.class.getResourceAsStream(configpropsPath);
         try {
             JsonProperties jsonProperties = mapper.readValue(inputStream, typeReference);
+            log.info("Reading file: " + configpropsPath);
             setStoryPrefix(jsonProperties);
             setStatusDisplayTitles(jsonProperties);
             setStatusTitleDisplayMap(jsonProperties);
