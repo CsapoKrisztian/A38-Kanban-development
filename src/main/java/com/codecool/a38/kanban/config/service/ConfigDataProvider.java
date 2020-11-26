@@ -49,7 +49,7 @@ public class ConfigDataProvider {
             setStatusTitleDisplayMap(jsonProperties);
             setPriorityTitleDisplayNumMap(jsonProperties);
         } catch (IOException e) {
-            log.info("Unable to read file: " + configpropsPath);
+            log.error("Unable to read file: " + configpropsPath);
             e.printStackTrace();
         }
     }
