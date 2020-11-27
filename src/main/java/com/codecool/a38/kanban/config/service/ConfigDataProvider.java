@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.FileInputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,8 +41,8 @@ public class ConfigDataProvider {
         ObjectMapper mapper = new ObjectMapper();
         TypeReference<JsonProperties> typeReference = new TypeReference<>() {
         };
-        InputStream inputStream = TypeReference.class.getResourceAsStream(configpropsPath);
         try {
+            InputStream inputStream = new FileInputStream(configpropsPath);
             JsonProperties jsonProperties = mapper.readValue(inputStream, typeReference);
             log.info("Reading file: " + configpropsPath);
             setStoryPrefix(jsonProperties);
