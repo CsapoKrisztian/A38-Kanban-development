@@ -33,12 +33,13 @@ public class IssueController {
         return dataManager.getStoryIdIssuesMap(gitlabAccessToken, filter.getProjectIds(),
                 filter.getMilestoneTitles(), filter.getStoryTitles());
     }
-
     @GetMapping("/statuses")
-    public List<String> getStatusTitles() {
-        return dataManager.getStatusDisplayTitles();
+    public List<String> getStatusTitles() throws Exception {
+        List<String> statusDisplayTitles = dataManager.getStatusDisplayTitles();
+        if (statusDisplayTitles == null) throw new Exception("There are no statuses. " +
+                "This error might occur, if configprops.json could not be loaded.");
+        return statusDisplayTitles;
     }
-
 
     @GetMapping("/projects")
     public List<Project> getProjects(@CookieValue(defaultValue = "default") String gitlabAccessToken) {
