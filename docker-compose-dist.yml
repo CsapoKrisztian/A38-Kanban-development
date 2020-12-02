@@ -21,8 +21,4 @@ services:
       dockerfile: 'Dockerfile'
     ports:
       - '3000:3000'
-    environment:
-      - REACT_APP_GITLAB_SERVER=https://gitlab.techpm.guru
-      - REACT_APP_GITLAB_APP_ID=458f27c6eb357cf7419231331e3af3e3a9d39782b7edf50ac2cc083e7a7f1a4a
-      - REACT_APP_APPLICATION=http://localhost:3000
     stdin_open: true
