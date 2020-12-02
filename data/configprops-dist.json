@@ -1,0 +1,46 @@
+{
+  "storyPrefix": "story:",
+
+  "priorities": [
+    {
+      "title": "KB[priority][70][P3]",
+      "display": "P3"
+    },
+    {
+      "title": "KB[priority][80][P2]",
+      "display": "P2"
+    },
+    {
+      "title": "KB[priority][90][P1]",
+      "display": "P1"
+    },
+    {
+      "title": "KB[priority][99][P0]",
+      "display": "PO"
+    }
+  ],
+
+  "statuses": [
+    {
+      "title": "KB[stage][10][Todo]",
+      "display": "Todo"
+    },
+    {
+      "title": "KB[stage][30][Development]",
+      "display": "Development"
+    },
+    {
+      "title": "KB[stage][35][DevReview]",
+      "display": "Dev review"
+    },
+    {
+      "title": "KB[stage][40][FinalReview]",
+      "display": "Final review"
+    },
+    {
+      "title": "KB[stage][50][Documentation]",
+      "display": "Documentation"
+    }
+  ]
+
+}
