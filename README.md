@@ -86,6 +86,7 @@ services:
     environment:
       - frontend.url=http://localhost:3000    #This should be your frontend url
       - gitlabServer.url=https://gitlab.techpm.guru   #This should be your gitlab server url
+      - app.secret=f0fbf238c1ef5d0be56bf1118c430b15daff2b85d790d4bbfd76b8ccbb5bac33    #This should be your gitlab application secret
       - configprops.path=/configprops.json    #This should be the path of the config json file
                                               #The default path ("/configprops.json") points to this file: "A38-Kanban-development/src/main/resources/configprops.json"
   frontend:
@@ -98,7 +99,6 @@ services:
     environment:
       - REACT_APP_GITLAB_SERVER=https://gitlab.techpm.guru    #This should be your gitlab server url
       - REACT_APP_GITLAB_APP_ID=458f27c6eb357cf7419231331e3af3e3a9d39782b7edf50ac2cc083e7a7f1a4a    #This should be your gitlab application id
-      - REACT_APP_GITLAB_APP_SECRET=f0fbf238c1ef5d0be56bf1118c430b15daff2b85d790d4bbfd76b8ccbb5bac33    #This should be your gitlab application secret
       - REACT_APP_APPLICATION=http://localhost:3000   #This should be your frontend url
     stdin_open: true
 ```
