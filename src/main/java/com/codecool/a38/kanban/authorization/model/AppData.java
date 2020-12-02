@@ -7,8 +7,6 @@ public class AppData {
 
     private String appId;
 
-    private String appSecret;
-
     private String redirectUri;
 
 }
