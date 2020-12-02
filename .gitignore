@@ -151,5 +151,5 @@ fabric.properties
 .idea/$CACHE_FILE$
 
 # Config files
-/src/main/resources/configprops.json
 /docker-compose.yml
+/data/configprops.json

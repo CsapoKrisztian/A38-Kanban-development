@@ -19,6 +19,9 @@ public class AuthController {
     @Value("${gitlabServer.url}")
     private String gitlabServerUrl;
 
+    @Value("${app.secret}")
+    private String appSecret;
+
     private RestTemplate restTemplate;
 
     public AuthController(RestTemplate restTemplate) {
@@ -30,17 +33,17 @@ public class AuthController {
      * as described in gitlab's Web application OAuth2 flow (https://docs.gitlab.com/ee/api/oauth2.html).
      * After that the token is put into an HTTP only cookie and the cookie is added to the response.
      * The cookie's max age is set either to the token's expiration time (if it exists) or one week.
-     * @param response
+     * @param response  the response in which the cookie will be set
      * @param code      the code received in query parameter
-     * @param appData
-     * @return
+     * @param appData   an object that contains the app id and the redirect url
+     * @return          returns ResponseEntity with a message about hte authentication process
      */
     @PostMapping("/getToken")
     public ResponseEntity<String> getToken(HttpServletResponse response, @RequestParam String code,
                                            @RequestBody AppData appData) {
         String gitlabServerOauthTokenUrl = gitlabServerUrl + "/oauth/token";
         String parameters = "?client_id=" + appData.getAppId() +
-                "&client_secret=" + appData.getAppSecret() +
+                "&client_secret=" + appSecret +
                 "&code=" + code +
                 "&grant_type=authorization_code" +
                 "&redirect_uri=" + appData.getRedirectUri();
