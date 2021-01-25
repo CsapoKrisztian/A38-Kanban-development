@@ -153,3 +153,6 @@ fabric.properties
 # Config files
 /docker-compose.yml
 /data/configprops.json
+
+# Container data
+/data/
